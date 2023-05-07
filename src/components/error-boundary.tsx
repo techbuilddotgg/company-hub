@@ -1,17 +1,18 @@
 import React, { ErrorInfo, PropsWithChildren, ReactNode } from 'react';
 import { Button } from '@components/button';
-import { router } from 'next/client';
+import { Router } from 'next/router';
 
 interface ErrorBoundaryState {
   hasError: boolean;
   message: string;
+  route?: string;
 }
 
 class ErrorBoundary extends React.Component<
-  PropsWithChildren,
+  PropsWithChildren & { router: Router },
   ErrorBoundaryState
 > {
-  constructor(props: PropsWithChildren) {
+  constructor(props: PropsWithChildren & { router: Router }) {
     super(props);
 
     // Define a state variable to track whether there is an error or not
@@ -29,6 +30,15 @@ class ErrorBoundary extends React.Component<
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     // You can use your own error logging service here
     console.log({ error, errorInfo });
+    this.setState({ ...this.state, route: this.props.router.pathname });
+  }
+
+  // reset state when router path changes
+  componentDidUpdate(): void {
+    if (!this.state.route) return;
+    if (this.state.route !== this.props.router.pathname) {
+      this.setState({ ...this.state, hasError: false, route: undefined });
+    }
   }
 
   render(): ReactNode {
@@ -41,7 +51,10 @@ class ErrorBoundary extends React.Component<
         >
           <h1 className={'font-semibold'}>{this.state.message}</h1>
           <div className={'flex flex-row  gap-4'}>
-            <Button variant={'default'} onClick={() => router.back()}>
+            <Button
+              variant={'default'}
+              onClick={() => this.props.router.back()}
+            >
               Go back
             </Button>
             <Button
