@@ -3,12 +3,15 @@ import { ClerkProvider } from '@clerk/nextjs';
 import type { AppType } from 'next/app';
 import { trpc } from '@utils/trpc';
 import Layout from '@components/layout';
+import ErrorBoundary from '@components/error-boundry';
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <ClerkProvider {...pageProps}>
       <Layout>
-        <Component {...pageProps} />
+        <ErrorBoundary>
+          <Component {...pageProps} />
+        </ErrorBoundary>
       </Layout>
     </ClerkProvider>
   );

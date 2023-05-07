@@ -3,9 +3,9 @@ import Navigation from '@components/navigation/navigation';
 
 const Layout: FC<PropsWithChildren> = ({ children }) => {
   return (
-    <div>
+    <div className={'flex h-full flex-col'}>
       <Navigation />
-      <main>{children}</main>
+      <main className={'flex-1'}>{children}</main>
     </div>
   );
 };
