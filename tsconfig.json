@@ -29,6 +29,9 @@
       "@server/*": [
         "./src/server/*"
       ],
+      "@constants/*": [
+        "./src/constants/*"
+      ],
       "@env": [
         "./src/env.mjs"
       ]

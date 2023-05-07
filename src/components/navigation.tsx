@@ -1,8 +1,9 @@
-import React from 'react';
-import { AppRoute } from '@components/navigation/app-routes';
+import React, { RefObject, useEffect } from 'react';
+import { AppRoute } from '@constants/app-routes';
 import Link from 'next/link';
 import { SignInButton, SignedOut, SignedIn, UserButton } from '@clerk/nextjs';
 import { Button } from '@components/button';
+import { useRouter } from 'next/router';
 
 const links: { name: string; href: AppRoute }[] = [
   { name: 'Overview', href: AppRoute.HOME },
@@ -12,6 +13,15 @@ const links: { name: string; href: AppRoute }[] = [
 ];
 
 const Navigation = () => {
+  const router = useRouter();
+  const ref = React.useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (router.query?.['open_modal'] && ref.current) {
+      ref.current.click();
+    }
+  }, [ref, router.query]);
+
   return (
     <div>
       <div className="border-b">
@@ -71,7 +81,12 @@ const Navigation = () => {
             </SignedIn>
             <SignedOut>
               <SignInButton mode={'modal'}>
-                <Button variant={'default'}>Sign in</Button>
+                <Button
+                  variant={'default'}
+                  ref={ref as unknown as RefObject<HTMLButtonElement>}
+                >
+                  Sign in
+                </Button>
               </SignInButton>
             </SignedOut>
           </div>

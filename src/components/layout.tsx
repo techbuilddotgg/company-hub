@@ -1,5 +1,5 @@
 import React, { FC, PropsWithChildren } from 'react';
-import Navigation from '@components/navigation/navigation';
+import Navigation from '@components/navigation';
 
 const Layout: FC<PropsWithChildren> = ({ children }) => {
   return (
