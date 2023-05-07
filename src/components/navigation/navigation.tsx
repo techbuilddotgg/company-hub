@@ -1,7 +1,8 @@
 import React from 'react';
 import { AppRoute } from '@components/navigation/app-routes';
 import Link from 'next/link';
-import { useUser, SignInButton } from '@clerk/nextjs';
+import { SignInButton, SignedOut, SignedIn, UserButton } from '@clerk/nextjs';
+import { Button } from '@components/button';
 
 const links: { name: string; href: AppRoute }[] = [
   { name: 'Overview', href: AppRoute.HOME },
@@ -11,13 +12,11 @@ const links: { name: string; href: AppRoute }[] = [
 ];
 
 const Navigation = () => {
-  const user = useUser();
-
   return (
     <div>
       <div className="border-b">
         <div className="flex h-16 items-center px-4">
-          {/* Logo */}
+          {/* Logo or Choose Organization */}
           {/*<button*/}
           {/*  className="inline-flex h-9 w-[200px] items-center justify-between rounded-md px-3 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"*/}
           {/*  role="combobox"*/}
@@ -67,7 +66,14 @@ const Navigation = () => {
           </nav>
 
           <div className="ml-auto flex items-center space-x-4">
-            {!!user && <SignInButton />}
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
+            <SignedOut>
+              <SignInButton mode={'modal'}>
+                <Button variant={'default'}>Sign in</Button>
+              </SignInButton>
+            </SignedOut>
           </div>
         </div>
       </div>
