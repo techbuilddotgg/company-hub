@@ -20,11 +20,14 @@
     "incremental": true,
     "noUncheckedIndexedAccess": true,
     "paths": {
-      "@utils": [
-        "./src/utils"
+      "@utils/*": [
+        "./src/utils/*"
       ],
-      "@components": [
-        "./src/components"
+      "@components/*": [
+        "./src/components/*"
+      ],
+      "@server/*": [
+        "./src/server/*"
       ],
       "@env": [
         "./src/env.mjs"
