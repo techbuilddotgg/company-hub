@@ -21,13 +21,13 @@
     "noUncheckedIndexedAccess": true,
     "paths": {
       "@utils": [
-        "src/utils"
+        "./src/utils"
       ],
       "@components": [
-        "src/components"
+        "./src/components"
       ],
       "@env": [
-        "src/env.mjs"
+        "./src/env.mjs"
       ]
     }
   },
