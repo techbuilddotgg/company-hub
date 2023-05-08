@@ -20,11 +20,9 @@ export default withClerkMiddleware((request: NextRequest) => {
   const { userId } = getAuth(request);
 
   if (!userId) {
-    // redirect the users to /pages/sign-in/[[...index]].ts
     const redirect = new URL(AppRoute.HOME, request.url);
     redirect.searchParams.set('redirect_url', request.url);
     redirect.searchParams.set('open_modal', 'true');
-
     return NextResponse.redirect(redirect);
   }
   return NextResponse.next();
