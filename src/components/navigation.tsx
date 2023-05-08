@@ -12,7 +12,7 @@ const links: { name: string; href: AppRoute }[] = [
   { name: 'Calendar', href: AppRoute.CALENDAR },
 ];
 
-const Navigation = () => {
+export const Navigation = () => {
   const router = useRouter();
   const ref = React.useRef<HTMLDivElement>(null);
 
@@ -96,4 +96,3 @@ const Navigation = () => {
   );
 };
 
-export default Navigation;

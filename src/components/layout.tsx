@@ -1,7 +1,7 @@
 import React, { FC, PropsWithChildren } from 'react';
-import Navigation from '@components/navigation';
+import { Navigation } from '@components';
 
-const Layout: FC<PropsWithChildren> = ({ children }) => {
+export const Layout: FC<PropsWithChildren> = ({ children }) => {
   return (
     <div className={'flex h-full flex-col'}>
       <Navigation />
@@ -9,5 +9,3 @@ const Layout: FC<PropsWithChildren> = ({ children }) => {
     </div>
   );
 };
-
-export default Layout;
