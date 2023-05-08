@@ -1,11 +1,24 @@
 import {createEnv} from '@t3-oss/env-nextjs';
 import {z} from 'zod';
+import * as dotenv from 'dotenv';
+
+const environment = process.env.NODE_ENV || 'development';
+
+const fileName = {
+    development: '.env.local',
+    prod: '.env.production',
+    test: ".env.test",
+}
+
+dotenv.config({
+    path: `../${fileName[environment]}`,
+});
 
 export const env = createEnv({
     server: {
         DATABASE_URL: z.string().url(),
         CLERK_SECRET_KEY: z.string().min(1),
-        NODE_ENV: z.enum(['development', 'production']),
+        NODE_ENV: z.enum(['development', 'production', "test"]),
     },
     client: {
         NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(1),

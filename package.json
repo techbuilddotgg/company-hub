@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "dev": "next dev",
+    "dev:ios": "NODE_ENV=development next dev",
+    "dev:win": "SET NODE_ENV=development next dev",
     "postinstall": "prisma generate",
     "lint": "next lint",
     "start": "next start"
@@ -21,6 +22,7 @@
     "@trpc/server": "10.0.0-proxy-beta.15",
     "class-variance-authority": "^0.6.0",
     "clsx": "^1.2.1",
+    "dotenv": "^16.0.3",
     "lucide-react": "^0.214.0",
     "next": "12.3.1",
     "react": "18.2.0",
