@@ -16,14 +16,14 @@ export default withClerkMiddleware((request: NextRequest) => {
     return NextResponse.next();
   }
 
-  // if the user is not signed in redirect them to the sign in page.
+  // if the user is not signed in redirect them to the sign in pages.
   const { userId } = getAuth(request);
 
   if (!userId) {
     const redirect = new URL(AppRoute.HOME, request.url);
     redirect.searchParams.set('redirect_url', request.url);
     redirect.searchParams.set('open_modal', 'true');
-    return NextResponse.redirect(redirect);
+    // return NextResponse.redirect(redirect);
   }
   return NextResponse.next();
 });
