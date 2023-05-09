@@ -4,13 +4,125 @@
 generator client {
   provider = "prisma-client-js"
 }
+
 datasource db {
-  provider = "mysql"
-  url = env("DATABASE_URL")
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
 
+model Question {
+  id              String   @id @default(cuid())
+  title           String
+  description     String
+  answers         Answer[]
+  authorId        String
+  correctAnswerId String?
+  company         Company  @relation(fields: [companyId], references: [id])
+  companyId       String
+  createdAt       DateTime @default(now())
 
-model Example {
-    id String @id @default(cuid())
+  @@map("questions")
+}
+
+model Answer {
+  id         String   @id @default(cuid())
+  text       String
+  question   Question @relation(fields: [questionId], references: [id])
+  questionId String
+  authorId   String
+  createdAt  DateTime @default(now())
+
+  @@map("answers")
+}
+
+model Company {
+  id            String         @id @default(cuid())
+  name          String
+  questions     Question[]
+  ProjectBoards ProjectBoard[]
+
+  @@map("companies")
+}
+
+model Event {
+  id            String   @id @default(cuid())
+  name          String
+  description   String
+  date          DateTime
+  authorId      String
+  participantId String
+  createdAt     DateTime @default(now())
+
+  @@map("events")
+}
+
+model Project {
+  id   String @id @default(cuid())
+  name String
+
+  @@map("projects")
+}
+
+model ProjectBoard {
+  id                 String               @id @default(cuid())
+  name               String
+  company            Company              @relation(fields: [companyId], references: [id])
+  companyId          String
+  ProjectBoardColumn ProjectBoardColumn[]
+
+  @@map("project_boards")
+}
+
+model ProjectBoardColumn {
+  id               String              @id @default(cuid())
+  name             String
+  projectBoard     ProjectBoard        @relation(fields: [projectBoardId], references: [id])
+  projectBoardId   String
+  projectBoardCard ProjectBoardTasks[]
+
+  @@map("project_board_columns")
+}
+
+model ProjectBoardTasks {
+  id                      String                    @id @default(cuid())
+  name                    String
+  description             String
+  projectBoardColumn      ProjectBoardColumn        @relation(fields: [projectBoardColumnId], references: [id])
+  projectBoardColumnId    String
+  createdAt               DateTime                  @default(now())
+  ProjectBoardTaskComment ProjectBoardTaskComment[]
+  TaskPriority            TaskPriority              @relation(fields: [taskPriorityId], references: [id])
+  taskPriorityId          String
+  TaskType                TaskType                  @relation(fields: [taskTypeId], references: [id])
+  taskTypeId              String
+
+  @@map("project_board_taks")
+}
+
+model ProjectBoardTaskComment {
+  id                 String            @id @default(cuid())
+  text               String
+  authorId           String
+  projectBoardTask   ProjectBoardTasks @relation(fields: [projectBoardTaskId], references: [id])
+  projectBoardTaskId String
+  createdAt          DateTime          @default(now())
+
+  @@map("project_board_task_comments")
+}
+
+model TaskPriority {
+  id                String              @id @default(cuid())
+  name              String
+  ProjectBoardTasks ProjectBoardTasks[]
+
+  @@map("task_priorities")
+}
+
+model TaskType {
+  id                String              @id @default(cuid())
+  name              String
+  ProjectBoardTasks ProjectBoardTasks[]
+
+  @@map("task_types")
 }

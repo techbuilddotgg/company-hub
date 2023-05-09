@@ -49,7 +49,7 @@ These technologies have been carefully chosen to ensure efficient development, m
 ## Environment Variables
 
 ```bash
-# .env.local
+# .env
 NODE_ENV="development"
 DATABASE_URL="mysql://root:password@localhost:3306/companyhub_db"
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="test"
