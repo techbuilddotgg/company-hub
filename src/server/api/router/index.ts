@@ -1,4 +1,4 @@
-// src/server/router/root.ts
+// src/server/router/index.ts
 import { t } from '../trpc';
 
 export const appRouter = t.router({});
