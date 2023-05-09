@@ -84,5 +84,8 @@
         margin: 0;
         padding: 0;
     }
+    div[class*='-internal-b'] {
+        @apply hidden;
+    }
 
 }

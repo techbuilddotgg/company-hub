@@ -80,7 +80,7 @@ const Navigation = () => {
               <UserButton />
             </SignedIn>
             <SignedOut>
-              <SignInButton mode={'modal'}>
+              <SignInButton mode={'redirect'}>
                 <Button
                   variant={'default'}
                   ref={ref as unknown as RefObject<HTMLButtonElement>}
