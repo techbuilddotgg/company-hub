@@ -1,50 +1,108 @@
-# Create T3 App
 
-This is an app bootstrapped according to the [init.tips](https://init.tips) stack, also known as the T3-Stack.
+# Project Description
 
-## Why are there `.js` files in here?
 
-As per [T3-Axiom #3](https://github.com/t3-oss/create-t3-app/tree/next#3-typesafety-isnt-optional), we take typesafety as a first class citizen. Unfortunately, not all frameworks and plugins support TypeScript which means some of the configuration files have to be `.js` files.
+This project aims to develop a web application tailored for IT companies and beyond, providing an intuitive and efficient solution for task management and execution within the organization. The application offers a range of features that enhance project coordination and facilitate efficient task handling.
 
-We try to emphasize that these files are javascript for a reason, by explicitly declaring its type (`cjs` or `mjs`) depending on what's supported by the library it is used by. Also, all the `js` files in this project are still typechecked using a `@ts-check` comment at the top.
+## Features
+- **Graphical Project Management**: The application allows for easy graphical management of projects, enabling teams to visualize and organize tasks efficiently.
 
-## What's next? How do I make an app with this?
 
-We try to keep this project as simple as possible, so you can start with the most basic configuration and then move on to more advanced configuration.
+- **Agile Task Board**: Tasks can be managed on an agile task board, providing a flexible and collaborative environment for teams to track and prioritize their work.
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
 
-- [Next-Auth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [TailwindCSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io) (using @next version? [see v10 docs here](https://trpc.io/docs/v10/))
+- **Time Tracking**: Each task includes time tracking functionality, allowing users to monitor and analyze the time taken for task completion, facilitating performance evaluation and resource management.
 
-Also checkout these awesome tutorials on `create-t3-app`.
 
-- [Build a Blog With the T3 Stack - tRPC, TypeScript, Next.js, Prisma & Zod](https://www.youtube.com/watch?v=syEWlxVFUrY)
-- [Build a Live Chat Application with the T3 Stack - TypeScript, Tailwind, tRPC](https://www.youtube.com/watch?v=dXRRY37MPuk)
-- [Build a full stack app with create-t3-app](https://www.nexxel.dev/blog/ct3a-guestbook)
-- [A first look at create-t3-app](https://dev.to/ajcwebdev/a-first-look-at-create-t3-app-1i8f)
+- **Internal Knowledge Base and Issue Tracking**: The application incorporates an internal knowledge base and issue tracking system. It enables users to publish and search for internal problems and knowledge, fostering knowledge sharing and efficient problem resolution.
 
-## How do I deploy this?
 
-### Vercel
+- **AI-Powered Problem Search**: Leveraging artificial intelligence (ChatGPT), the application offers intelligent problem search capabilities tailored to the company's knowledge base. This feature enables employees to swiftly find solutions to recurring issues and exchange insights and opinions.
+Calendar Integration: The application includes a calendar function to plan and manage project timelines, events, meetings, and deadlines. The centralized calendar serves as a hub for tracking key project milestones and important organizational events.
 
-We recommend deploying to [Vercel](https://vercel.com/?utm_source=t3-oss&utm_campaign=oss). It makes it super easy to deploy NextJs apps.
 
-- Push your code to a GitHub repository.
-- Go to [Vercel](https://vercel.com/?utm_source=t3-oss&utm_campaign=oss) and sign up with GitHub.
-- Create a Project and import the repository you pushed your code to.
-- Add your environment variables.
-- Click **Deploy**
-- Now whenever you push a change to your repository, Vercel will automatically redeploy your website!
+## Customization and Branding
+The application is highly customizable, allowing each company to tailor it to their specific needs and branding requirements. Customization options include the ability to personalize the application's name, logo, colors, and other visual elements.
 
-### Docker
+## Benefits
+By leveraging the comprehensive features provided by this application, companies can enhance task management, streamline project coordination, and foster effective communication among team members. The result is improved productivity, accelerated progress, and ultimately, better business outcomes.
 
-You can also dockerize this stack and deploy a container. See the [Docker deployment page](https://create-t3-app-nu.vercel.app/en/deployment/docker) for details.
 
-## Useful resources
+## Technologies
 
-Here are some resources that we commonly refer to:
+This project leverages the following technologies:
 
-- [Protecting routes with Next-Auth.js](https://next-auth.js.org/configuration/nextjs#unstable_getserversession)
+- **Next.js**: A powerful React framework for building modern web applications.
+- **Typescript**: A typed superset of JavaScript that enhances code readability and maintainability.
+- **tRPC**: A lightweight and fast TypeScript RPC (Remote Procedure Call) framework for building APIs.
+- **Prisma**: A modern database toolkit that simplifies database access and management.
+- **PlanetScale MySql**: A cloud-native, scalable, and highly available MySQL-compatible database solution.
+- **TailwindCSS**: A utility-first CSS framework that enables rapid UI development with pre-built and customizable components.
+- **Clerk Auth**: A user authentication and authorization platform that simplifies secure user management.
+
+These technologies have been carefully chosen to ensure efficient development, maintainable codebase, robust APIs, scalable databases, and a responsive and visually appealing user interface.
+
+
+# Getting Started
+
+
+## Environment Variables
+
+```bash
+# .env
+NODE_ENV="development"
+DATABASE_URL="mysql://root:password@localhost:3306/companyhub_db"
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="test"
+CLERK_SECRET_KEY="test"
+```
+
+## Run the development server
+
+```bash
+# install dependencies
+npm install
+
+# run the development server on ios
+npm run dev:ios
+
+# run the development server on windows
+npm run dev:windows
+```
+
+## Prisma
+
+```bash
+# generates assets like Prisma Client based on the generator and data model blocks defined in your prisma/schema.prisma file.
+npx prisma generate
+```
+```bash
+# create a new migration
+npx prisma migrate dev --name init
+```
+```bash
+# seed the database
+npx prisma db seed 
+```
+
+```bash
+# push prisma schema to db without migration
+npx prisma push 
+```
+```bash
+ # connect to your database and add Prisma models to your Prisma schema
+ npx prisma pull
+```
+
+
+```bash
+# open prisma studio to view the database
+npx prisma studio
+```
+
+## PlanetScale
+You need to have the PlanetScale CLI installed and configured. You can find the instructions [here](https://planetscale.com/docs/reference/planetscale-cli).
+
+```bash
+# runs PlanetScale db locally
+$ pscale connect companyhub_db
+```
