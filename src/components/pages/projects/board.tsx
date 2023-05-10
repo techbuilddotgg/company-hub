@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { TaskProps } from './task';
+import { Tag, TaskProps } from './task';
 import { Column } from '@components/pages/projects/column';
 
 interface ColumnData {
@@ -19,13 +19,13 @@ export const Board: React.FC = () => {
       cards: [
         {
           name: 'Finish project',
-          tag: 'feature',
+          tag: Tag.FEATURE,
           deadline: '25.4.2023',
           description: 'Description.',
         },
         {
           name: 'Fix error',
-          tag: 'bug',
+          tag: Tag.BUG,
           deadline: '25.4.2023',
           description: 'Description.',
         },
@@ -57,7 +57,7 @@ export const Board: React.FC = () => {
     if (cardName !== null && cardName.trim() !== '') {
       const card: TaskProps = {
         name: cardName.trim(),
-        tag: 'feature',
+        tag: Tag.FEATURE,
         deadline: '4.5.2023',
         description: '',
       };
