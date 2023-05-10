@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@components/button';
+import { Button } from '@components/ui/button';
 import { useRouter } from 'next/router';
 
 const NotFoundPage = () => {
