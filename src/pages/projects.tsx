@@ -1,10 +1,9 @@
-import Board from "@components/trello/Board";
+import { Board } from '@components';
 
 const Projects = () => {
-
-  return(
-    <div className='ml-10'>
-      <h1 className='font-bold text-2xl my-4'>Project 1</h1>
+  return (
+    <div className="ml-10">
+      <h1 className="my-4 text-2xl font-bold">Project 1</h1>
       <Board />
     </div>
   );
