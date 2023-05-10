@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Card } from '@components';
+import { Card, VotingButton } from '@components';
 import Link from 'next/link';
 
 interface QuestionProps {

@@ -2,9 +2,9 @@ import React from 'react';
 import {
   AlertDialogButton,
   Answer,
-  Button,
+  LinkButton,
+  Markdown,
   PageHeader,
-  VotingButton,
 } from '@components';
 
 const QuestionPage = () => {
@@ -15,7 +15,7 @@ const QuestionPage = () => {
           <PageHeader title={'Ki mamo skrite banane?'} />
           <p className={'text-gray-500'}>Asked 2 min ago</p>
         </div>
-        <Button>Edit</Button>
+        <LinkButton href={'/knowledge-base/ask-question'}>Edit</LinkButton>
         <AlertDialogButton
           buttonText={'Delete'}
           title={'Delete question'}
@@ -23,21 +23,20 @@ const QuestionPage = () => {
         />
       </div>
 
-      <div className={'flex flex-row items-center gap-4'}>
-        <VotingButton counter={0} />
-        <div>
-          <h2
-            className={'text-xl font-semibold text-gray-800 dark:text-gray-100'}
-          >
-            Description
-          </h2>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam
-          </p>
-        </div>
+      <div className={'flex flex-col gap-2'}>
+        <h2
+          className={'text-xl font-semibold text-gray-800 dark:text-gray-100'}
+        >
+          Description
+        </h2>
+        <Markdown>
+          {`# Kam so nam banane zgindl
+ zdej pa res ne vem kje so
+  \`\`\`js 
+  const banana = null; 
+  throw new Error("Banananaaa");
+  \`\`\``}
+        </Markdown>
       </div>
 
       <h2 className={'text-xl font-semibold text-gray-800 dark:text-gray-100'}>
@@ -46,7 +45,7 @@ const QuestionPage = () => {
       <Answer
         username={'Joža'}
         votes={2}
-        text={'Boi naš joža žena ga boža'}
+        text={'Bogi naš joža žena ga boža'}
         isCorrect
       />
       <Answer username={'Božo'} votes={2} text={'Ne tak lepo po malen'} />
