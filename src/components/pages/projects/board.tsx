@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-
 import { Tag, TaskProps } from './task';
 import { Column } from '@components/pages/projects/column';
 
