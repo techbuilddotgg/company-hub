@@ -1,5 +1,5 @@
 import React from 'react';
-import { Task, TaskProps } from '@components/pages/projects/task';
+import { TaskProps, Task } from '@components/pages/projects/task';
 
 interface ColumnProps {
   name: string;

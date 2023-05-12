@@ -1,6 +1,11 @@
 import { FC } from 'react';
 import { cn } from '@utils/classNames';
 
+export enum Tag {
+  FEATURE = 'feature',
+  BUG = 'bug',
+}
+
 export interface TaskProps {
   name: string;
   tag: Tag;
@@ -8,14 +13,9 @@ export interface TaskProps {
   description: string;
 }
 
-export enum Tag {
-  FEATURE = 'feature',
-  BUG = 'bug',
-}
-
 const tagColor: Record<Tag, string> = {
-  [Tag.BUG]: 'bg-red-500',
   [Tag.FEATURE]: 'bg-green-500',
+  [Tag.BUG]: 'bg-red-500',
 };
 
 export const Task: FC<TaskProps> = ({ name, tag, deadline, description }) => {

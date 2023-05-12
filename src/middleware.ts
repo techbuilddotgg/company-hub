@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { AppRoute } from '@constants/app-routes';
 
-const publicPaths = [AppRoute.HOME];
+const publicPaths = [AppRoute.SIGN_IN, AppRoute.SIGN_UP];
 
 const isPublic = (path: string) => {
   return publicPaths.find((x) =>
@@ -16,14 +16,11 @@ export default withClerkMiddleware((request: NextRequest) => {
     return NextResponse.next();
   }
 
-  // if the user is not signed in redirect them to the sign in pages.
   const { userId } = getAuth(request);
 
   if (!userId) {
-    const redirect = new URL(AppRoute.HOME, request.url);
-    redirect.searchParams.set('redirect_url', request.url);
-    redirect.searchParams.set('open_modal', 'true');
-    // return NextResponse.redirect(redirect);
+    const redirect = new URL(AppRoute.SIGN_IN, request.url);
+    return NextResponse.redirect(redirect);
   }
   return NextResponse.next();
 });
