@@ -1,24 +1,49 @@
+import Ticket from '@components/pages/projects/ticket';
+import { Droppable } from 'react-beautiful-dnd';
 import React from 'react';
-import { TaskProps, Task } from '@components/pages/projects/task';
 
 interface ColumnProps {
-  name: string;
-  cards: TaskProps[];
-  onAddCard: () => void;
+  data: {
+    id: string;
+    name: string;
+    tickets: {
+      content: string;
+      id: string;
+    }[];
+  };
 }
-
-export const Column: React.FC<ColumnProps> = ({ name, cards, onAddCard }) => {
+const Column = ({ data }: ColumnProps) => {
   return (
-    <div className="mr-4 w-80 rounded-lg bg-gray-100 p-4">
-      <h2 className="mb-4 text-lg font-bold">{name}</h2>
-      <div className="space-y-4">
-        {cards.map((card, index) => (
-          <Task key={index} {...card} />
-        ))}
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}
+    >
+      <h2>{data.name}</h2>
+      <div style={{ margin: 8 }}>
+        <Droppable droppableId={data.id} key={data.id}>
+          {(provided, snapshot) => (
+            <div
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              style={{
+                background: snapshot.isDraggingOver ? 'lightblue' : 'lightgrey',
+                padding: 4,
+                width: 250,
+                minHeight: 500,
+              }}
+            >
+              {data.tickets.map((ticket, index) => (
+                <Ticket key={index} data={ticket} index={index} />
+              ))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
       </div>
-      <button className="mt-4 px-4 py-2 text-gray-400" onClick={onAddCard}>
-        + Add Card
-      </button>
     </div>
   );
 };
+export default Column;

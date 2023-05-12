@@ -1,4 +1,6 @@
 import { Board } from '@components';
+import { GetServerSideProps } from 'next';
+import { resetServerContext } from 'react-beautiful-dnd';
 
 const Projects = () => {
   return (
@@ -10,3 +12,9 @@ const Projects = () => {
 };
 
 export default Projects;
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  resetServerContext();
+
+  return { props: { data: [] } };
+};

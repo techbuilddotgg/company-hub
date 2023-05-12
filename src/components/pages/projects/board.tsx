@@ -1,103 +1,99 @@
 import React, { useState } from 'react';
-import { Tag, TaskProps } from './task';
-import { Column } from '@components/pages/projects/column';
+import { DragDropContext, DropResult } from 'react-beautiful-dnd';
+import Column from '@components/pages/projects/column';
 
-interface ColumnData {
-  name: string;
-  cards: TaskProps[];
-}
+const itemsFromBackend = [
+  { id: 'bfgftrhettrh', content: 'First task' },
+  { id: 'hfghgfhrthfgh', content: 'Second task' },
+  { id: 'hfkdgfjsdsgj', content: 'Third task' },
+  { id: 'ktzj6rhtfdhj54', content: 'Fourth task' },
+  { id: 'j65ej76ij656', content: 'Fifth task' },
+];
 
-export const Board: React.FC = () => {
-  const [columns, setColumns] = useState<ColumnData[]>([
-    {
-      name: 'To do',
-      cards: [],
-    },
-    {
-      name: 'Doing',
-      cards: [
-        {
-          name: 'Finish project',
-          tag: Tag.FEATURE,
-          deadline: '25.4.2023',
-          description: 'Description.',
-        },
-        {
-          name: 'Fix error',
-          tag: Tag.BUG,
-          deadline: '25.4.2023',
-          description: 'Description.',
-        },
-      ],
-    },
-    {
-      name: 'Done',
-      cards: [],
-    },
-  ]);
+const columnsFromBackend = [
+  {
+    id: 'column1',
+    name: 'Requested',
+    tickets: itemsFromBackend,
+  },
+  {
+    id: 'column2',
+    name: 'To do',
+    tickets: [],
+  },
+  {
+    id: 'column3',
+    name: 'In Progress',
+    tickets: [],
+  },
+  {
+    id: 'column4',
+    name: 'Done',
+    tickets: [],
+  },
+];
 
-  const [newColumnName, setNewColumnName] = useState('');
+export const Board = () => {
+  const [columns, setColumns] = useState(columnsFromBackend);
 
-  const handleNewColumnNameChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    setNewColumnName(event.target.value);
-  };
+  const onDragEnd = (result: DropResult) => {
+    if (!result.destination) return;
+    const { source, destination } = result;
 
-  const handleAddColumn = () => {
-    if (newColumnName.trim() !== '') {
-      setColumns([...columns, { name: newColumnName.trim(), cards: [] }]);
-      setNewColumnName('');
-    }
-  };
+    if (source.droppableId !== destination.droppableId) {
+      const sourceColumnIndex = columns.findIndex(
+        (column) => column.id === source.droppableId,
+      );
+      const sourceColumn = columns[sourceColumnIndex];
+      const destColumnIndex = columns.findIndex(
+        (column) => column.id === destination.droppableId,
+      );
+      const destColumn = columns[destColumnIndex];
 
-  const handleAddCard = (columnIndex: number) => {
-    const cardName = prompt('Enter the name of the card:');
-    if (cardName !== null && cardName.trim() !== '') {
-      const card: TaskProps = {
-        name: cardName.trim(),
-        tag: Tag.FEATURE,
-        deadline: '4.5.2023',
-        description: '',
-      };
+      if (!sourceColumn || !destColumn) return;
+
+      const sourceItems = [...sourceColumn.tickets];
+      const destItems = [...destColumn.tickets];
+
+      const [removed] = sourceItems.splice(source.index, 1);
+
+      if (removed) destItems.splice(destination.index, 0, removed);
+
+      sourceColumn.tickets = sourceItems;
+      destColumn.tickets = destItems;
+      const finalColumns = [...columns];
+      finalColumns[sourceColumnIndex] = sourceColumn;
+      finalColumns[destColumnIndex] = destColumn;
+
+      setColumns(finalColumns);
+    } else {
+      const columnIndex = columns.findIndex(
+        (column) => column.id === destination.droppableId,
+      );
       const column = columns[columnIndex];
-      if (column && column.cards) {
-        const newColumns = [...columns];
-        newColumns[columnIndex] = {
-          ...column,
-          cards: [...column.cards, card],
-        };
-        setColumns(newColumns);
-      }
+
+      if (!column) return;
+
+      const copiedItems = [...column.tickets];
+      const [removed] = copiedItems.splice(source.index, 1);
+
+      if (removed) copiedItems.splice(destination.index, 0, removed);
+
+      column.tickets = copiedItems;
+      const finalColumns = [...columns];
+      finalColumns[columnIndex] = column;
+
+      setColumns(finalColumns);
     }
   };
 
   return (
-    <div className="flex">
-      {columns.map((column, index) => (
-        <Column
-          key={index}
-          name={column.name}
-          cards={column.cards}
-          onAddCard={() => handleAddCard(index)}
-        />
-      ))}
-      <div className="mr-4 w-80 rounded-lg bg-gray-100 p-4">
-        <h2 className="mb-4 text-lg font-bold">Add a column</h2>
-        <input
-          type="text"
-          className="mr-2 flex-1 rounded-lg border border-gray-400 p-2"
-          placeholder="Column name"
-          value={newColumnName}
-          onChange={handleNewColumnNameChange}
-        />
-        <button
-          className="my-4 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-          onClick={handleAddColumn}
-        >
-          + Add New Column
-        </button>
-      </div>
+    <div style={{ display: 'flex', justifyContent: 'center', height: '100%' }}>
+      <DragDropContext onDragEnd={onDragEnd}>
+        {columns.map((column) => (
+          <Column data={column} key={column.id} />
+        ))}
+      </DragDropContext>
     </div>
   );
 };
