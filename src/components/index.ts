@@ -1,5 +1,6 @@
 export * from './ui/button';
 export * from './ui/input';
+export * from './ui/input-wrapper';
 export * from './ui/navigation';
 export * from './ui/layout';
 export * from './ui/page-header';
@@ -14,6 +15,7 @@ export * from './pages/knowledge-base/question';
 export * from './pages/knowledge-base/answer';
 export * from './pages/knowledge-base/markdown';
 export * from './pages/knowledge-base/ask-question-form';
+export * from './pages/knowledge-base/chat-model';
 export * from './pages/projects/task';
 export * from './pages/projects/board';
 export * from './pages/projects/column';
