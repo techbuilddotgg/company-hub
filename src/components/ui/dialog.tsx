@@ -4,6 +4,9 @@ import * as React from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
 import { cn } from '@utils/classNames';
+import { FC } from 'react';
+import { Button } from '@components/ui/button';
+import { Input } from '@components/ui/input';
 
 const Dialog = DialogPrimitive.Root;
 
@@ -116,9 +119,43 @@ const DialogDescription = React.forwardRef<
 ));
 DialogDescription.displayName = DialogPrimitive.Description.displayName;
 
+interface DialogButtonProps {
+  buttonVariant?: 'default' | 'secondary' | 'outline';
+  buttonText: string;
+  title: string;
+  description: string;
+  actionText?: string;
+  content: React.ReactNode;
+}
+
+const DialogButton: FC<DialogButtonProps> = ({
+  buttonText,
+  buttonVariant,
+  title,
+  description,
+  actionText = 'Save',
+  content,
+}) => {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant={buttonVariant}>{buttonText}</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">{content}</div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 export {
   Dialog,
   DialogTrigger,
+  DialogButton,
   DialogContent,
   DialogHeader,
   DialogFooter,
