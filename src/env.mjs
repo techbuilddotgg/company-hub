@@ -1,32 +1,32 @@
-import {createEnv} from '@t3-oss/env-nextjs';
-import {z} from 'zod';
-import * as dotenv from 'dotenv';
+import { createEnv } from "@t3-oss/env-nextjs";
+import { z } from "zod";
+import * as dotenv from "dotenv";
 
-const environment = process.env.NODE_ENV || 'development';
+const environment = process.env.NODE_ENV || "development";
 
 const fileName = {
-    development: '.env.local',
-    prod: '.env.production',
-    test: ".env.test",
-}
+  development: ".env.local",
+  prod: ".env.production",
+  test: ".env.test"
+};
 
 dotenv.config({
-    path: `../${fileName[environment]}`,
+  path: `../${fileName[environment]}`
 });
 
 export const env = createEnv({
-    server: {
-        DATABASE_URL: z.string().url(),
-        CLERK_SECRET_KEY: z.string().min(1),
-        NODE_ENV: z.enum(['development', 'production', "test"]),
-    },
-    client: {
-        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(1),
-    },
-    runtimeEnv: {
-        NODE_ENV: process.env.NODE_ENV,
-        DATABASE_URL: process.env.DATABASE_URL,
-        CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
-        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
-    },
+  server: {
+    NODE_ENV: z.enum(["development", "production", "test"]),
+    DATABASE_URL: z.string().url(),
+    CLERK_SECRET_KEY: z.string().min(1),
+  },
+  client: {
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(1)
+  },
+  runtimeEnv: {
+    NODE_ENV: process.env.NODE_ENV,
+    DATABASE_URL: process.env.DATABASE_URL,
+    CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+  }
 });
