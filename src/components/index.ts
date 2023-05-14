@@ -16,6 +16,4 @@ export * from './pages/knowledge-base/answer';
 export * from './pages/knowledge-base/markdown';
 export * from './pages/knowledge-base/ask-question-form';
 export * from './pages/knowledge-base/chat-model';
-export * from './pages/projects/task';
-export * from './pages/projects/board';
-export * from './pages/projects/column';
+export * from './pages/project/board';
