@@ -20,3 +20,4 @@ export * from './pages/project/board';
 export * from './ui/loading-spinner';
 export * from './ui/logo';
 export * from './ui/loading-page';
+export * from './ui/data-view';
