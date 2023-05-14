@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { SignedIn, UserButton, useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/router';
 import { cn } from '@utils/classNames';
-import { trpc } from '@utils/trpc';
+import { Logo } from '@components/ui/logo';
 
 const links: { name: string; href: AppRoute }[] = [
   { name: 'Overview', href: AppRoute.HOME },
@@ -20,12 +20,11 @@ export const Navigation = () => {
 
   const isActive = (href: AppRoute) => router.pathname === href;
 
-  const { data: projects } = trpc.project.get.useQuery();
   return (
     <div className=" flex h-16 min-h-screen flex-col items-center border-r px-6">
-      <h1 className={'my-4'}>
-        Tech<span className={'text-blue-600'}>Build</span>
-      </h1>
+      <div className={'my-4'}>
+        <Logo />
+      </div>
       <nav className=" mt-4 flex grow flex-col gap-4">
         <ul className={'flex grow flex-col gap-4'}>
           {links.map(({ name, href }) => (

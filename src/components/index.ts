@@ -18,3 +18,4 @@ export * from './pages/knowledge-base/ask-question-form';
 export * from './pages/knowledge-base/chat-model';
 export * from './pages/project/board';
 export * from './ui/loading';
+export * from './ui/logo';
