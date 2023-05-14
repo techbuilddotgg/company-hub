@@ -5,6 +5,7 @@ import { SignedIn, UserButton, useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/router';
 import { cn } from '@utils/classNames';
 import { Logo } from '@components/ui/logo';
+import { Settings } from 'lucide-react';
 
 const links: { name: string; href: AppRoute }[] = [
   { name: 'Overview', href: AppRoute.HOME },
@@ -52,11 +53,18 @@ export const Navigation = () => {
       </nav>
       <div className={'mb-6 flex w-full flex-row'}>
         <SignedIn>
-          <div className={'flex w-full flex-row items-center gap-4'}>
-            <UserButton />
-            <span className={'font-semibold text-gray-600'}>
-              {user.user?.username}
-            </span>
+          <div className={'flex w-full flex-row items-center justify-between'}>
+            <div className={'flex items-center gap-4'}>
+              <UserButton />
+              <span className={'font-semibold text-gray-500'}>
+                {user.user?.username}
+              </span>
+            </div>
+            <Link href={AppRoute.SETTINGS}>
+              <a className={'text-gray-500 hover:text-black'}>
+                <Settings size={20} />
+              </a>
+            </Link>
           </div>
         </SignedIn>
       </div>
