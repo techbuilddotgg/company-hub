@@ -1,12 +1,11 @@
 import React from 'react';
-import { Input, LinkButton, PageHeader, Question } from '@components';
-import { useRouter } from 'next/router';
+import { ChatModel, Input, LinkButton, PageHeader } from '@components';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { CreateKnowledgeBaseModal } from '@components/pages/knowledge-base/create-knowledge-base-modal';
 
 const KnowledgeBase = () => {
-  const router = useRouter();
   return (
-    <div className={'flex h-full flex-col'}>
+    <div className={'flex h-full flex-col gap-2'}>
       <PageHeader title={'Knowledge Base'} />
       <div className={'flex w-full grow flex-col gap-4'}>
         <Input placeholder={'Search...'} />
@@ -16,47 +15,36 @@ const KnowledgeBase = () => {
               'text-2xl font-semibold text-gray-800 dark:text-gray-100'
             }
           >
-            Top questions
+            Models
           </h2>
-          <LinkButton
-            href={'/knowledge-base/ask-question'}
-            className={'ml-auto'}
-          >
-            Ask a question
-          </LinkButton>
+          <div className={'ml-auto'}>
+            <CreateKnowledgeBaseModal />
+          </div>
         </div>
-
-        <Question
-          votes={23}
-          username={'domen'}
-          title={'Ki mamo banane skrite?'}
-          answers={2}
-          createdAt={'2 min'}
-        />
-
-        <Question
-          votes={0}
-          username={'domen'}
-          title={'Bomo naredli letnik?'}
-          answers={0}
-          createdAt={'2 min'}
-        />
-
-        <Question
-          votes={0}
-          username={'domen'}
-          title={'Gremo potem v Kozlovno na pir?'}
-          answers={3}
-          createdAt={'2 min'}
-        />
-        <Question
-          votes={1}
-          username={'domen'}
-          title={'Kam gremo pol jest?'}
-          answers={1}
-          createdAt={'2 min'}
-        />
+        <div className={'grid grid-cols-4 gap-4'}>
+          <ChatModel
+            title={'Next documentacija'}
+            description={'Documentacija za Next.js'}
+          />
+          <ChatModel
+            title={'Next documentacija'}
+            description={'Documentacija za Next.js'}
+          />
+          <ChatModel
+            title={'Next documentacija'}
+            description={'Documentacija za Next.js'}
+          />
+          <ChatModel
+            title={'Next documentacija'}
+            description={'Documentacija za Next.js'}
+          />
+          <ChatModel
+            title={'Next documentacija'}
+            description={'Documentacija za Next.js'}
+          />
+        </div>
       </div>
+
       <div className={'flex flex-row justify-center gap-1'}>
         <LinkButton href={'/knowledge-base?age=1'} variant={'ghost'}>
           <ChevronLeft />
