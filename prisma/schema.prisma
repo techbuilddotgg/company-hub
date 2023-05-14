@@ -37,10 +37,10 @@ model Answer {
 }
 
 model Company {
-  id            String         @id @default(cuid())
-  name          String
-  questions     Question[]
-  ProjectBoards ProjectBoard[]
+  id        String     @id @default(cuid())
+  name      String
+  questions Question[]
+  Projects  Project[]
 
   @@map("companies")
 }
@@ -58,17 +58,20 @@ model Event {
 }
 
 model Project {
-  id   String @id @default(cuid())
-  name String
+  id           String         @id @default(cuid())
+  name         String
+  company      Company        @relation(fields: [companyId], references: [id])
+  companyId    String
+  ProjectBoard ProjectBoard[]
 
-  @@map("projects")
+  @@map("project")
 }
 
 model ProjectBoard {
   id                 String               @id @default(cuid())
   name               String
-  company            Company              @relation(fields: [companyId], references: [id])
-  companyId          String
+  project            Project              @relation(fields: [projectId], references: [id])
+  projectId          String
   ProjectBoardColumn ProjectBoardColumn[]
 
   @@map("project_boards")

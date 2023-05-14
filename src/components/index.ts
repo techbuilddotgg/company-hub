@@ -14,4 +14,4 @@ export * from './pages/knowledge-base/question';
 export * from './pages/knowledge-base/answer';
 export * from './pages/knowledge-base/markdown';
 export * from './pages/knowledge-base/ask-question-form';
-export * from './pages/projects/board';
+export * from './pages/project/board';

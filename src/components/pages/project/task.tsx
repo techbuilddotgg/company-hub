@@ -1,16 +1,14 @@
 import React from 'react';
 import { Draggable } from 'react-beautiful-dnd';
+import { ProjectBoardTasks } from '@prisma/client';
 
 interface TicketProps {
-  data: {
-    content: string;
-    id: string;
-  };
+  data: ProjectBoardTasks;
   index: number;
 }
-const Ticket = ({ data, index }: TicketProps) => {
+const Task = ({ data, index }: TicketProps) => {
   return (
-    <Draggable key={data.content} draggableId={data.id} index={index}>
+    <Draggable key={data.id} draggableId={data.id} index={index}>
       {(provided, snapshot) => (
         <div
           ref={provided.innerRef}
@@ -26,10 +24,10 @@ const Ticket = ({ data, index }: TicketProps) => {
             ...provided.draggableProps.style,
           }}
         >
-          {data.content}
+          {data.name}
         </div>
       )}
     </Draggable>
   );
 };
-export default Ticket;
+export default Task;
