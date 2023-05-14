@@ -15,12 +15,7 @@ const TaskList = ({ data, id }: TicketListProps) => {
         <div
           {...provided.droppableProps}
           ref={provided.innerRef}
-          style={{
-            background: snapshot.isDraggingOver ? 'lightblue' : 'lightgrey',
-            padding: 4,
-            width: 250,
-            minHeight: 500,
-          }}
+          className=" bg-gray-100 p-4"
         >
           {data.map((task, index) => (
             <Task key={index} data={task} index={index} />
