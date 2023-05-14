@@ -2,6 +2,30 @@ import { protectedProcedure, t } from '../trpc';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 
+const projectBoardTasksSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string().nullable(),
+  projectBoardColumnId: z.string(),
+  createdAt: z.date(),
+  taskPriorityId: z.string().nullable(),
+  taskTypeId: z.string().nullable(),
+});
+
+export const projectBoardColumnSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  projectBoardId: z.string(),
+  projectBoardCard: z.array(projectBoardTasksSchema),
+});
+
+export const projectBoardSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  projectId: z.string(),
+  projectBoardColumn: z.array(projectBoardColumnSchema),
+});
+
 export const boardRouter = t.router({
   getById: protectedProcedure
     .input(z.object({ id: z.string() }))
@@ -12,9 +36,9 @@ export const boardRouter = t.router({
             id: input.id,
           },
           include: {
-            ProjectBoardColumn: {
+            projectBoardColumns: {
               include: {
-                projectBoardCard: true,
+                projectBoardTasks: true,
               },
             },
           },
@@ -36,6 +60,24 @@ export const boardRouter = t.router({
             name: input.name,
             projectId: input.projectId,
           },
+        });
+      } catch (e) {
+        console.log(e);
+        throw new TRPCError({
+          message: 'Something went wrong. Please try again later.',
+          code: 'INTERNAL_SERVER_ERROR',
+        });
+      }
+    }),
+  updateBoard: protectedProcedure
+    .input(projectBoardSchema)
+    .mutation(async ({ input }) => {
+      try {
+        await prisma?.projectBoard.update({
+          where: {
+            id: input.id,
+          },
+          data: input,
         });
       } catch (e) {
         console.log(e);
@@ -72,6 +114,24 @@ export const boardRouter = t.router({
             name: input.name,
             projectBoardColumnId: input.columnId,
           },
+        });
+      } catch (e) {
+        console.log(e);
+        throw new TRPCError({
+          message: 'Something went wrong. Please try again later.',
+          code: 'INTERNAL_SERVER_ERROR',
+        });
+      }
+    }),
+  updateTask: protectedProcedure
+    .input(projectBoardTasksSchema)
+    .mutation(async ({ input }) => {
+      try {
+        await prisma?.projectBoardTasks.update({
+          where: {
+            id: input.id,
+          },
+          data: input,
         });
       } catch (e) {
         console.log(e);

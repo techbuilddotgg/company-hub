@@ -3,31 +3,27 @@ import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
 import Column from '@components/pages/project/column';
 import { DraggableElementType } from '@components/pages/project/types';
 import { reorderElements } from '@components/pages/project/utils';
-import {
-  ProjectBoard,
-  ProjectBoardColumn,
-  ProjectBoardTasks,
-} from '@prisma/client';
+import { ProjectBoard } from '@prisma/client';
 import { trpc } from '@utils/trpc';
 import AddColumn from '@components/pages/project/add-column';
+import { ProjectColumnFull } from '../../../shared/types/board.types';
 
 interface BoardProps {
   data: ProjectBoard;
 }
-type ColumnType = ProjectBoardColumn & {
-  projectBoardCard: ProjectBoardTasks[];
-};
 
 export const Board = ({ data }: BoardProps) => {
-  const [columns, setColumns] = useState<ColumnType[]>([]);
+  const [columns, setColumns] = useState<ProjectColumnFull[]>([]);
   const { data: board, refetch } = trpc.board.getById.useQuery(
     { id: data.id },
     {
       onSuccess: (data) => {
-        setColumns(data?.ProjectBoardColumn || []);
+        setColumns(data?.projectBoardColumns || []);
       },
     },
   );
+
+  console.log(board);
 
   const onDragEnd = (result: DropResult) => {
     if (!result.destination || !columns) return;
@@ -48,7 +44,7 @@ export const Board = ({ data }: BoardProps) => {
           if (columnIndex === -1 || !column) return prevState;
 
           reorderElements(
-            column.projectBoardCard,
+            column.projectBoardTasks,
             source.index,
             destination.index,
           );
@@ -68,13 +64,13 @@ export const Board = ({ data }: BoardProps) => {
         if (!sourceColumn || !destColumn) return;
 
         setColumns((prevState) => {
-          const [removed] = sourceColumn.projectBoardCard.splice(
+          const [removed] = sourceColumn.projectBoardTasks.splice(
             source.index,
             1,
           );
 
           if (removed)
-            destColumn.projectBoardCard.splice(destination.index, 0, removed);
+            destColumn.projectBoardTasks.splice(destination.index, 0, removed);
 
           prevState[sourceColumnIndex] = sourceColumn;
           prevState[destColumnIndex] = destColumn;

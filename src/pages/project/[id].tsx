@@ -18,8 +18,8 @@ const Project = () => {
     <div className="ml-10">
       <h1 className="my-4 text-2xl font-bold">{project.name}</h1>
       <AddProjectForm />
-      {project.ProjectBoard.length !== 0 && project.ProjectBoard[0] ? (
-        <Board data={project.ProjectBoard[0]} />
+      {project.projectBoards.length !== 0 && project.projectBoards[0] ? (
+        <Board data={project.projectBoards[0]} />
       ) : (
         <p>No project board</p>
       )}

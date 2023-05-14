@@ -1,9 +1,9 @@
 import React from 'react';
 import { Draggable } from 'react-beautiful-dnd';
-import { ProjectBoardTasks } from '@prisma/client';
+import { ProjectBoardTask } from '@prisma/client';
 
 interface TicketProps {
-  data: ProjectBoardTasks;
+  data: ProjectBoardTask;
   index: number;
 }
 const Task = ({ data, index }: TicketProps) => {

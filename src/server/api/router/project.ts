@@ -48,7 +48,7 @@ export const projectRouter = t.router({
             id: input.id,
           },
           include: {
-            ProjectBoard: true,
+            projectBoards: true,
           },
         });
       } catch (e) {
