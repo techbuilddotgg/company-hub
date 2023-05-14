@@ -1,4 +1,4 @@
-import { Board } from '@components';
+import {Board, Loading} from '@components';
 import { GetServerSideProps } from 'next';
 import { resetServerContext } from 'react-beautiful-dnd';
 import { trpc } from '@utils/trpc';
@@ -11,7 +11,7 @@ const Project = () => {
     id: router.query.id as string,
   });
   console.log(project);
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div className='flex flex-row justify-center items-center h-full'><Loading/></div>
   if (!project) return <div>Project not found</div>;
 
   return (
