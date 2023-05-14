@@ -26,7 +26,7 @@ const Column = ({ data, index, refetch }: ColumnProps) => {
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className='bg-gray-100 mr-4 flex flex-col items-center py-4'
+          className='bg-gray-100 mr-4 flex flex-col items-center py-4 w-96'
         >
           <h2>{data.name}</h2>
           <div>
