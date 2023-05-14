@@ -1,4 +1,4 @@
-import { Board, LoadingProvider } from '@components';
+import { Board, LoadingPage } from '@components';
 import { GetServerSideProps } from 'next';
 import { resetServerContext } from 'react-beautiful-dnd';
 import { trpc } from '@utils/trpc';
@@ -10,22 +10,20 @@ const Project = () => {
   const { data: project, isLoading } = trpc.project.getById.useQuery({
     id: router.query.id as string,
   });
-  console.log(project);
 
+  if (isLoading) return <LoadingPage />;
   if (!project) return <div>Project not found</div>;
 
   return (
-    <LoadingProvider loading={isLoading}>
-      <div className="ml-10">
-        <h1 className="my-4 text-2xl font-bold">{project.name}</h1>
-        <AddProjectForm />
-        {project.projectBoards.length !== 0 && project.projectBoards[0] ? (
-          <Board data={project.projectBoards[0]} />
-        ) : (
-          <p>No project board</p>
-        )}
-      </div>
-    </LoadingProvider>
+    <div className="ml-10">
+      <h1 className="my-4 text-2xl font-bold">{project.name}</h1>
+      <AddProjectForm />
+      {project.projectBoards.length !== 0 && project.projectBoards[0] ? (
+        <Board data={project.projectBoards[0]} />
+      ) : (
+        <p>No project board</p>
+      )}
+    </div>
   );
 };
 
