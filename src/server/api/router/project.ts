@@ -1,19 +1,22 @@
 import { protectedProcedure, t } from '../trpc';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
+import { clerkClient } from '@clerk/nextjs/server';
 
 export const projectRouter = t.router({
   add: protectedProcedure
     .input(z.object({ name: z.string(), boardName: z.string() }))
-    .mutation(async ({ input, ctx }) => {
+    .mutation(async ({ input, ctx: { prisma, authedUserId } }) => {
+      const user = await clerkClient.users.getUser(authedUserId);
+
       try {
-        const project = await prisma?.project.create({
+        const project = await prisma.project.create({
           data: {
             name: input.name,
-            companyId: ctx.user.privateMetadata.companyId as string,
+            companyId: user.privateMetadata.companyId as string,
           },
         });
-        await prisma?.projectBoard.create({
+        await prisma.projectBoard.create({
           data: { name: input.boardName, projectId: project?.id as string },
         });
       } catch (e) {
@@ -24,11 +27,13 @@ export const projectRouter = t.router({
         });
       }
     }),
-  get: protectedProcedure.query(async ({ ctx }) => {
+  get: protectedProcedure.query(async ({ ctx: { prisma, authedUserId } }) => {
+    const user = await clerkClient.users.getUser(authedUserId);
+
     try {
-      return await prisma?.project.findMany({
+      return await prisma.project.findMany({
         where: {
-          companyId: ctx.user.privateMetadata.companyId as string,
+          companyId: user.privateMetadata.companyId as string,
         },
       });
     } catch (e) {
@@ -41,9 +46,9 @@ export const projectRouter = t.router({
   }),
   getById: protectedProcedure
     .input(z.object({ id: z.string() }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx: { prisma } }) => {
       try {
-        return await prisma?.project.findUnique({
+        return await prisma.project.findUnique({
           where: {
             id: input.id,
           },
