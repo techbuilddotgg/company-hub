@@ -1,6 +1,6 @@
 import Task from '@components/pages/project/task';
 import { Droppable } from 'react-beautiful-dnd';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { DraggableElementType } from '@components/pages/project/types';
 import { ProjectBoardTask } from '@prisma/client';
 
@@ -9,6 +9,10 @@ interface TicketListProps {
   data: ProjectBoardTask[];
 }
 const TaskList = ({ data, id }: TicketListProps) => {
+  const tasks = useMemo(
+    () => data.sort((a, b) => a.orderIndex - b.orderIndex),
+    [data],
+  );
   return (
     <Droppable droppableId={id} key={id} type={DraggableElementType.TASK}>
       {(provided, snapshot) => (
@@ -22,7 +26,7 @@ const TaskList = ({ data, id }: TicketListProps) => {
             minHeight: 500,
           }}
         >
-          {data.map((task, index) => (
+          {tasks.map((task, index) => (
             <Task key={index} data={task} index={index} />
           ))}
           {provided.placeholder}
