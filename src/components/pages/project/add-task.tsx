@@ -32,9 +32,9 @@ const AddTask = ({ columnId, refetch }: AddTaskProps) => {
     addTask({ ...data, columnId });
   };
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-row">
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-row p-4 items-center">
       <Input type="text" id="name" {...register('name')} />
-      <button type="submit">Add</button>
+      <button className="text-gray-400 px-4 py-2 w-36" type="submit">+ Add a card</button>
     </form>
   );
 };

@@ -3,6 +3,7 @@ import dynamic from 'next/dynamic';
 import TaskList from '@components/pages/project/task-list';
 import AddTask from '@components/pages/project/add-task';
 import { ProjectColumnFull } from '../../../shared/types/board.types';
+import { Button, Card, CardFooter } from "@components";
 
 const Draggable = dynamic(
   () =>
@@ -21,23 +22,22 @@ const Column = ({ data, index, refetch }: ColumnProps) => {
   return (
     <Draggable draggableId={data.id} index={index}>
       {(provided) => (
-        <div
+        <Card
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            ...provided.draggableProps.style,
-          }}
+          className='bg-gray-100 mr-4 flex flex-col items-center py-4'
         >
           <h2>{data.name}</h2>
-          <div style={{ margin: 8 }}>
+          <div>
             <TaskList id={data.id} data={data.projectBoardTasks} />
             <AddTask columnId={data.id} refetch={refetch} />
           </div>
-        </div>
+          <CardFooter>
+            <Button type="submit">Delete</Button>
+          </CardFooter>
+
+        </Card>
       )}
     </Draggable>
   );

@@ -3,7 +3,8 @@ import { trpc } from '@utils/trpc';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Input } from '@components';
+import { Card, Input, Button } from "@components";
+
 
 export const AddColumnSchema = z.object({
   name: z
@@ -33,14 +34,13 @@ const AddColumn = ({ boardId, refetch }: AddColumnProps) => {
     addColumn({ ...data, boardId });
   };
   return (
-    <div className="flex h-72 w-52 items-center justify-center bg-blue-100">
-      <div>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <label htmlFor="name">Name</label>
+    <div className="flex flex-row items-start">
+      <Card className='bg-gray-100'>
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-row p-4 items-center gap-4">
           <Input type="text" id="name" {...register('name')} />
-          <button type="submit">Add</button>
+          <Button type="submit" className='w-44'>+ Add a column</Button>
         </form>
-      </div>
+      </Card>
     </div>
   );
 };
