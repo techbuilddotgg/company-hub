@@ -63,4 +63,22 @@ export const boardRouter = t.router({
         });
       }
     }),
+  addTask: protectedProcedure
+    .input(z.object({ name: z.string(), columnId: z.string() }))
+    .mutation(async ({ input }) => {
+      try {
+        await prisma?.projectBoardTasks.create({
+          data: {
+            name: input.name,
+            projectBoardColumnId: input.columnId,
+          },
+        });
+      } catch (e) {
+        console.log(e);
+        throw new TRPCError({
+          message: 'Something went wrong. Please try again later.',
+          code: 'INTERNAL_SERVER_ERROR',
+        });
+      }
+    }),
 });

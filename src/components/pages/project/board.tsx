@@ -100,7 +100,12 @@ export const Board = ({ data }: BoardProps) => {
               {...provided.droppableProps}
             >
               {columns.map((column, index) => (
-                <Column data={column} key={column.id} index={index} />
+                <Column
+                  data={column}
+                  key={column.id}
+                  index={index}
+                  refetch={refetch}
+                />
               ))}
               <AddColumn refetch={refetch} boardId={board?.id || ''} />
             </div>

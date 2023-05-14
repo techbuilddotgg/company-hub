@@ -64,7 +64,7 @@ model Project {
   companyId    String
   ProjectBoard ProjectBoard[]
 
-  @@map("project")
+  @@map("projects")
 }
 
 model ProjectBoard {
@@ -90,15 +90,15 @@ model ProjectBoardColumn {
 model ProjectBoardTasks {
   id                      String                    @id @default(cuid())
   name                    String
-  description             String
+  description             String?
   projectBoardColumn      ProjectBoardColumn        @relation(fields: [projectBoardColumnId], references: [id])
   projectBoardColumnId    String
   createdAt               DateTime                  @default(now())
   ProjectBoardTaskComment ProjectBoardTaskComment[]
-  TaskPriority            TaskPriority              @relation(fields: [taskPriorityId], references: [id])
-  taskPriorityId          String
-  TaskType                TaskType                  @relation(fields: [taskTypeId], references: [id])
-  taskTypeId              String
+  TaskPriority            TaskPriority?             @relation(fields: [taskPriorityId], references: [id])
+  taskPriorityId          String?
+  TaskType                TaskType?                 @relation(fields: [taskTypeId], references: [id])
+  taskTypeId              String?
 
   @@map("project_board_taks")
 }

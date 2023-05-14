@@ -2,6 +2,7 @@ import React from 'react';
 import dynamic from 'next/dynamic';
 import TaskList from '@components/pages/project/task-list';
 import { ProjectBoardColumn, ProjectBoardTasks } from '@prisma/client';
+import AddTask from '@components/pages/project/add-task';
 
 const Draggable = dynamic(
   () =>
@@ -14,8 +15,9 @@ const Draggable = dynamic(
 interface ColumnProps {
   data: ProjectBoardColumn & { projectBoardCard: ProjectBoardTasks[] };
   index: number;
+  refetch: () => void;
 }
-const Column = ({ data, index }: ColumnProps) => {
+const Column = ({ data, index, refetch }: ColumnProps) => {
   return (
     <Draggable draggableId={data.id} index={index}>
       {(provided) => (
@@ -33,6 +35,7 @@ const Column = ({ data, index }: ColumnProps) => {
           <h2>{data.name}</h2>
           <div style={{ margin: 8 }}>
             <TaskList id={data.id} data={data.projectBoardCard} />
+            <AddTask columnId={data.id} refetch={refetch} />
           </div>
         </div>
       )}
