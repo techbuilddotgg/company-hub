@@ -17,5 +17,6 @@ export * from './pages/knowledge-base/markdown';
 export * from './pages/knowledge-base/ask-question-form';
 export * from './pages/knowledge-base/chat-model';
 export * from './pages/project/board';
-export * from './ui/loading';
+export * from './ui/loading-spinner';
 export * from './ui/logo';
+export * from './ui/loading-provider';
