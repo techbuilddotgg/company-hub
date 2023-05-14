@@ -2,6 +2,7 @@ import { initTRPC, TRPCError } from '@trpc/server';
 import type { Context } from './context';
 import superjson from 'superjson';
 import { ZodError } from 'zod';
+import { clerkClient, User } from '@clerk/nextjs/server';
 
 export const t = initTRPC.context<Context>().create({
   transformer: superjson,
@@ -17,14 +18,22 @@ export const t = initTRPC.context<Context>().create({
   },
 });
 
-const isAuthed = t.middleware(({ next, ctx }) => {
+const isAuthed = t.middleware(async ({ next, ctx }) => {
   if (!ctx.userId) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
+  }
+
+  let user: User | null = null;
+  try {
+    user = await clerkClient.users.getUser(ctx.userId);
+  } catch (e) {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
 
   return next({
     ctx: {
       auth: ctx.userId,
+      user: user,
     },
   });
 });

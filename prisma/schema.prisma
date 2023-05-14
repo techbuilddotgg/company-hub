@@ -37,10 +37,10 @@ model Answer {
 }
 
 model Company {
-  id            String         @id @default(cuid())
-  name          String
-  questions     Question[]
-  ProjectBoards ProjectBoard[]
+  id        String     @id @default(cuid())
+  name      String
+  questions Question[]
+  Projects  Project[]
 
   @@map("companies")
 }
@@ -58,71 +58,76 @@ model Event {
 }
 
 model Project {
-  id   String @id @default(cuid())
-  name String
+  id            String         @id @default(cuid())
+  name          String
+  company       Company        @relation(fields: [companyId], references: [id])
+  companyId     String
+  projectBoards ProjectBoard[]
 
   @@map("projects")
 }
 
 model ProjectBoard {
-  id                 String               @id @default(cuid())
-  name               String
-  company            Company              @relation(fields: [companyId], references: [id])
-  companyId          String
-  ProjectBoardColumn ProjectBoardColumn[]
+  id                  String               @id @default(cuid())
+  name                String
+  project             Project              @relation(fields: [projectId], references: [id])
+  projectId           String
+  projectBoardColumns ProjectBoardColumn[]
 
   @@map("project_boards")
 }
 
 model ProjectBoardColumn {
-  id               String              @id @default(cuid())
-  name             String
-  projectBoard     ProjectBoard        @relation(fields: [projectBoardId], references: [id])
-  projectBoardId   String
-  projectBoardCard ProjectBoardTasks[]
+  id                String             @id @default(cuid())
+  name              String
+  projectBoard      ProjectBoard       @relation(fields: [projectBoardId], references: [id])
+  projectBoardId    String
+  projectBoardTasks ProjectBoardTask[]
+  orderIndex        Int
 
   @@map("project_board_columns")
 }
 
-model ProjectBoardTasks {
-  id                      String                    @id @default(cuid())
-  name                    String
-  description             String
-  projectBoardColumn      ProjectBoardColumn        @relation(fields: [projectBoardColumnId], references: [id])
-  projectBoardColumnId    String
-  createdAt               DateTime                  @default(now())
-  ProjectBoardTaskComment ProjectBoardTaskComment[]
-  TaskPriority            TaskPriority              @relation(fields: [taskPriorityId], references: [id])
-  taskPriorityId          String
-  TaskType                TaskType                  @relation(fields: [taskTypeId], references: [id])
-  taskTypeId              String
+model ProjectBoardTask {
+  id                       String                    @id @default(cuid())
+  name                     String
+  description              String?
+  projectBoardColumn       ProjectBoardColumn        @relation(fields: [projectBoardColumnId], references: [id])
+  projectBoardColumnId     String
+  createdAt                DateTime                  @default(now())
+  projectBoardTaskComments ProjectBoardTaskComment[]
+  TaskPriority             TaskPriority?             @relation(fields: [taskPriorityId], references: [id])
+  taskPriorityId           String?
+  TaskType                 TaskType?                 @relation(fields: [taskTypeId], references: [id])
+  taskTypeId               String?
+  orderIndex               Int
 
-  @@map("project_board_taks")
+  @@map("project_board_tasks")
 }
 
 model ProjectBoardTaskComment {
-  id                 String            @id @default(cuid())
+  id                 String           @id @default(cuid())
   text               String
   authorId           String
-  projectBoardTask   ProjectBoardTasks @relation(fields: [projectBoardTaskId], references: [id])
+  projectBoardTask   ProjectBoardTask @relation(fields: [projectBoardTaskId], references: [id])
   projectBoardTaskId String
-  createdAt          DateTime          @default(now())
+  createdAt          DateTime         @default(now())
 
   @@map("project_board_task_comments")
 }
 
 model TaskPriority {
-  id                String              @id @default(cuid())
+  id                String             @id @default(cuid())
   name              String
-  ProjectBoardTasks ProjectBoardTasks[]
+  projectBoardTasks ProjectBoardTask[]
 
   @@map("task_priorities")
 }
 
 model TaskType {
-  id                String              @id @default(cuid())
+  id                String             @id @default(cuid())
   name              String
-  ProjectBoardTasks ProjectBoardTasks[]
+  projectBoardTasks ProjectBoardTask[]
 
   @@map("task_types")
 }

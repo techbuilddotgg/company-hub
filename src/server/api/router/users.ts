@@ -22,11 +22,9 @@ export const usersRouter = t.router({
         return {
           message: 'Invitation sent to ' + allowListResponse.identifier,
         };
-      } catch (error: any) {
+      } catch (error) {
         throw new TRPCError({
-          message:
-            error?.errors[0]?.message ||
-            'Something went wrong. Please try again later.',
+          message: 'Something went wrong. Please try again later.',
           code: 'INTERNAL_SERVER_ERROR',
         });
       }

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { SignedIn, UserButton, useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/router';
 import { cn } from '@utils/classNames';
+import { trpc } from '@utils/trpc';
 
 const links: { name: string; href: AppRoute }[] = [
   { name: 'Overview', href: AppRoute.HOME },
@@ -19,6 +20,7 @@ export const Navigation = () => {
 
   const isActive = (href: AppRoute) => router.pathname === href;
 
+  const { data: projects } = trpc.project.get.useQuery();
   return (
     <div className=" flex h-16 min-h-screen flex-col items-center border-r px-6">
       <h1 className={'my-4'}>
