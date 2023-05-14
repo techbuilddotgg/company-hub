@@ -91,10 +91,20 @@ export const boardRouter = t.router({
     .input(z.object({ name: z.string(), boardId: z.string() }))
     .mutation(async ({ input }) => {
       try {
+        const board = await prisma?.projectBoard.findUnique({
+          where: { id: input.boardId },
+          include: { projectBoardColumns: true },
+        });
+        if (!board)
+          throw new TRPCError({
+            message: 'Board not found',
+            code: 'INTERNAL_SERVER_ERROR',
+          });
         await prisma?.projectBoardColumn.create({
           data: {
             name: input.name,
             projectBoardId: input.boardId,
+            orderIndex: board.projectBoardColumns.length,
           },
         });
       } catch (e) {
@@ -109,10 +119,20 @@ export const boardRouter = t.router({
     .input(z.object({ name: z.string(), columnId: z.string() }))
     .mutation(async ({ input }) => {
       try {
+        const column = await prisma?.projectBoardColumn.findUnique({
+          where: { id: input.columnId },
+          include: { projectBoardTasks: true },
+        });
+        if (!column)
+          throw new TRPCError({
+            message: 'Column not found',
+            code: 'INTERNAL_SERVER_ERROR',
+          });
         await prisma?.projectBoardTask.create({
           data: {
             name: input.name,
             projectBoardColumnId: input.columnId,
+            orderIndex: column.projectBoardTasks.length,
           },
         });
       } catch (e) {

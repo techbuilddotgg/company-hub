@@ -83,6 +83,7 @@ model ProjectBoardColumn {
   projectBoard      ProjectBoard       @relation(fields: [projectBoardId], references: [id])
   projectBoardId    String
   projectBoardTasks ProjectBoardTask[]
+  orderIndex        Int
 
   @@map("project_board_columns")
 }
@@ -99,8 +100,9 @@ model ProjectBoardTask {
   taskPriorityId           String?
   TaskType                 TaskType?                 @relation(fields: [taskTypeId], references: [id])
   taskTypeId               String?
+  orderIndex               Int
 
-  @@map("project_board_taks")
+  @@map("project_board_tasks")
 }
 
 model ProjectBoardTaskComment {
