@@ -109,7 +109,7 @@ export const boardRouter = t.router({
     .input(z.object({ name: z.string(), columnId: z.string() }))
     .mutation(async ({ input }) => {
       try {
-        await prisma?.projectBoardTasks.create({
+        await prisma?.projectBoardTask.create({
           data: {
             name: input.name,
             projectBoardColumnId: input.columnId,
@@ -127,7 +127,7 @@ export const boardRouter = t.router({
     .input(projectBoardTasksSchema)
     .mutation(async ({ input }) => {
       try {
-        await prisma?.projectBoardTasks.update({
+        await prisma?.projectBoardTask.update({
           where: {
             id: input.id,
           },
