@@ -101,6 +101,7 @@ model ProjectBoardTask {
   TaskType                 TaskType?                 @relation(fields: [taskTypeId], references: [id])
   taskTypeId               String?
   orderIndex               Int
+  users                    ProjectBoardTaskUser[]
 
   @@map("project_board_tasks")
 }
@@ -130,4 +131,13 @@ model TaskType {
   projectBoardTasks ProjectBoardTask[]
 
   @@map("task_types")
+}
+
+model ProjectBoardTaskUser {
+  id                 String           @id @default(cuid())
+  userId             String
+  projectBoardTask   ProjectBoardTask @relation(fields: [projectBoardTaskId], references: [id])
+  projectBoardTaskId String
+
+  @@map("project_board_task_user")
 }
