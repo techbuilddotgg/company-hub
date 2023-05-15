@@ -31,9 +31,9 @@ export const projectBoardSchema = z.object({
 export const boardRouter = t.router({
   getById: protectedProcedure
     .input(z.object({ id: z.string() }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       try {
-        return await prisma?.projectBoard.findUnique({
+        return await ctx.prisma.projectBoard.findUnique({
           where: {
             id: input.id,
           },
@@ -55,9 +55,9 @@ export const boardRouter = t.router({
     }),
   addBoard: protectedProcedure
     .input(z.object({ name: z.string(), projectId: z.string() }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       try {
-        await prisma?.projectBoard.create({
+        await ctx.prisma.projectBoard.create({
           data: {
             name: input.name,
             projectId: input.projectId,
@@ -72,16 +72,14 @@ export const boardRouter = t.router({
       }
     }),
   updateBoard: protectedProcedure
-    .input(
-      z.object({
-        id: z.string(),
-        name: z.string(),
-        projectId: z.string(),
-      }),
-    )
-    .mutation(async ({ input }) => {
+    .input(z.object({
+      id: z.string(),
+      name: z.string(),
+      projectId: z.string(),
+    }))
+    .mutation(async ({ input, ctx }) => {
       try {
-        await prisma?.projectBoard.update({
+        await ctx.prisma.projectBoard.update({
           where: {
             id: input.id,
           },
@@ -97,9 +95,9 @@ export const boardRouter = t.router({
     }),
   addColumn: protectedProcedure
     .input(z.object({ name: z.string(), boardId: z.string() }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       try {
-        const board = await prisma?.projectBoard.findUnique({
+        const board = await ctx.prisma.projectBoard.findUnique({
           where: { id: input.boardId },
           include: { projectBoardColumns: true },
         });
@@ -108,7 +106,7 @@ export const boardRouter = t.router({
             message: 'Board not found',
             code: 'INTERNAL_SERVER_ERROR',
           });
-        await prisma?.projectBoardColumn.create({
+        await ctx.prisma.projectBoardColumn.create({
           data: {
             name: input.name,
             projectBoardId: input.boardId,
@@ -125,9 +123,9 @@ export const boardRouter = t.router({
     }),
   addTask: protectedProcedure
     .input(z.object({ name: z.string(), columnId: z.string() }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       try {
-        const column = await prisma?.projectBoardColumn.findUnique({
+        const column = await ctx.prisma.projectBoardColumn.findUnique({
           where: { id: input.columnId },
           include: { projectBoardTasks: true },
         });
@@ -136,7 +134,7 @@ export const boardRouter = t.router({
             message: 'Column not found',
             code: 'INTERNAL_SERVER_ERROR',
           });
-        await prisma?.projectBoardTask.create({
+        await ctx.prisma.projectBoardTask.create({
           data: {
             name: input.name,
             projectBoardColumnId: input.columnId,
@@ -153,9 +151,9 @@ export const boardRouter = t.router({
     }),
   updateTask: protectedProcedure
     .input(projectBoardTaskSchema)
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       try {
-        await prisma?.projectBoardTask.update({
+        await ctx.prisma.projectBoardTask.update({
           where: {
             id: input.id,
           },
@@ -176,9 +174,9 @@ export const boardRouter = t.router({
         columns: z.array(projectBoardColumnSchema),
       }),
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       try {
-        await prisma?.projectBoard.update({
+        await ctx.prisma.projectBoard.update({
           where: {
             id: input.boardId,
           },
@@ -206,9 +204,9 @@ export const boardRouter = t.router({
         tasks: z.array(projectBoardTaskSchema),
       }),
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       try {
-        await prisma?.projectBoardColumn.update({
+        await ctx.prisma.projectBoardColumn.update({
           where: {
             id: input.columnId,
           },
@@ -239,11 +237,11 @@ export const boardRouter = t.router({
         targetColumnId: z.string(),
       }),
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       try {
         console.log(input);
-        await prisma?.$transaction([
-          prisma?.projectBoardColumn.update({
+        await ctx.prisma.$transaction([
+          ctx.prisma.projectBoardColumn.update({
             where: {
               id: input.sourceColumnId,
             },
@@ -264,7 +262,7 @@ export const boardRouter = t.router({
               },
             },
           }),
-          prisma?.projectBoardColumn.update({
+          ctx.prisma.projectBoardColumn.update({
             where: {
               id: input.targetColumnId,
             },
@@ -285,7 +283,7 @@ export const boardRouter = t.router({
               },
             },
           }),
-          prisma?.projectBoardTask.update({
+          ctx.prisma.projectBoardTask.update({
             where: {
               id: input.taskId,
             },
@@ -305,11 +303,11 @@ export const boardRouter = t.router({
     }),
   updateTasks: protectedProcedure
     .input(z.array(projectBoardTaskSchema))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       try {
         await Promise.all(
           input.map((task) =>
-            prisma?.projectBoardTask.update({
+            ctx.prisma.projectBoardTask.update({
               where: {
                 id: task.id,
               },

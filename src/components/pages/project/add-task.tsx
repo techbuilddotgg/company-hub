@@ -3,7 +3,7 @@ import { trpc } from '@utils/trpc';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Input } from '@components';
+import { Button, Input } from "@components";
 
 export const AddTaskSchema = z.object({
   name: z
@@ -32,9 +32,9 @@ const AddTask = ({ columnId, refetch }: AddTaskProps) => {
     addTask({ ...data, columnId });
   };
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-row">
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-row p-4 items-center">
       <Input type="text" id="name" {...register('name')} />
-      <button type="submit">Add</button>
+      <Button variant="ghost" type="submit" className='w-44'>+ Add a card</Button>
     </form>
   );
 };

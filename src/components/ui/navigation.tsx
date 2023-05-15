@@ -4,7 +4,8 @@ import Link from 'next/link';
 import { SignedIn, UserButton, useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/router';
 import { cn } from '@utils/classNames';
-import { trpc } from '@utils/trpc';
+import { Logo } from '@components/ui/logo';
+import { Settings } from 'lucide-react';
 
 const links: { name: string; href: AppRoute }[] = [
   { name: 'Overview', href: AppRoute.HOME },
@@ -20,12 +21,11 @@ export const Navigation = () => {
 
   const isActive = (href: AppRoute) => router.pathname === href;
 
-  const { data: projects } = trpc.project.get.useQuery();
   return (
     <div className=" flex h-16 min-h-screen flex-col items-center border-r px-6">
-      <h1 className={'my-4'}>
-        Tech<span className={'text-blue-600'}>Build</span>
-      </h1>
+      <div className={'my-4'}>
+        <Logo />
+      </div>
       <nav className=" mt-4 flex grow flex-col gap-4">
         <ul className={'flex grow flex-col gap-4'}>
           {links.map(({ name, href }) => (
@@ -53,11 +53,18 @@ export const Navigation = () => {
       </nav>
       <div className={'mb-6 flex w-full flex-row'}>
         <SignedIn>
-          <div className={'flex w-full flex-row items-center gap-4'}>
-            <UserButton />
-            <span className={'font-semibold text-gray-600'}>
-              {user.user?.username}
-            </span>
+          <div className={'flex w-full flex-row items-center justify-between'}>
+            <div className={'flex items-center gap-4'}>
+              <UserButton />
+              <span className={'font-semibold text-gray-500'}>
+                {user.user?.username}
+              </span>
+            </div>
+            <Link href={AppRoute.SETTINGS}>
+              <a className={'text-gray-500 hover:text-black'}>
+                <Settings size={20} />
+              </a>
+            </Link>
           </div>
         </SignedIn>
       </div>
