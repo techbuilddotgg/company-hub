@@ -2,7 +2,7 @@ import { protectedProcedure, t } from '../trpc';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 
-const projectBoardTasksSchema = z.object({
+export const projectBoardTaskSchema = z.object({
   id: z.string(),
   name: z.string(),
   description: z.string().nullable(),
@@ -10,20 +10,22 @@ const projectBoardTasksSchema = z.object({
   createdAt: z.date(),
   taskPriorityId: z.string().nullable(),
   taskTypeId: z.string().nullable(),
+  orderIndex: z.number(),
 });
 
 export const projectBoardColumnSchema = z.object({
   id: z.string(),
   name: z.string(),
   projectBoardId: z.string(),
-  projectBoardCard: z.array(projectBoardTasksSchema),
+  orderIndex: z.number(),
+  projectBoardTasks: z.array(projectBoardTaskSchema),
 });
 
 export const projectBoardSchema = z.object({
   id: z.string(),
   name: z.string(),
   projectId: z.string(),
-  projectBoardColumn: z.array(projectBoardColumnSchema),
+  projectBoardColumns: z.array(projectBoardColumnSchema),
 });
 
 export const boardRouter = t.router({
@@ -70,7 +72,13 @@ export const boardRouter = t.router({
       }
     }),
   updateBoard: protectedProcedure
-    .input(projectBoardSchema)
+    .input(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        projectId: z.string(),
+      }),
+    )
     .mutation(async ({ input, ctx }) => {
       try {
         await ctx.prisma.projectBoard.update({
@@ -115,6 +123,37 @@ export const boardRouter = t.router({
         });
       }
     }),
+  updateColumn: protectedProcedure
+    .input(z.object({ id: z.string(), name: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      try {
+        await ctx.prisma.projectBoardColumn.update({
+          where: { id: input.id },
+          data: input,
+        });
+      } catch (e) {
+        console.log(e);
+        throw new TRPCError({
+          message: 'Something went wrong. Please try again later.',
+          code: 'INTERNAL_SERVER_ERROR',
+        });
+      }
+    }),
+  deleteColumn: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      try {
+        await ctx.prisma.projectBoardColumn.delete({
+          where: { id: input.id },
+        });
+      } catch (e) {
+        console.log(e);
+        throw new TRPCError({
+          message: 'Something went wrong. Please try again later.',
+          code: 'INTERNAL_SERVER_ERROR',
+        });
+      }
+    }),
   addTask: protectedProcedure
     .input(z.object({ name: z.string(), columnId: z.string() }))
     .mutation(async ({ input, ctx }) => {
@@ -144,7 +183,7 @@ export const boardRouter = t.router({
       }
     }),
   updateTask: protectedProcedure
-    .input(projectBoardTasksSchema)
+    .input(projectBoardTaskSchema)
     .mutation(async ({ input, ctx }) => {
       try {
         await ctx.prisma.projectBoardTask.update({
@@ -152,6 +191,179 @@ export const boardRouter = t.router({
             id: input.id,
           },
           data: input,
+        });
+      } catch (e) {
+        console.log(e);
+        throw new TRPCError({
+          message: 'Something went wrong. Please try again later.',
+          code: 'INTERNAL_SERVER_ERROR',
+        });
+      }
+    }),
+  reorderColumns: protectedProcedure
+    .input(
+      z.object({
+        boardId: z.string(),
+        columns: z.array(projectBoardColumnSchema),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      try {
+        await ctx.prisma.projectBoard.update({
+          where: {
+            id: input.boardId,
+          },
+          data: {
+            projectBoardColumns: {
+              updateMany: input.columns.map((column, index) => ({
+                where: { id: column.id },
+                data: { orderIndex: index },
+              })),
+            },
+          },
+        });
+      } catch (e) {
+        console.log(e);
+        throw new TRPCError({
+          message: 'Something went wrong. Please try again later.',
+          code: 'INTERNAL_SERVER_ERROR',
+        });
+      }
+    }),
+  reorderTasksInColumn: protectedProcedure
+    .input(
+      z.object({
+        columnId: z.string(),
+        tasks: z.array(projectBoardTaskSchema),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      try {
+        await ctx.prisma.projectBoardColumn.update({
+          where: {
+            id: input.columnId,
+          },
+          data: {
+            projectBoardTasks: {
+              updateMany: input.tasks.map((task, index) => ({
+                where: { id: task.id },
+                data: { orderIndex: index },
+              })),
+            },
+          },
+        });
+      } catch (e) {
+        console.log(e);
+        throw new TRPCError({
+          message: 'Something went wrong. Please try again later.',
+          code: 'INTERNAL_SERVER_ERROR',
+        });
+      }
+    }),
+  moveTask: protectedProcedure
+    .input(
+      z.object({
+        taskId: z.string(),
+        targetOrderIndex: z.number(),
+        sourceOrderIndex: z.number(),
+        sourceColumnId: z.string(),
+        targetColumnId: z.string(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      try {
+        console.log(input);
+        await ctx.prisma.$transaction([
+          ctx.prisma.projectBoardColumn.update({
+            where: {
+              id: input.sourceColumnId,
+            },
+            data: {
+              projectBoardTasks: {
+                updateMany: {
+                  where: {
+                    orderIndex: {
+                      gt: input.sourceOrderIndex,
+                    },
+                  },
+                  data: {
+                    orderIndex: {
+                      decrement: 1,
+                    },
+                  },
+                },
+              },
+            },
+          }),
+          ctx.prisma.projectBoardColumn.update({
+            where: {
+              id: input.targetColumnId,
+            },
+            data: {
+              projectBoardTasks: {
+                updateMany: {
+                  where: {
+                    orderIndex: {
+                      gte: input.targetOrderIndex,
+                    },
+                  },
+                  data: {
+                    orderIndex: {
+                      increment: 1,
+                    },
+                  },
+                },
+              },
+            },
+          }),
+          ctx.prisma.projectBoardTask.update({
+            where: {
+              id: input.taskId,
+            },
+            data: {
+              projectBoardColumnId: input.targetColumnId,
+              orderIndex: input.targetOrderIndex,
+            },
+          }),
+        ]);
+      } catch (e) {
+        console.log(e);
+        throw new TRPCError({
+          message: 'Something went wrong. Please try again later.',
+          code: 'INTERNAL_SERVER_ERROR',
+        });
+      }
+    }),
+  updateTasks: protectedProcedure
+    .input(z.array(projectBoardTaskSchema))
+    .mutation(async ({ input, ctx }) => {
+      try {
+        await Promise.all(
+          input.map((task) =>
+            ctx.prisma.projectBoardTask.update({
+              where: {
+                id: task.id,
+              },
+              data: task,
+            }),
+          ),
+        );
+      } catch (e) {
+        console.log(e);
+        throw new TRPCError({
+          message: 'Something went wrong. Please try again later.',
+          code: 'INTERNAL_SERVER_ERROR',
+        });
+      }
+    }),
+  deleteTask: protectedProcedure
+    .input(z.string())
+    .mutation(async ({ input, ctx }) => {
+      try {
+        await ctx.prisma.projectBoardTask.delete({
+          where: {
+            id: input,
+          },
         });
       } catch (e) {
         console.log(e);
