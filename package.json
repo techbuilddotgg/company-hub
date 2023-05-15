@@ -24,6 +24,11 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^4.17.1",
+    "@fullcalendar/core": "^6.1.7",
+    "@fullcalendar/daygrid": "^6.1.7",
+    "@fullcalendar/interaction": "^6.1.7",
+    "@fullcalendar/react": "^6.1.7",
+    "@fullcalendar/timegrid": "^6.1.7",
     "@hookform/resolvers": "^3.1.0",
     "@prisma/client": "^4.4.0",
     "@radix-ui/react-alert-dialog": "^1.0.3",
