@@ -1,17 +1,34 @@
-import React, { FC } from "react";
-import { useForm } from "react-hook-form";
-import { Button, DialogContent, Input, Textarea } from "@components";
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { Button, DialogContent, Input, Textarea } from '@components';
+import { trpc } from '@utils/trpc';
 
 interface FormData {
   name: string;
   description: string;
 }
 
-export const TaskModal: FC = () => {
+interface TaskModalProps {
+  id: string;
+  refetch: () => void;
+  setOpenTaskDialog: (open: boolean) => void;
+}
+
+export const TaskModal = ({
+  id,
+  refetch,
+  setOpenTaskDialog,
+}: TaskModalProps) => {
   const { register, handleSubmit } = useForm<FormData>({
     defaultValues: {
       name: '',
       description: '',
+    },
+  });
+  const { mutate: deleteTaskMutation } = trpc.board.deleteTask.useMutation({
+    onSuccess: () => {
+      refetch();
+      setOpenTaskDialog(false);
     },
   });
 
@@ -19,24 +36,22 @@ export const TaskModal: FC = () => {
     console.log(data);
   };
 
+  const deleteTask = () => {
+    deleteTaskMutation(id);
+  };
+
   return (
-    <DialogContent>
+    <DialogContent setDialogOpen={setOpenTaskDialog}>
       <form className={'flex flex-col gap-4'} onSubmit={handleSubmit(onSubmit)}>
         <Input label={'Name'} {...register('name')} />
         <Textarea label={'Description'} {...register('description')} rows={5} />
         <div className="flex justify-between">
-          <Button  type={'submit'} variant="destructive">
+          <Button onClick={deleteTask} type={'submit'} variant="destructive">
             Delete
           </Button>
-          <Button type={'submit'}>
-            Update
-          </Button>
+          <Button type={'submit'}>Update</Button>
         </div>
-
       </form>
     </DialogContent>
-
   );
 };
-
-

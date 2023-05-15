@@ -72,11 +72,13 @@ export const boardRouter = t.router({
       }
     }),
   updateBoard: protectedProcedure
-    .input(z.object({
-      id: z.string(),
-      name: z.string(),
-      projectId: z.string(),
-    }))
+    .input(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        projectId: z.string(),
+      }),
+    )
     .mutation(async ({ input, ctx }) => {
       try {
         await ctx.prisma.projectBoard.update({
@@ -112,6 +114,37 @@ export const boardRouter = t.router({
             projectBoardId: input.boardId,
             orderIndex: board.projectBoardColumns.length,
           },
+        });
+      } catch (e) {
+        console.log(e);
+        throw new TRPCError({
+          message: 'Something went wrong. Please try again later.',
+          code: 'INTERNAL_SERVER_ERROR',
+        });
+      }
+    }),
+  updateColumn: protectedProcedure
+    .input(z.object({ id: z.string(), name: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      try {
+        await ctx.prisma.projectBoardColumn.update({
+          where: { id: input.id },
+          data: input,
+        });
+      } catch (e) {
+        console.log(e);
+        throw new TRPCError({
+          message: 'Something went wrong. Please try again later.',
+          code: 'INTERNAL_SERVER_ERROR',
+        });
+      }
+    }),
+  deleteColumn: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      try {
+        await ctx.prisma.projectBoardColumn.delete({
+          where: { id: input.id },
         });
       } catch (e) {
         console.log(e);
@@ -315,6 +348,23 @@ export const boardRouter = t.router({
             }),
           ),
         );
+      } catch (e) {
+        console.log(e);
+        throw new TRPCError({
+          message: 'Something went wrong. Please try again later.',
+          code: 'INTERNAL_SERVER_ERROR',
+        });
+      }
+    }),
+  deleteTask: protectedProcedure
+    .input(z.string())
+    .mutation(async ({ input, ctx }) => {
+      try {
+        await ctx.prisma.projectBoardTask.delete({
+          where: {
+            id: input,
+          },
+        });
       } catch (e) {
         console.log(e);
         throw new TRPCError({

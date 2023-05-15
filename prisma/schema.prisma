@@ -92,7 +92,7 @@ model ProjectBoardTask {
   id                       String                    @id @default(cuid())
   name                     String
   description              String?
-  projectBoardColumn       ProjectBoardColumn        @relation(fields: [projectBoardColumnId], references: [id])
+  projectBoardColumn       ProjectBoardColumn        @relation(fields: [projectBoardColumnId], references: [id], onDelete: Cascade)
   projectBoardColumnId     String
   createdAt                DateTime                  @default(now())
   projectBoardTaskComments ProjectBoardTaskComment[]
@@ -109,7 +109,7 @@ model ProjectBoardTaskComment {
   id                 String           @id @default(cuid())
   text               String
   authorId           String
-  projectBoardTask   ProjectBoardTask @relation(fields: [projectBoardTaskId], references: [id])
+  projectBoardTask   ProjectBoardTask @relation(fields: [projectBoardTaskId], references: [id], onDelete: Cascade)
   projectBoardTaskId String
   createdAt          DateTime         @default(now())
 
