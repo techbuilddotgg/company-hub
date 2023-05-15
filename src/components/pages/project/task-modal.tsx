@@ -11,6 +11,7 @@ import {
   Textarea
 } from "@components";
 import { trpc } from "@utils/trpc";
+import { Trash2 } from "lucide-react";
 
 interface FormData {
   name: string;
@@ -105,8 +106,8 @@ export const TaskModal = ({
         <Input label={'Name'} {...register('name')} />
         <Textarea label={'Description'} {...register('description')} rows={5} />
         <div className="flex justify-between">
-          <Button onClick={deleteTask} type={'submit'} variant="destructive">
-            Delete
+          <Button onClick={deleteTask} variant="ghost" type="submit">
+            <Trash2 color="black" size={22} />
           </Button>
           <Button type={'submit'}>Update</Button>
         </div>

@@ -36,7 +36,7 @@ const AddColumn = ({ boardId, refetch }: AddColumnProps) => {
   return (
     <div className="flex flex-row items-start">
       <Card className='bg-gray-100'>
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-row p-4 items-center gap-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-row items-center gap-4">
           <Input type="text" id="name" {...register('name')} />
           <Button type="submit" className='w-44' variant='ghost'>+ Add a column</Button>
         </form>

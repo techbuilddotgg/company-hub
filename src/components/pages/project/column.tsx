@@ -3,8 +3,10 @@ import dynamic from 'next/dynamic';
 import TaskList from '@components/pages/project/task-list';
 import AddTask from '@components/pages/project/add-task';
 import { ProjectColumnFull } from '../../../shared/types/board.types';
-import { Button, Card, CardFooter } from '@components';
+import { Button, Card } from '@components';
 import { trpc } from '@utils/trpc';
+import {  Trash2 } from "lucide-react";
+
 
 const Draggable = dynamic(
   () =>
@@ -37,7 +39,13 @@ const Column = ({ data, index, refetch }: ColumnProps) => {
           {...provided.dragHandleProps}
           className="mr-4 flex w-96 flex-col items-center bg-gray-100 py-4"
         >
-          <h2>{data.name}</h2>
+          <div className='flex flex-row w-full justify-between'>
+            <h2>{data.name}</h2>
+            <Button onClick={deleteColumn} variant="ghost" type="submit">
+              <Trash2 color="black" size={22} />
+            </Button>
+          </div>
+
           <div>
             <TaskList
               id={data.id}
@@ -46,11 +54,6 @@ const Column = ({ data, index, refetch }: ColumnProps) => {
             />
             <AddTask columnId={data.id} refetch={refetch} />
           </div>
-          <CardFooter>
-            <Button onClick={deleteColumn} type="submit">
-              Delete
-            </Button>
-          </CardFooter>
         </Card>
       )}
     </Draggable>
