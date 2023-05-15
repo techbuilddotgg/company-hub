@@ -21,9 +21,8 @@ export const Navigation = () => {
   const user = useUser();
 
   const isActive = (href: string) => {
-    return router.asPath === href
-
-  }
+    return router.asPath === href;
+  };
   const { data: projects } = trpc.project.get.useQuery();
 
   return (
@@ -39,7 +38,7 @@ export const Navigation = () => {
               'rounded p-2 text-gray-500',
               isActive(AppRoute.HOME) && 'bg-blue-100 text-blue-600',
               !isActive(AppRoute.HOME) &&
-              'text-gray-500 hover:bg-gray-100 hover:text-black',
+                'text-gray-500 hover:bg-gray-100 hover:text-black',
             )}
           >
             <Link href={AppRoute.HOME}>
@@ -58,7 +57,7 @@ export const Navigation = () => {
               'rounded p-2 text-gray-500',
               isActive(AppRoute.PROJECTS) && 'bg-blue-100 text-blue-600',
               !isActive(AppRoute.PROJECTS) &&
-              'text-gray-500 hover:bg-gray-100 hover:text-black',
+                'text-gray-500 hover:bg-gray-100 hover:text-black',
             )}
           >
             <Link href={AppRoute.PROJECTS}>
@@ -73,15 +72,19 @@ export const Navigation = () => {
           </li>
           {projects?.map((project) => (
             <li
-              key={'Projects'}
+              key={project.id}
               className={cn(
-                'rounded p-2 text-gray-500 ml-5',
-                isActive(`${AppRoute.PROJECTS}/${project.id}`) && 'bg-blue-100 text-blue-600',
+                'ml-5 rounded p-2 text-gray-500',
+                isActive(`${AppRoute.PROJECTS}/${project.id}`) &&
+                  'bg-blue-100 text-blue-600',
                 !isActive(`${AppRoute.PROJECTS}/${project.id}`) &&
-                'text-gray-500 hover:bg-gray-100 hover:text-black',
+                  'text-gray-500 hover:bg-gray-100 hover:text-black',
               )}
             >
-              <Link href={`${AppRoute.PROJECTS}/${project.id}`} key={project.name}>
+              <Link
+                href={`${AppRoute.PROJECTS}/${project.id}`}
+                key={project.name}
+              >
                 <a className="rounded-md p-2 text-sm font-medium transition-colors">
                   {project.name}
                 </a>
@@ -94,7 +97,7 @@ export const Navigation = () => {
               'rounded p-2 text-gray-500',
               isActive(AppRoute.KNOWLEDGE_BASE) && 'bg-blue-100 text-blue-600',
               !isActive(AppRoute.KNOWLEDGE_BASE) &&
-              'text-gray-500 hover:bg-gray-100 hover:text-black',
+                'text-gray-500 hover:bg-gray-100 hover:text-black',
             )}
           >
             <Link href={AppRoute.KNOWLEDGE_BASE}>
@@ -113,7 +116,7 @@ export const Navigation = () => {
               'rounded p-2 text-gray-500',
               isActive(AppRoute.CALENDAR) && 'bg-blue-100 text-blue-600',
               !isActive(AppRoute.CALENDAR) &&
-              'text-gray-500 hover:bg-gray-100 hover:text-black',
+                'text-gray-500 hover:bg-gray-100 hover:text-black',
             )}
           >
             <Link href={AppRoute.CALENDAR}>
