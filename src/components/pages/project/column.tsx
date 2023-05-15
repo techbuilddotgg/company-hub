@@ -20,8 +20,9 @@ interface ColumnProps {
   refetch: () => void;
 }
 const Column = ({ data, index, refetch }: ColumnProps) => {
-  const { mutate: deleteColumnMutation } =
-    trpc.board.deleteColumn.useMutation();
+  const { mutate: deleteColumnMutation } = trpc.board.deleteColumn.useMutation({
+    onSuccess: () => refetch(),
+  });
 
   const deleteColumn = () => {
     deleteColumnMutation({ id: data.id });

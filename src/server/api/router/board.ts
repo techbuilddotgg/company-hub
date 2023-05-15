@@ -1,32 +1,10 @@
 import { protectedProcedure, t } from '../trpc';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
-
-export const projectBoardTaskSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  description: z.string().nullable(),
-  projectBoardColumnId: z.string(),
-  createdAt: z.date(),
-  taskPriorityId: z.string().nullable(),
-  taskTypeId: z.string().nullable(),
-  orderIndex: z.number(),
-});
-
-export const projectBoardColumnSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  projectBoardId: z.string(),
-  orderIndex: z.number(),
-  projectBoardTasks: z.array(projectBoardTaskSchema),
-});
-
-export const projectBoardSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  projectId: z.string(),
-  projectBoardColumns: z.array(projectBoardColumnSchema),
-});
+import {
+  projectBoardColumnSchema,
+  projectBoardTaskSchema,
+} from '../../../shared/validators/board.schemes';
 
 export const boardRouter = t.router({
   getById: protectedProcedure

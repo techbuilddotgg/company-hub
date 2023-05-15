@@ -10,6 +10,7 @@ export * from './ui/dialog';
 export * from './ui/textarea';
 export * from './ui/toast';
 export * from './ui/toaster';
+export * from './ui/accordion';
 export * from './pages/knowledge-base/voting-button';
 export * from './pages/knowledge-base/question';
 export * from './pages/knowledge-base/answer';

@@ -60,9 +60,12 @@ model Event {
 model Project {
   id            String         @id @default(cuid())
   name          String
-  company       Company        @relation(fields: [companyId], references: [id])
+  company       Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId     String
   projectBoards ProjectBoard[]
+  startDate     DateTime       @default(now())
+  endDate       DateTime?
+  description   String?
 
   @@map("projects")
 }
@@ -70,7 +73,7 @@ model Project {
 model ProjectBoard {
   id                  String               @id @default(cuid())
   name                String
-  project             Project              @relation(fields: [projectId], references: [id])
+  project             Project              @relation(fields: [projectId], references: [id], onDelete: Cascade)
   projectId           String
   projectBoardColumns ProjectBoardColumn[]
 
@@ -80,7 +83,7 @@ model ProjectBoard {
 model ProjectBoardColumn {
   id                String             @id @default(cuid())
   name              String
-  projectBoard      ProjectBoard       @relation(fields: [projectBoardId], references: [id])
+  projectBoard      ProjectBoard       @relation(fields: [projectBoardId], references: [id], onDelete: Cascade)
   projectBoardId    String
   projectBoardTasks ProjectBoardTask[]
   orderIndex        Int

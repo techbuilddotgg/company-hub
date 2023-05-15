@@ -1,31 +1,33 @@
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { trpc } from '@utils/trpc';
-import { Input } from '@components';
+import { Button, Input, Textarea } from '@components';
+import { AddProjectSchema } from '../../../shared/validators/project.schemes';
+import { AddProjectType } from '../../../shared/types/project.types';
+import React from 'react';
 
-export const AddProjectSchema = z.object({
-  name: z
-    .string()
-    .min(3, { message: 'Enter at least 3 chars' })
-    .max(20, { message: 'Max is 20' }),
-  boardName: z
-    .string()
-    .min(3, { message: 'Enter at least 3 chars' })
-    .max(20, { message: 'Max is 20' }),
-});
-
-type AddProjectType = z.infer<typeof AddProjectSchema>;
-
-const AddProjectForm = () => {
+interface AddProjectFormProps {
+  refetchProjects: () => void;
+  setDialogOpened: (open: boolean) => void;
+}
+const AddProjectForm = ({
+  refetchProjects,
+  setDialogOpened,
+}: AddProjectFormProps) => {
   const { register, handleSubmit } = useForm({
     resolver: zodResolver(AddProjectSchema),
     defaultValues: {
       name: '',
       boardName: '',
+      description: '',
     },
   });
-  const { mutate: addProject } = trpc.project.add.useMutation();
+  const { mutate: addProject } = trpc.project.add.useMutation({
+    onSuccess: () => {
+      refetchProjects();
+      setDialogOpened(false);
+    },
+  });
 
   const onSubmit = (data: AddProjectType) => {
     addProject(data);
@@ -33,13 +35,17 @@ const AddProjectForm = () => {
 
   return (
     <div>
-      <h1>Add Project Form</h1>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <label htmlFor="name">Name</label>
-        <Input type="text" id="name" {...register('name')} />
-        <label htmlFor="name">Baord name</label>
-        <Input type="text" id="board-name" {...register('boardName')} />
-        <button type="submit">Add</button>
+      <h3>Save Project</h3>
+      <form
+        className="mt-5 flex flex-col gap-4"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <Input label="Name" {...register('name')} />
+        <Textarea rows={5} label="Description" {...register('description')} />
+        <Input label="Board name" {...register('boardName')} />
+        <Button className="mt-5 self-end" type="submit">
+          Save
+        </Button>
       </form>
     </div>
   );

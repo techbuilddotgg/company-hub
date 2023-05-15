@@ -2,10 +2,12 @@ import { protectedProcedure, t } from '../trpc';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { clerkClient } from '@clerk/nextjs/server';
+import { projectSchema } from '../../../shared/validators/board.schemes';
+import { AddProjectSchema } from '../../../shared/validators/project.schemes';
 
 export const projectRouter = t.router({
   add: protectedProcedure
-    .input(z.object({ name: z.string(), boardName: z.string() }))
+    .input(AddProjectSchema)
     .mutation(async ({ input, ctx: { prisma, authedUserId } }) => {
       const user = await clerkClient.users.getUser(authedUserId);
 
@@ -54,6 +56,41 @@ export const projectRouter = t.router({
           },
           include: {
             projectBoards: true,
+          },
+        });
+      } catch (e) {
+        console.log(e);
+        throw new TRPCError({
+          message: 'Something went wrong. Please try again later.',
+          code: 'INTERNAL_SERVER_ERROR',
+        });
+      }
+    }),
+  update: protectedProcedure
+    .input(projectSchema)
+    .mutation(async ({ input, ctx }) => {
+      try {
+        return await ctx.prisma.project.update({
+          where: {
+            id: input.id,
+          },
+          data: input,
+        });
+      } catch (e) {
+        console.log(e);
+        throw new TRPCError({
+          message: 'Something went wrong. Please try again later.',
+          code: 'INTERNAL_SERVER_ERROR',
+        });
+      }
+    }),
+  delete: protectedProcedure
+    .input(z.string())
+    .mutation(async ({ input, ctx }) => {
+      try {
+        return await ctx.prisma.project.delete({
+          where: {
+            id: input,
           },
         });
       } catch (e) {
