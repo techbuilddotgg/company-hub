@@ -352,14 +352,14 @@ export const boardRouter = t.router({
       }
     }),
   addUserToTask: protectedProcedure
-    .input(z.object({userId: z.string(), taskId: z.string()}))
+    .input(z.object({ userId: z.string(), taskId: z.string() }))
     .mutation(async ({ input, ctx }) => {
       try {
         await ctx.prisma.projectBoardTaskUser.create({
           data: {
             userId: input.userId,
-            projectBoardTaskId: input.taskId
-          }
+            projectBoardTaskId: input.taskId,
+          },
         });
       } catch (e) {
         console.log(e);
@@ -370,16 +370,15 @@ export const boardRouter = t.router({
       }
     }),
   getUsersAssignedToTask: protectedProcedure
-    .input(z.object({ taskId: z.string()}))
+    .input(z.object({ taskId: z.string() }))
     .query(async ({ input, ctx }) => {
       try {
-        const users =  await ctx.prisma.projectBoardTaskUser.findMany({
+        const users = await ctx.prisma.projectBoardTaskUser.findMany({
           where: {
             projectBoardTaskId: input.taskId,
           },
         });
         return users.map((user) => user.userId);
-
       } catch (e) {
         console.log(e);
         throw new TRPCError({
@@ -389,7 +388,7 @@ export const boardRouter = t.router({
       }
     }),
   removeUserFromTask: protectedProcedure
-    .input(z.object({userId: z.string(), taskId: z.string()}))
+    .input(z.object({ userId: z.string(), taskId: z.string() }))
     .mutation(async ({ input, ctx }) => {
       try {
         await ctx.prisma.projectBoardTaskUser.deleteMany({
