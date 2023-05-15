@@ -3,6 +3,7 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
+import momentPlugin from '@fullcalendar/moment';
 
 const CalendarScheduler = () => {
   const weekends = {
@@ -13,14 +14,19 @@ const CalendarScheduler = () => {
   return (
     <div>
       <FullCalendar
-        plugins={[timeGridPlugin, dayGridPlugin, interactionPlugin]}
+        plugins={[
+          timeGridPlugin,
+          dayGridPlugin,
+          interactionPlugin,
+          momentPlugin,
+        ]}
         initialView="timeGridWeek"
         headerToolbar={{
           left: 'prev,next today',
           center: 'title',
           right: 'dayGridMonth,timeGridWeek,timeGridDay',
         }}
-        locale="en"
+        locale="en-gb"
         weekends={weekends.weekendsVisible}
         events={[
           { title: 'event 1', date: '2023-05-16' },
@@ -35,7 +41,7 @@ const CalendarScheduler = () => {
         allDaySlot={false}
         editable={true}
         nowIndicator={true}
-        height="700px"
+        height={'700px'}
       />
     </div>
   );
