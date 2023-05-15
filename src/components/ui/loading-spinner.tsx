@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { FC } from 'react';
+import { cn } from '@utils/classNames';
 
-export const LoadingSpinner = () => {
+export const LoadingSpinner: FC<{ color?: string }> = ({
+  color = 'text-gray-200',
+}) => {
   return (
     <div role="status">
       <svg
         aria-hidden="true"
-        className="mr-2 inline h-6 w-6 animate-spin fill-black text-gray-200 dark:text-gray-600"
+        className={cn('mr-2 inline h-6 w-6 animate-spin fill-black', color)}
         viewBox="0 0 100 101"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -19,7 +22,6 @@ export const LoadingSpinner = () => {
           fill="currentFill"
         />
       </svg>
-      <span className="sr-only">Loading...</span>
     </div>
   );
 };
