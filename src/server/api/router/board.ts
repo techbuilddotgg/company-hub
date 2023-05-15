@@ -351,4 +351,56 @@ export const boardRouter = t.router({
         });
       }
     }),
+  addUserToTask: protectedProcedure
+    .input(z.object({userId: z.string(), taskId: z.string()}))
+    .mutation(async ({ input, ctx }) => {
+      try {
+        await ctx.prisma.projectBoardTaskUser.create({
+          data: {
+            userId: input.userId,
+            projectBoardTaskId: input.taskId
+          }
+        });
+      } catch (e) {
+        console.log(e);
+        throw new TRPCError({
+          message: 'Something went wrong. Please try again later.',
+          code: 'INTERNAL_SERVER_ERROR',
+        });
+      }
+    }),
+  getUsersAssignedToTask: protectedProcedure
+    .input(z.object({ taskId: z.string()}))
+    .query(async ({ input, ctx }) => {
+      try {
+        const users =  await ctx.prisma.projectBoardTaskUser.findMany({
+          where: {
+            projectBoardTaskId: input.taskId,
+          },
+        });
+        return users.map((user) => user.userId);
+
+      } catch (e) {
+        console.log(e);
+        throw new TRPCError({
+          message: 'Something went wrong. Please try again later.',
+          code: 'INTERNAL_SERVER_ERROR',
+        });
+      }
+    }),
+  removeUserFromTask: protectedProcedure
+    .input(z.object({userId: z.string(), taskId: z.string()}))
+    .mutation(async ({ input, ctx }) => {
+      try {
+        await ctx.prisma.projectBoardTaskUser.deleteMany({
+          where: { userId: input.userId, projectBoardTaskId: input.taskId },
+        });
+      } catch (e) {
+        console.log(e);
+        throw new TRPCError({
+          message: 'Something went wrong. Please try again later.',
+          code: 'INTERNAL_SERVER_ERROR',
+        });
+      }
+    }),
 });
