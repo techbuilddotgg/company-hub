@@ -3,7 +3,7 @@ import { GetServerSideProps } from 'next';
 import { resetServerContext } from 'react-beautiful-dnd';
 import { trpc } from '@utils/trpc';
 import { useRouter } from 'next/router';
-import AddProjectForm from '@components/pages/project/add-project-form';
+import SaveProjectForm from '@components/pages/project/save-project-form';
 import { Project, ProjectBoard } from '@prisma/client';
 
 const Project = () => {
@@ -21,7 +21,7 @@ const Project = () => {
       {(data) => (
         <div className="ml-10">
           <h1 className="my-4 text-2xl font-bold">{data.name}</h1>
-          <AddProjectForm />
+          <SaveProjectForm />
           {data.projectBoards.length !== 0 && data.projectBoards[0] ? (
             <Board data={data.projectBoards[0]} />
           ) : (

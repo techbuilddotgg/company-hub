@@ -37,6 +37,9 @@ export const projectRouter = t.router({
         where: {
           companyId: user.privateMetadata.companyId as string,
         },
+        include: {
+          projectBoards: true,
+        },
       });
     } catch (e) {
       console.log(e);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { trpc } from '@utils/trpc';
 import {
   Accordion,
@@ -12,10 +12,13 @@ import {
 } from '@components';
 import { formatDate } from '@utils/format-date';
 import { Project } from '@prisma/client';
-import AddProjectForm from '@components/pages/project/add-project-form';
+import SaveProjectForm from '@components/pages/project/save-project-form';
+import { ProjectWithBoards } from '../../shared/types/project.types';
 
 const Projects = () => {
   const [dialogOpened, setDialogOpened] = React.useState(false);
+  const [selectedProjectForEditing, setSelectedProjectForEditing] =
+    React.useState<ProjectWithBoards>();
 
   const { data: projects, refetch: refetchProjects } =
     trpc.project.get.useQuery();
@@ -36,11 +39,25 @@ const Projects = () => {
     deleteProjectMutation(id);
   };
 
+  useEffect(() => {
+    if (selectedProjectForEditing) setDialogOpened(true);
+  }, [selectedProjectForEditing]);
+
+  useEffect(() => {
+    if (!dialogOpened) setSelectedProjectForEditing(undefined);
+  }, [dialogOpened]);
+
   return (
     <Dialog open={dialogOpened}>
       <div className="flex flex-row justify-between">
         <h1 className="mb-10 text-3xl font-bold">Projects</h1>
-        <DialogTrigger asChild onClick={() => setDialogOpened(true)}>
+        <DialogTrigger
+          asChild
+          onClick={() => {
+            setSelectedProjectForEditing(undefined);
+            setDialogOpened(true);
+          }}
+        >
           <Button className="mt-4">Add new project</Button>
         </DialogTrigger>
       </div>
@@ -50,7 +67,7 @@ const Projects = () => {
             <AccordionTrigger>{project.name}</AccordionTrigger>
             <AccordionContent>
               <p className="font-bold">{project.description}</p>
-              <div className="mt-4 flex flex-row justify-between">
+              <div className="mt-6 flex flex-row justify-between">
                 <div className="flex flex-row">
                   <div>
                     <p>Start Date</p>
@@ -73,6 +90,12 @@ const Projects = () => {
                     {project.endDate ? 'Reopen project' : 'Close project'}
                   </Button>
                   <Button
+                    className="ml-2"
+                    onClick={() => setSelectedProjectForEditing(project)}
+                  >
+                    Edit
+                  </Button>
+                  <Button
                     onClick={() => deleteProject(project.id)}
                     className="ml-2"
                     variant="destructive"
@@ -87,7 +110,8 @@ const Projects = () => {
       ))}
 
       <DialogContent setDialogOpen={setDialogOpened}>
-        <AddProjectForm
+        <SaveProjectForm
+          project={selectedProjectForEditing}
           setDialogOpened={setDialogOpened}
           refetchProjects={refetchProjects}
         />
