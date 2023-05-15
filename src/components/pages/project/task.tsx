@@ -6,43 +6,56 @@ import {
   CardContent,
   CardFooter,
   CardHeader,
-  CardTitle, Dialog, DialogTrigger
-} from "@components";
-import { TaskModal } from "@components/pages/project/task-modal";
+  CardTitle,
+  Dialog,
+  DialogTrigger,
+} from '@components';
+import { TaskModal } from '@components/pages/project/task-modal';
 
 interface TicketProps {
   data: ProjectBoardTask;
   index: number;
+  refetch: () => void;
 }
-const Task = ({ data, index }: TicketProps) => {
+const Task = ({ data, index, refetch }: TicketProps) => {
+  const [openTaskDialog, setOpenTaskDialog] = React.useState(false);
   return (
-    <Dialog>
-      <DialogTrigger className='w-full'>
+    <Dialog open={openTaskDialog}>
+      <DialogTrigger className="w-full" onClick={() => setOpenTaskDialog(true)}>
         <Draggable key={data.id} draggableId={data.id} index={index}>
-          {(provided, snapshot) => (
+          {(provided) => (
             <Card
               ref={provided.innerRef}
               {...provided.draggableProps}
               {...provided.dragHandleProps}
-              className="bg-white shadow rounded-lg p-4 my-4"
+              className="my-4 rounded-lg bg-white p-4 shadow"
             >
               <CardHeader>
-                <span className={`rounded-sm text-center w-1/2 text-white mb-4 text-sm font-semibold bg-green-500 py-2`}>{'feature'}</span>
-                <CardTitle className='text-left'>{data.name}</CardTitle>
+                <span
+                  className={`mb-4 w-1/2 rounded-sm bg-green-500 py-2 text-center text-sm font-semibold text-white`}
+                >
+                  {'feature'}
+                </span>
+                <CardTitle className="text-left">{data.name}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-700 mb-4">{data.description}</p>
+                <p className="mb-4 text-gray-700">{data.description}</p>
               </CardContent>
               <CardFooter>
-                <span className="text-gray-600 text-sm">Deadline: {'15.04.2023'}</span>
+                <span className="text-sm text-gray-600">
+                  Deadline: {'15.04.2023'}
+                </span>
               </CardFooter>
             </Card>
           )}
         </Draggable>
       </DialogTrigger>
-      <TaskModal />
+      <TaskModal
+        id={data.id}
+        refetch={refetch}
+        setOpenTaskDialog={setOpenTaskDialog}
+      />
     </Dialog>
-
   );
 };
 export default Task;

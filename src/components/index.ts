@@ -21,3 +21,5 @@ export * from './ui/loading-spinner';
 export * from './ui/logo';
 export * from './ui/loading-page';
 export * from './ui/data-view';
+export * from './ui/checkbox'
+export * from './ui/scroll-area'
