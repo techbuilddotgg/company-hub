@@ -142,7 +142,7 @@ export const Board = ({ data }: BoardProps) => {
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', height: '100%' }}>
+    <div className="h-full max-h-full">
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable
           droppableId="board"
@@ -163,6 +163,7 @@ export const Board = ({ data }: BoardProps) => {
                   refetch={refetch}
                 />
               ))}
+              {provided.placeholder}
               <AddColumn refetch={refetch} boardId={board?.id || ''} />
             </div>
           )}

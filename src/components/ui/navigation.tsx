@@ -26,7 +26,7 @@ export const Navigation = () => {
   const { data: projects } = trpc.project.get.useQuery();
 
   return (
-    <div className=" flex h-16 min-h-screen flex-col items-center border-r px-6">
+    <div className=" flex h-16 h-full flex-col items-center border-r px-6">
       <div className={'my-4'}>
         <Logo />
       </div>

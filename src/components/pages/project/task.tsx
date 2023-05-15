@@ -21,14 +21,18 @@ const Task = ({ data, index, refetch }: TicketProps) => {
   const [openTaskDialog, setOpenTaskDialog] = React.useState(false);
   return (
     <Dialog open={openTaskDialog}>
-      <DialogTrigger className="w-full" onClick={() => setOpenTaskDialog(true)}>
+      <DialogTrigger
+        asChild
+        className="w-full"
+        onClick={() => setOpenTaskDialog(true)}
+      >
         <Draggable key={data.id} draggableId={data.id} index={index}>
           {(provided) => (
             <Card
               ref={provided.innerRef}
               {...provided.draggableProps}
               {...provided.dragHandleProps}
-              className="my-4 rounded-lg bg-white p-4 shadow"
+              className="mb-4 rounded-lg bg-white p-4 shadow"
             >
               <CardHeader>
                 <span

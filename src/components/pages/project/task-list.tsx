@@ -20,12 +20,14 @@ const TaskList = ({ data, id, refetch }: TicketListProps) => {
         <div
           {...provided.droppableProps}
           ref={provided.innerRef}
-          className=" bg-gray-100 p-4"
+          className="max-h-[700px] overflow-y-auto overflow-x-hidden bg-gray-100 p-4"
         >
-          {tasks.map((task, index) => (
-            <Task key={index} data={task} index={index} refetch={refetch} />
-          ))}
-          {provided.placeholder}
+          <div>
+            {tasks.map((task, index) => (
+              <Task key={index} data={task} index={index} refetch={refetch} />
+            ))}
+            {provided.placeholder}
+          </div>
         </div>
       )}
     </Droppable>
