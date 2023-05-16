@@ -8,7 +8,6 @@ import {
   CardHeader,
   CardTitle,
   Dialog,
-  DialogTrigger,
 } from '@components';
 import { TaskModal } from '@components/pages/project/task-modal';
 import { Clock3 } from 'lucide-react';
@@ -23,8 +22,7 @@ const Task = ({ data, index, refetch }: TicketProps) => {
   const [openTaskDialog, setOpenTaskDialog] = React.useState(false);
   return (
     <Dialog open={openTaskDialog}>
-      <DialogTrigger
-        asChild
+      <div
         className="w-full"
         onClick={() => setOpenTaskDialog(true)}
       >
@@ -54,7 +52,7 @@ const Task = ({ data, index, refetch }: TicketProps) => {
             </Card>
           )}
         </Draggable>
-      </DialogTrigger>
+      </div>
       <TaskModal
         id={data.id}
         refetch={refetch}

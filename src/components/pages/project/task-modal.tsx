@@ -43,30 +43,28 @@ export const TaskModal = ({
     },
   });
 
-  const {data: assignedUsers} = trpc.board.getUsersAssignedToTask.useQuery({ taskId: id});
+  const {data: assignedUsers, refetch: refetchAssignedUsers} = trpc.board.getUsersAssignedToTask.useQuery({ taskId: id});
   const { mutate: addUserToTask } = trpc.board.addUserToTask.useMutation({
     onSuccess: () => {
-      //refetch();
+      refetchAssignedUsers()
       setOpenTaskDialog(true);
     },
   });
 
   const { mutate: removeUserFromTask } = trpc.board.removeUserFromTask.useMutation({
     onSuccess: () => {
-      refetch();
+      refetchAssignedUsers()
       setOpenTaskDialog(true);
     },
   });
 
-  const { data: users, refetch: refetchUsers } = trpc.users.findAll.useQuery();
+  const { data: users } = trpc.users.findAll.useQuery();
 
   const onUserCheckedChange = (userId: string, checked: string |boolean) => {
     if(checked)
       addUserToTask({ userId: userId, taskId: id })
     if(!checked)
       removeUserFromTask({ userId: userId, taskId: id })
-
-    console.log(userId);
   }
 
   const onSubmit = (data: FormData) => {
