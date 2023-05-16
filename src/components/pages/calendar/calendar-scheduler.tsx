@@ -5,6 +5,10 @@ import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import momentPlugin from '@fullcalendar/moment';
 import { trpc } from '@utils/trpc';
+import { DialogContent } from '@components/ui/dialog';
+import { Input } from '@components/ui/input';
+import { Textarea } from '@components/ui/textarea';
+import { Button } from '@components/ui/button';
 
 const CalendarScheduler = () => {
   const { mutate: addEvent } = trpc.event.add.useMutation();
@@ -45,8 +49,16 @@ const CalendarScheduler = () => {
         locale="en-gb"
         weekends={weekends.weekendsVisible}
         events={[
-          { title: 'event 1', date: '2023-05-16' },
-          { title: 'event 2', date: '2023-05-18' },
+          {
+            title: 'event 1',
+            start: '2023-05-16T10:30:00',
+            end: '2023-05-16T18:30:00',
+          },
+          {
+            title: 'event 2',
+            start: '2023-05-17T08:30:00',
+            end: '2023-05-17T11:30:00',
+          },
         ]}
         longPressDelay={1000}
         eventLongPressDelay={1000}
