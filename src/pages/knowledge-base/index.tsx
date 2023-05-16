@@ -1,6 +1,5 @@
 import React from 'react';
-import { ChatModel, Input, LinkButton, PageHeader } from '@components';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Input, PageHeader } from '@components';
 import { CreateKnowledgeBaseModal } from '@components/pages/knowledge-base/create-knowledge-base-modal';
 
 const KnowledgeBase = () => {
@@ -21,44 +20,23 @@ const KnowledgeBase = () => {
             <CreateKnowledgeBaseModal />
           </div>
         </div>
-        <div className={'grid grid-cols-4 gap-4'}>
-          <ChatModel
-            title={'Next documentacija'}
-            description={'Documentacija za Next.js'}
-          />
-          <ChatModel
-            title={'Next documentacija'}
-            description={'Documentacija za Next.js'}
-          />
-          <ChatModel
-            title={'Next documentacija'}
-            description={'Documentacija za Next.js'}
-          />
-          <ChatModel
-            title={'Next documentacija'}
-            description={'Documentacija za Next.js'}
-          />
-          <ChatModel
-            title={'Next documentacija'}
-            description={'Documentacija za Next.js'}
-          />
-        </div>
+        <div className={'grid grid-cols-4 gap-4'}></div>
       </div>
 
-      <div className={'flex flex-row justify-center gap-1'}>
-        <LinkButton href={'/knowledge-base?age=1'} variant={'ghost'}>
-          <ChevronLeft />
-        </LinkButton>
-        <div className={'flex flex-row gap-2'}>
-          <LinkButton href={'/knowledge-base?age=1'}>1</LinkButton>
-          <LinkButton href={'/knowledge-base?age=2'}>2</LinkButton>
-          <LinkButton href={'/knowledge-base?age=3'}>3</LinkButton>
-        </div>
+      {/*<div className={'flex flex-row justify-center gap-1'}>*/}
+      {/*  <LinkButton href={'/knowledge-base?age=1'} variant={'ghost'}>*/}
+      {/*    <ChevronLeft />*/}
+      {/*  </LinkButton>*/}
+      {/*  <div className={'flex flex-row gap-2'}>*/}
+      {/*    <LinkButton href={'/knowledge-base?age=1'}>1</LinkButton>*/}
+      {/*    <LinkButton href={'/knowledge-base?age=2'}>2</LinkButton>*/}
+      {/*    <LinkButton href={'/knowledge-base?age=3'}>3</LinkButton>*/}
+      {/*  </div>*/}
 
-        <LinkButton href={'/knowledge-base?age=1'} variant={'ghost'}>
-          <ChevronRight />
-        </LinkButton>
-      </div>
+      {/*  <LinkButton href={'/knowledge-base?age=1'} variant={'ghost'}>*/}
+      {/*    <ChevronRight />*/}
+      {/*  </LinkButton>*/}
+      {/*</div>*/}
     </div>
   );
 };

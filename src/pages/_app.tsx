@@ -4,6 +4,9 @@ import type { AppType } from 'next/app';
 import { trpc } from '@utils/trpc';
 import { AppRoute } from '@constants/app-routes';
 import { Layout, Toaster } from '@components';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
 
 const MyApp: AppType = ({ Component, pageProps, router }) => {
   const useLayout = ![AppRoute.SIGN_IN, AppRoute.SIGN_UP].includes(
@@ -11,16 +14,18 @@ const MyApp: AppType = ({ Component, pageProps, router }) => {
   );
 
   return (
-    <ClerkProvider {...pageProps}>
-      {useLayout ? (
-        <Layout>
+    <QueryClientProvider client={queryClient}>
+      <ClerkProvider {...pageProps}>
+        {useLayout ? (
+          <Layout>
+            <Component {...pageProps} />
+            <Toaster />
+          </Layout>
+        ) : (
           <Component {...pageProps} />
-          <Toaster />
-        </Layout>
-      ) : (
-        <Component {...pageProps} />
-      )}
-    </ClerkProvider>
+        )}
+      </ClerkProvider>
+    </QueryClientProvider>
   );
 };
 
