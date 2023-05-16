@@ -1,11 +1,18 @@
 import React from 'react';
-import { Button, Checkbox, DialogButton, Input, Textarea } from '@components';
+import {
+  Button,
+  Checkbox,
+  DatePicker,
+  DialogButton,
+  Input,
+  Textarea,
+} from '@components';
 
 const EventModalForm = () => {
   return (
     <form>
       <Input label={'Title'} />
-      <div className="flex items-center space-x-2">
+      <div className="my-2 flex items-center space-x-2">
         <Checkbox id="all_day" />
         <label
           htmlFor="all_day"
@@ -14,8 +21,12 @@ const EventModalForm = () => {
           All day
         </label>
       </div>
-      <Textarea label={'Description'} rows={5} />
-      <Button className={'ml-auto'} type={'submit'}>
+      <div className={'my-2 flex gap-2'}>
+        <DatePicker label={'date 1'} />
+        <DatePicker label={'date 2'} />
+      </div>
+      <Textarea label={'Description'} rows={3} />
+      <Button className={'ml-auto mt-2'} type={'submit'}>
         Add
       </Button>
     </form>
