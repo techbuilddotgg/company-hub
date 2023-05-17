@@ -113,6 +113,7 @@ model ProjectBoardTaskComment {
   id                 String           @id @default(cuid())
   text               String
   authorId           String
+  email              String
   projectBoardTask   ProjectBoardTask @relation(fields: [projectBoardTaskId], references: [id], onDelete: Cascade)
   projectBoardTaskId String
   createdAt          DateTime         @default(now())

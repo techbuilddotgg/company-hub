@@ -402,4 +402,41 @@ export const boardRouter = t.router({
         });
       }
     }),
+  commentTicket: protectedProcedure
+    .input(z.object({ comment: z.string(), taskId: z.string(), userId: z.string(), email: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      try {
+        await ctx.prisma.projectBoardTaskComment.create({
+          data: {
+            text: input.comment,
+            projectBoardTaskId: input.taskId,
+            authorId: input.userId,
+            email: input.email
+          },
+        });
+      } catch (e) {
+        console.log(e);
+        throw new TRPCError({
+          message: 'Something went wrong. Please try again later.',
+          code: 'INTERNAL_SERVER_ERROR',
+        });
+      }
+    }),
+  getTaskComments: protectedProcedure
+    .input(z.object({ taskId: z.string() }))
+    .query(async ({ input, ctx }) => {
+      try {
+        return await ctx.prisma.projectBoardTaskComment.findMany({
+          where: {
+            projectBoardTaskId: input.taskId,
+          }
+        });
+      } catch (e) {
+        console.log(e);
+        throw new TRPCError({
+          message: 'Something went wrong. Please try again later.',
+          code: 'INTERNAL_SERVER_ERROR',
+        });
+      }
+    }),
 });

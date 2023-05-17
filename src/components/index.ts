@@ -24,3 +24,4 @@ export * from './ui/loading-page';
 export * from './ui/data-view';
 export * from './ui/checkbox'
 export * from './ui/scroll-area'
+export * from './ui/separator'
