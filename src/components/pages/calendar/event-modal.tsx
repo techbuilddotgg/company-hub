@@ -6,6 +6,7 @@ import {
   DialogButton,
   Input,
   Textarea,
+  TimePicker,
 } from '@components';
 
 const EventModalForm = () => {
@@ -21,9 +22,10 @@ const EventModalForm = () => {
           All day
         </label>
       </div>
+      <DatePicker />
       <div className={'my-2 flex gap-2'}>
-        <DatePicker label={'date 1'} />
-        <DatePicker label={'date 2'} />
+        {/*<TimePicker />*/}
+        <TimePicker />
       </div>
       <Textarea label={'Description'} rows={3} />
       <Button className={'ml-auto mt-2'} type={'submit'}>
