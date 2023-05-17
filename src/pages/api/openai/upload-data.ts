@@ -38,7 +38,23 @@ export default async function handler(
     res.status(400).send({ error: isValid.error });
   }
 
-  const text = fs.readFileSync(formData.file.filepath, 'utf8');
+  const companyId = 'fake-company-id';
+  const companyDir = `./public/uploads/${companyId}`;
+  if (!fs.existsSync(companyDir)) {
+    fs.mkdirSync(companyDir);
+  }
+  console.log(formData.file);
+  try {
+    await saveFile({
+      path: formData.file.filepath,
+      location: `${companyDir}/${formData.file.originalFilename}`,
+    });
+  } catch (e) {
+    const err = e as Error;
+    console.log(err.message);
+    res.status(500).send({ error: err.message });
+    return;
+  }
 
   res.status(200).send({ message: 'Success' });
 }
@@ -59,4 +75,17 @@ async function getFormData(req: NextApiRequest) {
     files: Files;
   };
   return { ...fields, ...files };
+}
+
+async function saveFile({
+  path,
+  location,
+}: {
+  path: string;
+  location: string;
+}) {
+  const data = fs.readFileSync(path);
+  fs.writeFileSync(location, data);
+  await fs.unlinkSync(path);
+  return;
 }
