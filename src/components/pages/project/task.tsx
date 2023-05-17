@@ -6,43 +6,59 @@ import {
   CardContent,
   CardFooter,
   CardHeader,
-  CardTitle, Dialog, DialogTrigger
-} from "@components";
-import { TaskModal } from "@components/pages/project/task-modal";
+  CardTitle,
+  Dialog,
+} from '@components';
+import { TaskModal } from '@components/pages/project/task-modal';
+import { Clock3 } from 'lucide-react';
+
 
 interface TicketProps {
   data: ProjectBoardTask;
   index: number;
+  refetch: () => void;
 }
-const Task = ({ data, index }: TicketProps) => {
+const Task = ({ data, index, refetch }: TicketProps) => {
+  const [openTaskDialog, setOpenTaskDialog] = React.useState(false);
   return (
-    <Dialog>
-      <DialogTrigger className='w-full'>
+    <Dialog open={openTaskDialog}>
+      <div
+        className="w-full"
+        onClick={() => setOpenTaskDialog(true)}
+      >
         <Draggable key={data.id} draggableId={data.id} index={index}>
-          {(provided, snapshot) => (
+          {(provided) => (
             <Card
               ref={provided.innerRef}
               {...provided.draggableProps}
               {...provided.dragHandleProps}
-              className="bg-white shadow rounded-lg p-4 my-4"
+              className="mb-4 rounded-lg bg-white shadow p-0"
             >
-              <CardHeader>
-                <span className={`rounded-sm text-center w-1/2 text-white mb-4 text-sm font-semibold bg-green-500 py-2`}>{'feature'}</span>
-                <CardTitle className='text-left'>{data.name}</CardTitle>
+              <CardHeader className='p-0 flex flex-row justify-between items-stretch'>
+                <CardTitle className="text-left p-3">{data.name}</CardTitle>
+                <span className={`w-1/4 rounded-sm bg-green-500 py-2 self-start justify-self-start text-center text-sm font-semibold text-white p-2 ml-auto mt-0`}>
+                  {'feature'}
+                </span>
               </CardHeader>
-              <CardContent>
-                <p className="text-gray-700 mb-4">{data.description}</p>
+              <CardContent className='px-3 py-0'>
+                <p className="mb-4 text-gray-700">{data.description}</p>
               </CardContent>
-              <CardFooter>
-                <span className="text-gray-600 text-sm">Deadline: {'15.04.2023'}</span>
+              <CardFooter className='px-3'>
+                <div className='flex items-center'>
+                  <Clock3 color="gray" size={18} />
+                  <span className="text-sm text-gray-600 ml-2">{'15.04.2023'}</span>
+                </div>
               </CardFooter>
             </Card>
           )}
         </Draggable>
-      </DialogTrigger>
-      <TaskModal />
+      </div>
+      <TaskModal
+        id={data.id}
+        refetch={refetch}
+        setOpenTaskDialog={setOpenTaskDialog}
+      />
     </Dialog>
-
   );
 };
 export default Task;

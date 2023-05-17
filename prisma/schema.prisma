@@ -58,9 +58,12 @@ model Event {
 model Project {
   id            String         @id @default(cuid())
   name          String
-  company       Company        @relation(fields: [companyId], references: [id])
+  company       Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId     String
   projectBoards ProjectBoard[]
+  startDate     DateTime       @default(now())
+  endDate       DateTime?
+  description   String?
 
   @@map("projects")
 }
@@ -68,7 +71,7 @@ model Project {
 model ProjectBoard {
   id                  String               @id @default(cuid())
   name                String
-  project             Project              @relation(fields: [projectId], references: [id])
+  project             Project              @relation(fields: [projectId], references: [id], onDelete: Cascade)
   projectId           String
   projectBoardColumns ProjectBoardColumn[]
 
@@ -78,7 +81,7 @@ model ProjectBoard {
 model ProjectBoardColumn {
   id                String             @id @default(cuid())
   name              String
-  projectBoard      ProjectBoard       @relation(fields: [projectBoardId], references: [id])
+  projectBoard      ProjectBoard       @relation(fields: [projectBoardId], references: [id], onDelete: Cascade)
   projectBoardId    String
   projectBoardTasks ProjectBoardTask[]
   orderIndex        Int
@@ -90,7 +93,7 @@ model ProjectBoardTask {
   id                       String                    @id @default(cuid())
   name                     String
   description              String?
-  projectBoardColumn       ProjectBoardColumn        @relation(fields: [projectBoardColumnId], references: [id])
+  projectBoardColumn       ProjectBoardColumn        @relation(fields: [projectBoardColumnId], references: [id], onDelete: Cascade)
   projectBoardColumnId     String
   createdAt                DateTime                  @default(now())
   projectBoardTaskComments ProjectBoardTaskComment[]
@@ -99,6 +102,7 @@ model ProjectBoardTask {
   TaskType                 TaskType?                 @relation(fields: [taskTypeId], references: [id])
   taskTypeId               String?
   orderIndex               Int
+  users                    ProjectBoardTaskUser[]
 
   @@map("project_board_tasks")
 }
@@ -107,7 +111,8 @@ model ProjectBoardTaskComment {
   id                 String           @id @default(cuid())
   text               String
   authorId           String
-  projectBoardTask   ProjectBoardTask @relation(fields: [projectBoardTaskId], references: [id])
+  email              String
+  projectBoardTask   ProjectBoardTask @relation(fields: [projectBoardTaskId], references: [id], onDelete: Cascade)
   projectBoardTaskId String
   createdAt          DateTime         @default(now())
 
@@ -128,4 +133,13 @@ model TaskType {
   projectBoardTasks ProjectBoardTask[]
 
   @@map("task_types")
+}
+
+model ProjectBoardTaskUser {
+  id                 String           @id @default(cuid())
+  userId             String
+  projectBoardTask   ProjectBoardTask @relation(fields: [projectBoardTaskId], references: [id])
+  projectBoardTaskId String
+
+  @@map("project_board_task_user")
 }
