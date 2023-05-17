@@ -98,6 +98,7 @@ model ProjectBoardTask {
   projectBoardColumn       ProjectBoardColumn        @relation(fields: [projectBoardColumnId], references: [id], onDelete: Cascade)
   projectBoardColumnId     String
   createdAt                DateTime                  @default(now())
+  deadLine                 DateTime?
   projectBoardTaskComments ProjectBoardTaskComment[]
   TaskPriority             TaskPriority?             @relation(fields: [taskPriorityId], references: [id])
   taskPriorityId           String?
