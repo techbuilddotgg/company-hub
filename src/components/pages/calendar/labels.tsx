@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { FC } from 'react';
 
 const labels: { color: string }[] = [
   {
@@ -15,9 +15,12 @@ const labels: { color: string }[] = [
   },
 ];
 
-const Labels = () => {
-  const [selected, setSelected] = useState('blue');
+interface LabelsProps {
+  selected: string;
+  handleLabelChange: (label: string) => void;
+}
 
+const Labels: FC<LabelsProps> = ({ selected, handleLabelChange }) => {
   return (
     <label className="flex items-center gap-2">
       {labels.map((label, index) => (
@@ -28,7 +31,7 @@ const Labels = () => {
           }-500 cursor-pointer ${
             selected === label.color ? 'ring-2 ring-gray-200 ring-offset-1' : ''
           }`}
-          onClick={() => setSelected(label.color)}
+          onClick={() => handleLabelChange(label.color)}
         ></div>
       ))}
     </label>

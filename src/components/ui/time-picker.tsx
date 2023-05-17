@@ -1,38 +1,18 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC } from 'react';
 
+export interface TimePickerTimeFormat {
+  hours: number;
+  minutes: number;
+}
 interface TimePickerProps {
-  addHours?: number;
+  defaultTime: TimePickerTimeFormat;
+  onTimeChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
-const TimePicker: FC<TimePickerProps> = ({ addHours }) => {
-  const [hour, setHour] = useState<number>(0);
-  const [minute, setMinute] = useState<number>(0);
-
-  const handleHourChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setHour(parseInt(e.target.value));
+const TimePicker: FC<TimePickerProps> = ({ defaultTime, onTimeChange }) => {
+  const handleTimeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    onTimeChange(e);
   };
-
-  const handleMinuteChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setMinute(parseInt(e.target.value));
-  };
-
-  useEffect(() => {
-    const now = new Date();
-    let currentHour = now.getHours();
-    let currentMinute = Math.round(now.getMinutes() / 15) * 15;
-
-    if (currentMinute === 60) {
-      currentMinute = 0;
-      currentHour += 1;
-    }
-
-    if (addHours) {
-      currentHour += addHours;
-    }
-
-    setHour(currentHour);
-    setMinute(currentMinute);
-  }, [addHours]);
 
   return (
     <div className="inline-flex rounded-md border p-2 text-sm">
@@ -40,8 +20,8 @@ const TimePicker: FC<TimePickerProps> = ({ addHours }) => {
         id="hours"
         name="hours"
         className="appearance-none bg-transparent px-2 outline-none"
-        onChange={handleHourChange}
-        value={hour}
+        onChange={handleTimeChange}
+        value={defaultTime.hours}
       >
         <option value="01">01</option>
         <option value="02">02</option>
@@ -73,8 +53,8 @@ const TimePicker: FC<TimePickerProps> = ({ addHours }) => {
         id="minutes"
         name="minutes"
         className="appearance-none bg-transparent px-2 outline-none"
-        onChange={handleMinuteChange}
-        value={minute}
+        onChange={handleTimeChange}
+        value={defaultTime.minutes}
       >
         <option value="00">00</option>
         <option value="15">15</option>
