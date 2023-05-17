@@ -1,5 +1,10 @@
-import React, { useEffect, useState } from 'react';
-const TimePicker = () => {
+import React, { FC, useEffect, useState } from 'react';
+
+interface TimePickerProps {
+  addHours?: number;
+}
+
+const TimePicker: FC<TimePickerProps> = ({ addHours }) => {
   const [hour, setHour] = useState<number>(0);
   const [minute, setMinute] = useState<number>(0);
 
@@ -15,14 +20,19 @@ const TimePicker = () => {
     const now = new Date();
     let currentHour = now.getHours();
     let currentMinute = Math.round(now.getMinutes() / 15) * 15;
+
     if (currentMinute === 60) {
       currentMinute = 0;
       currentHour += 1;
     }
 
+    if (addHours) {
+      currentHour += addHours;
+    }
+
     setHour(currentHour);
     setMinute(currentMinute);
-  }, []);
+  }, [addHours]);
 
   return (
     <div className="inline-flex rounded-md border p-2 text-sm">

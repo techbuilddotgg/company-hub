@@ -8,6 +8,7 @@ import {
   Textarea,
   TimePicker,
 } from '@components';
+import Labels from '@components/pages/calendar/labels';
 
 const EventModalForm = () => {
   const [allDay, setAllDay] = React.useState(false);
@@ -30,11 +31,14 @@ const EventModalForm = () => {
       {!allDay && (
         <div className={'my-2 flex gap-2'}>
           <TimePicker />
-          <TimePicker />
+          <TimePicker addHours={1} />
         </div>
       )}
       <Textarea label={'Description'} rows={3} />
-      <Button className={'ml-auto mt-2'} type={'submit'}>
+      <div className={'my-2'}>
+        <Labels />
+      </div>
+      <Button className={'ml-auto'} type={'submit'}>
         Add
       </Button>
     </form>
