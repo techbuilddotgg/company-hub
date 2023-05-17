@@ -40,7 +40,6 @@ export default async function handler(
     const chatResponse = await chain.call({
       query: body.message,
     });
-    console.log(chatResponse);
     res.status(200).send({ chatResponse });
   } catch (e) {
     const err = e as Error;
