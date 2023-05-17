@@ -105,4 +105,10 @@
         @apply text-xl font-bold;
     }
 
+    *[contenteditable="true"] {
+        outline: none;
+    }
+    *[contenteditable="true"]:hover {
+        cursor: auto;
+    }
 }

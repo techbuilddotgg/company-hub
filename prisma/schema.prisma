@@ -46,13 +46,11 @@ model Company {
 }
 
 model Event {
-  id            String   @id @default(cuid())
-  name          String
-  description   String
-  date          DateTime
-  authorId      String
-  participantId String
-  createdAt     DateTime @default(now())
+  id       String @id @default(cuid())
+  title    String
+  start    String
+  end      String
+  authorId String
 
   @@map("events")
 }
@@ -113,6 +111,7 @@ model ProjectBoardTaskComment {
   id                 String           @id @default(cuid())
   text               String
   authorId           String
+  email              String
   projectBoardTask   ProjectBoardTask @relation(fields: [projectBoardTaskId], references: [id], onDelete: Cascade)
   projectBoardTaskId String
   createdAt          DateTime         @default(now())
