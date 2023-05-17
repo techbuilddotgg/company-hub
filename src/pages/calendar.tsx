@@ -5,8 +5,10 @@ import { EventModal } from '@components';
 const Calendar = () => {
   return (
     <div>
-      <EventModal />
       <div>Calendar</div>
+      <div className={'mb-3'}>
+        <EventModal />
+      </div>
       <CalendarScheduler />
     </div>
   );

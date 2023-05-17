@@ -5,10 +5,6 @@ import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import momentPlugin from '@fullcalendar/moment';
 import { trpc } from '@utils/trpc';
-import { DialogContent } from '@components/ui/dialog';
-import { Input } from '@components/ui/input';
-import { Textarea } from '@components/ui/textarea';
-import { Button } from '@components/ui/button';
 
 const CalendarScheduler = () => {
   const { mutate: addEvent } = trpc.event.add.useMutation();
@@ -32,7 +28,6 @@ const CalendarScheduler = () => {
 
   return (
     <div>
-      <button onClick={onSubmit}>add dummy event</button>
       <FullCalendar
         plugins={[
           timeGridPlugin,
