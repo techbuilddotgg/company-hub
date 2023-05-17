@@ -22,6 +22,12 @@ export * from './ui/loading-spinner';
 export * from './ui/logo';
 export * from './ui/loading-page';
 export * from './ui/data-view';
-export * from './ui/checkbox'
+export * from './ui/checkbox';
 export * from './ui/scroll-area'
 export * from './ui/separator'
+export * from './ui/popover';
+export * from './ui/date-picker';
+export * from './ui/calendar';
+export * from './pages/calendar/calendar-scheduler';
+export * from './pages/calendar/event-modal';
+export * from './ui/time-picker';
