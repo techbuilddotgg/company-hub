@@ -46,11 +46,13 @@ model Company {
 }
 
 model Event {
-  id       String @id @default(cuid())
-  title    String
-  start    String
-  end      String
-  authorId String
+  id          String @id @default(cuid())
+  title       String
+  description String
+  start       String
+  end         String
+  label       String
+  authorId    String
 
   @@map("events")
 }

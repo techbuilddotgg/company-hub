@@ -1,20 +1,10 @@
 import React, { FC } from 'react';
-
-export interface TimePickerTimeFormat {
-  hours: number;
-  minutes: number;
-}
-interface TimePickerProps {
-  defaultTime: TimePickerTimeFormat;
-  onTimeChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-}
+import { TimePickerProps } from '../../shared/types/calendar.types';
 
 const TimePicker: FC<TimePickerProps> = ({ defaultTime, onTimeChange }) => {
   const handleTimeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     onTimeChange(e);
   };
-
-  console.log(defaultTime);
 
   return (
     <div className="inline-flex rounded-md border p-2 text-sm">
@@ -48,7 +38,7 @@ const TimePicker: FC<TimePickerProps> = ({ defaultTime, onTimeChange }) => {
         <option value="21">21</option>
         <option value="22">22</option>
         <option value="23">23</option>
-        <option value="24">24</option>
+        <option value="24">00</option>
       </select>
       <span className="px-2">:</span>
       <select

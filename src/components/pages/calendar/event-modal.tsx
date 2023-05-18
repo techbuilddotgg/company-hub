@@ -1,26 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import {
   Button,
+  Checkbox,
   DatePicker,
   DialogButton,
   Input,
   Textarea,
   TimePicker,
-  TimePickerTimeFormat,
 } from '@components';
 import Labels from '@components/pages/calendar/labels';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { DateRange } from 'react-day-picker';
-
-export const AddEventSchema = z.object({
-  title: z.string().max(15, { message: 'Enter 15 chars max' }),
-  description: z.string().max(100, { message: 'Enter 100 chars max' }),
-  allDay: z.boolean(),
-});
+import { checkTime, formatTime } from '@components/pages/calendar/utils';
+import { trpc } from '@utils/trpc';
+import {
+  AddEventType,
+  TimePickerTimeFormat,
+} from '../../../shared/types/calendar.types';
+import { AddEventSchema } from '../../../shared/validators/calendar.schemas';
+import { useToast } from '@hooks';
 
 const EventModalForm = () => {
+  const { toast } = useToast();
   const [date, setDate] = useState<DateRange | undefined>({
     from: new Date(),
   });
@@ -37,11 +39,14 @@ const EventModalForm = () => {
 
   const [label, setLabel] = useState('blue');
 
-  const { register, watch } = useForm({
+  const { register, watch, handleSubmit, setValue } = useForm({
     resolver: zodResolver(AddEventSchema),
     defaultValues: {
       title: '',
       description: '',
+      start: '',
+      end: '',
+      label: label,
       allDay: false,
     },
   });
@@ -78,15 +83,46 @@ const EventModalForm = () => {
     setEndTime({ hours: currentHour + 1, minutes: currentMinute });
   }, []);
 
+  const { mutate: addEvent } = trpc.event.add.useMutation({
+    onSuccess: () => {
+      console.log('show toast');
+      //close modal
+    },
+  });
+
+  const onSubmit = (data: AddEventType) => {
+    if (!checkTime(date, startTime, endTime)) {
+      console.log(date);
+      const time = formatTime(startTime, endTime, date as DateRange);
+
+      const event = {
+        title: data.title,
+        description: data.description,
+        start: time.from,
+        end: time.to,
+        label: label,
+      };
+      console.log(event);
+    } else {
+      toast({
+        title: 'Invalid time format',
+        description: 'Please check your time format and try again',
+      });
+    }
+  };
+
   return (
-    <form>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <div className={'flex flex-col gap-2'}>
         <Input label={'Title'} {...register('title')} />
         <DatePicker defaultState={date} onStateChange={onDateChange} />
       </div>
       <div className="my-2 ml-0.5 flex items-center space-x-2">
-        {/*<Checkbox id="allDay" {...register('allDay')} />*/}
-        <input type="checkbox" {...register('allDay')} />
+        <Checkbox
+          id="allDay"
+          checked={watchAllDay}
+          onCheckedChange={(value) => setValue('allDay', Boolean(value))}
+        />
         <label
           htmlFor="allDay"
           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"

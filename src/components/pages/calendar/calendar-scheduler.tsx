@@ -8,18 +8,7 @@ import { trpc } from '@utils/trpc';
 
 const CalendarScheduler = () => {
   const { mutate: addEvent } = trpc.event.add.useMutation();
-  const { data: events } = trpc.event.getById.useQuery({ id: '1' });
-
-  const onSubmit = () => {
-    addEvent({
-      title: 'event 1',
-      start: '2023-05-16',
-      end: '2023-05-18',
-      authorId: '1',
-    });
-  };
-
-  console.log(events);
+  // const { data: events } = trpc.event.get.useQuery();
 
   const weekends = {
     weekendsVisible: true,
@@ -46,13 +35,13 @@ const CalendarScheduler = () => {
         events={[
           {
             title: 'event 1',
-            start: '2023-05-16T10:30:00',
-            end: '2023-05-16T18:30:00',
+            start: '2023-05-19T22:00:00.000Z',
+            end: '2023-05-18T22:00:59.132Z',
           },
           {
             title: 'event 2',
-            start: '2023-05-17T08:30:00',
-            end: '2023-05-17T11:30:00',
+            start: '2023-05-18T22:00:51.668Z',
+            end: '2023-05-19T18:00:51.668Z',
           },
         ]}
         longPressDelay={1000}
