@@ -16,6 +16,7 @@ import { Trash2, Send } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import PickDate from "@components/pages/project/pick-date";
 import { ProjectBoardTask } from "@prisma/client";
+import { useToast } from "@hooks";
 
 interface FormData {
   name: string;
@@ -40,6 +41,7 @@ export const TaskModal = ({
 }: TaskModalProps) => {
 
   const user = useUser();
+  const { toast } = useToast();
 
   const {data: taskType} = trpc.board.getTaskType.useQuery({ taskTypeId: task.taskTypeId || ''});
 
@@ -116,6 +118,7 @@ export const TaskModal = ({
   const onSubmitTask = (data: FormData) => {
     const taskId = taskTypes?.find(taskType => taskType.name === selectedTaskType)?.id;
     updateTask({ id: task.id, name: data.name, description: data.description, deadLine: date, taskTypeId: taskId})
+    toast({ title: "Task update", description: "Task was updated successfully."})
   };
 
   const onSubmitComment = (data: FormDataComment) => {
@@ -135,7 +138,7 @@ export const TaskModal = ({
   return (
     <DialogContent setDialogOpen={setOpenTaskDialog}>
       <DialogHeader>
-        <DialogTitle>Ticket</DialogTitle>
+        <DialogTitle>Task</DialogTitle>
       </DialogHeader>
       <Accordion type="single" collapsible>
         <AccordionItem value={"item-1"} >

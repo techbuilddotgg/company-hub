@@ -139,7 +139,7 @@ model TaskType {
 model ProjectBoardTaskUser {
   id                 String           @id @default(cuid())
   userId             String
-  projectBoardTask   ProjectBoardTask @relation(fields: [projectBoardTaskId], references: [id])
+  projectBoardTask   ProjectBoardTask @relation(fields: [projectBoardTaskId], references: [id], onDelete: Cascade)
   projectBoardTaskId String
 
   @@map("project_board_task_user")
