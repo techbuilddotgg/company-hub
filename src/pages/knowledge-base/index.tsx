@@ -1,27 +1,29 @@
 import React from 'react';
-import { Button, Input, PageHeader } from '@components';
-import { CreateKnowledgeBaseModal } from '@components/pages/knowledge-base/create-knowledge-base-modal';
-import { useMutation } from '@tanstack/react-query';
+import { PageHeader, KnowledgeBaseSearch, LinkButton } from '@components';
 
 const KnowledgeBase = () => {
   return (
     <div className={'flex h-full flex-col gap-2'}>
-      <PageHeader title={'Knowledge Base'} />
-      <div className={'flex w-full grow flex-col gap-4'}>
-        <Input placeholder={'Search...'} />
+      <div className={'flex flex-row items-center'}>
+        <PageHeader
+          title={'Knowledge Base'}
+          description={
+            'Internal knowledge base and issue tracking system. It enables users ' +
+            'to publish and search for internal problems and knowledge, fostering knowledge sharing and efficient problem resolution.'
+          }
+        />
+        <LinkButton
+          href={'/knowledge-base/add-knowledge'}
+          className={'ml-auto'}
+        >
+          Add knowledge
+        </LinkButton>
+      </div>
 
-        <div className={'flex flex-row'}>
-          <h2
-            className={
-              'text-2xl font-semibold text-gray-800 dark:text-gray-100'
-            }
-          >
-            Models
-          </h2>
-          <div className={'ml-auto'}>
-            <CreateKnowledgeBaseModal />
-          </div>
-        </div>
+      <div className={'flex w-full grow flex-col gap-4'}>
+        <KnowledgeBaseSearch />
+
+        <div className={'flex flex-row'}></div>
         <div className={'grid grid-cols-4 gap-4'}></div>
       </div>
 

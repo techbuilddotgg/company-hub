@@ -17,7 +17,7 @@ This project aims to develop a web application tailored for IT companies and bey
 - **Internal Knowledge Base and Issue Tracking**: The application incorporates an internal knowledge base and issue tracking system. It enables users to publish and search for internal problems and knowledge, fostering knowledge sharing and efficient problem resolution.
 
 
-- **AI-Powered Problem Search**: Leveraging artificial intelligence (ChatGPT), the application offers intelligent problem search capabilities tailored to the company's knowledge base. This feature enables employees to swiftly find solutions to recurring issues and exchange insights and opinions.
+- **AI-Powered Problem KnowledgeBaseSearch**: Leveraging artificial intelligence (ChatGPT), the application offers intelligent problem search capabilities tailored to the company's knowledge base. This feature enables employees to swiftly find solutions to recurring issues and exchange insights and opinions.
 Calendar Integration: The application includes a calendar function to plan and manage project timelines, events, meetings, and deadlines. The centralized calendar serves as a hub for tracking key project milestones and important organizational events.
 
 

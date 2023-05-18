@@ -17,7 +17,7 @@ const initialState: FormData = {
   description: '',
 };
 
-export const AskQuestionForm = () => {
+export const AddKnowledgeForm = () => {
   const { toast } = useToast();
 
   const { register, handleSubmit, watch } = useForm<FormData>({
@@ -68,18 +68,18 @@ export const AskQuestionForm = () => {
         </Card>
       </div>
 
-      <div className={'flex flex-col'}>
-        <label htmlFor={'tags'} className={'font-semibold'}>
-          Tags
-        </label>
-        <span className={'text-sm text-gray-500'}>
-          Add up to 5 tags to describe what your question is about. Start typing
-          to see suggestions.
-        </span>
-        <Input placeholder="#r #dataframe #dplyr" {...register('title')} />
-      </div>
+      {/*<div className={'flex flex-col'}>*/}
+      {/*  <label htmlFor={'tags'} className={'font-semibold'}>*/}
+      {/*    Tags*/}
+      {/*  </label>*/}
+      {/*  <span className={'text-sm text-gray-500'}>*/}
+      {/*    Add up to 5 tags to describe what your question is about. Start typing*/}
+      {/*    to see suggestions.*/}
+      {/*  </span>*/}
+      {/*  <Input placeholder="#r #dataframe #dplyr" {...register('title')} />*/}
+      {/*</div>*/}
       <Button type={'submit'} className={'w-fit'}>
-        Submit
+        Save
       </Button>
     </form>
   );
