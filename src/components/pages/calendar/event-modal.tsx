@@ -106,7 +106,8 @@ const EventModalForm = () => {
         end: time.to,
         label: label,
       };
-      console.log(event);
+
+      addEvent(event);
     } else {
       toast({
         title: 'Invalid time format',

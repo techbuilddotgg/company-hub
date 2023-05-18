@@ -7,8 +7,10 @@ import momentPlugin from '@fullcalendar/moment';
 import { trpc } from '@utils/trpc';
 
 const CalendarScheduler = () => {
-  const { mutate: addEvent } = trpc.event.add.useMutation();
-  // const { data: events } = trpc.event.get.useQuery();
+  const { data: events } = trpc.event.get.useQuery();
+  const handleAddEventSelectAndOpenModal = () => {
+    //should open modal
+  };
 
   const weekends = {
     weekendsVisible: true,
@@ -32,21 +34,11 @@ const CalendarScheduler = () => {
         }}
         locale="en-gb"
         weekends={weekends.weekendsVisible}
-        events={[
-          {
-            title: 'event 1',
-            start: '2023-05-19T22:00:00.000Z',
-            end: '2023-05-18T22:00:59.132Z',
-          },
-          {
-            title: 'event 2',
-            start: '2023-05-18T22:00:51.668Z',
-            end: '2023-05-19T18:00:51.668Z',
-          },
-        ]}
+        events={events ? events : []}
         longPressDelay={1000}
         eventLongPressDelay={1000}
         selectLongPressDelay={1000}
+        select={handleAddEventSelectAndOpenModal}
         selectable={true}
         selectMirror={true}
         dayMaxEvents={true}

@@ -46,11 +46,11 @@ model Company {
 }
 
 model Event {
-  id          String   @id @default(cuid())
+  id          String @id @default(cuid())
   title       String
   description String
-  start       DateTime
-  end         DateTime
+  start       String
+  end         String
   label       String
   authorId    String
 
