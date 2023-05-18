@@ -58,7 +58,11 @@ export default async function handler(
 }
 
 async function getFormData(req: NextApiRequest) {
-  const form = formidable({ multiples: true });
+  const form = formidable({
+    multiples: true,
+    keepExtensions: true,
+    uploadDir: './public/uploads',
+  });
 
   const formData = new Promise((resolve, reject) => {
     form.parse(req, async (err, fields, files) => {
@@ -85,5 +89,4 @@ async function saveFile({
   const data = fs.readFileSync(path);
   fs.writeFileSync(location, data);
   await fs.unlinkSync(path);
-  return;
 }
