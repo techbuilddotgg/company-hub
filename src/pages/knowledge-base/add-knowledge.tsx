@@ -1,14 +1,11 @@
 import React from 'react';
 import {
   AddKnowledgeForm,
-  Button,
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
-  Input,
   PageHeader,
   Tabs,
   TabsContent,
@@ -27,7 +24,7 @@ const AddKnowledge = () => {
         }
       />
       <div className={'flex w-full flex-col items-center'}>
-        <Tabs defaultValue="account" className="w-2/3">
+        <Tabs defaultValue="add" className="w-2/3">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="add">Add</TabsTrigger>
             <TabsTrigger value="upload">Upload</TabsTrigger>

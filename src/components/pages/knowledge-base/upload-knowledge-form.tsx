@@ -6,7 +6,7 @@ export const UploadKnowledgeForm = () => {
     <form className={'flex flex-col gap-4'}>
       <Input
         label={'File with knowledge'}
-        info={'Supported types are .docx, .pdf and .txt'}
+        info={'Supported file extensions are .docx, .pdf, .txt, .md'}
         type={'file'}
       />
       <Button type={'submit'} className={'w-fit'}>

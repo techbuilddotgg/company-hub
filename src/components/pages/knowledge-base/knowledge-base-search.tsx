@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Button,
   DropdownMenu,
@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
   Input,
 } from '@components';
-import { Search, SearchIcon, Settings2 } from 'lucide-react';
+import { Settings2 } from 'lucide-react';
 
 enum SearchOption {
   AI = 'AI',
