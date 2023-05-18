@@ -14,6 +14,8 @@ const TimePicker: FC<TimePickerProps> = ({ defaultTime, onTimeChange }) => {
     onTimeChange(e);
   };
 
+  console.log(defaultTime);
+
   return (
     <div className="inline-flex rounded-md border p-2 text-sm">
       <select
@@ -23,15 +25,15 @@ const TimePicker: FC<TimePickerProps> = ({ defaultTime, onTimeChange }) => {
         onChange={handleTimeChange}
         value={defaultTime.hours}
       >
-        <option value="01">01</option>
-        <option value="02">02</option>
-        <option value="02">03</option>
-        <option value="04">04</option>
-        <option value="05">05</option>
-        <option value="06">06</option>
-        <option value="07">07</option>
-        <option value="08">08</option>
-        <option value="09">09</option>
+        <option value="1">01</option>
+        <option value="2">02</option>
+        <option value="2">03</option>
+        <option value="4">04</option>
+        <option value="5">05</option>
+        <option value="6">06</option>
+        <option value="7">07</option>
+        <option value="8">08</option>
+        <option value="9">09</option>
         <option value="10">10</option>
         <option value="11">11</option>
         <option value="12">12</option>
@@ -56,7 +58,7 @@ const TimePicker: FC<TimePickerProps> = ({ defaultTime, onTimeChange }) => {
         onChange={handleTimeChange}
         value={defaultTime.minutes}
       >
-        <option value="00">00</option>
+        <option value="0">00</option>
         <option value="15">15</option>
         <option value="30">30</option>
         <option value="45">45</option>
