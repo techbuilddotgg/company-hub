@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
 import { Button, DialogButton, Input, Textarea } from '@components';
 import { useForm } from 'react-hook-form';
-import { useMutation } from '@tanstack/react-query';
 
 interface CreateModelData {
   name: string;
@@ -17,23 +16,7 @@ const CreateKnowledgeBaseForm: FC = () => {
     },
   });
 
-  const { mutateAsync } = useMutation({
-    mutationFn: (data: CreateModelData) => {
-      const formData = new FormData();
-      formData.append('name', data.name);
-      formData.append('description', data.description);
-      formData.append('file', data.file?.[0] as File);
-
-      return fetch('/api/openai/upload-data', {
-        method: 'POST',
-        body: formData,
-      });
-    },
-  });
-
-  const onSubmit = async (data: CreateModelData) => {
-    await mutateAsync(data);
-  };
+  const onSubmit = async (data: CreateModelData) => {};
 
   return (
     <form className={'flex flex-col gap-4'} onSubmit={handleSubmit(onSubmit)}>

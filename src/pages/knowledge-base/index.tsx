@@ -4,26 +4,12 @@ import { CreateKnowledgeBaseModal } from '@components/pages/knowledge-base/creat
 import { useMutation } from '@tanstack/react-query';
 
 const KnowledgeBase = () => {
-  const { mutate } = useMutation({
-    mutationFn: () => {
-      return fetch('/api/openai/ask-model', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: 'Tell me something about Domen Perko',
-        }),
-      });
-    },
-  });
-
   return (
     <div className={'flex h-full flex-col gap-2'}>
       <PageHeader title={'Knowledge Base'} />
       <div className={'flex w-full grow flex-col gap-4'}>
         <Input placeholder={'Search...'} />
-        <Button onClick={() => mutate()}>Ask</Button>
+
         <div className={'flex flex-row'}>
           <h2
             className={
