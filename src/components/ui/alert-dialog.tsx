@@ -142,6 +142,7 @@ interface AlertDialogProps {
   buttonText?: ReactNode;
   buttonClassName?: string;
   title: string;
+  handleAction: () => void;
   description: string;
   cancelText?: string;
   actionText?: string;
@@ -153,6 +154,7 @@ const AlertDialogButton: FC<AlertDialogProps> = ({
   title,
   buttonClassName,
   description,
+  handleAction,
   cancelText = 'Cancel',
   actionText = 'Continue',
 }) => {
@@ -170,7 +172,9 @@ const AlertDialogButton: FC<AlertDialogProps> = ({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>{cancelText}</AlertDialogCancel>
-          <AlertDialogAction>{actionText}</AlertDialogAction>
+          <AlertDialogAction onClick={handleAction}>
+            {actionText}
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

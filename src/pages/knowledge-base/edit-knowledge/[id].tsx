@@ -9,7 +9,7 @@ import {
   KnowledgeFormType,
   PageHeader,
 } from '@components';
-import { useGetDocument } from '@hooks';
+import { useDeleteDocument, useGetDocument } from '@hooks';
 import { useRouter } from 'next/router';
 import { RouterOutput } from '@utils/trpc';
 import { X } from 'lucide-react';
@@ -26,6 +26,12 @@ const EditKnowledgePage = () => {
       enabled: !!id,
     },
   );
+
+  const { mutate } = useDeleteDocument();
+  const handleDelete = () => {
+    mutate({ id: id as string });
+    router.push('/knowledge-base');
+  };
 
   return (
     <div className={'flex flex-col gap-4'}>
@@ -49,6 +55,7 @@ const EditKnowledgePage = () => {
                   <CardHeader className={'p-0'}>
                     <div className={'ml-auto'}>
                       <AlertDialogButton
+                        handleAction={handleDelete}
                         buttonVariant={'ghost'}
                         buttonClassName={'rounded-full p-0 w-10'}
                         buttonText={<X className={'h-6 w-6 cursor-pointer'} />}

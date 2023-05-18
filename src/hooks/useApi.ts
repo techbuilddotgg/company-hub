@@ -1,4 +1,5 @@
 import { trpc, type RouterInput, type ReactQueryOptions } from '@utils/trpc';
+import { useMutation } from '@tanstack/react-query';
 
 // Knowledge Base
 export const useGetDocuments = (
@@ -31,4 +32,17 @@ export const useUpdateDocument = (
   opts?: ReactQueryOptions['knowledgeBase']['updateDocument'],
 ) => {
   return trpc.knowledgeBase.updateDocument.useMutation(opts);
+};
+
+export const useUploadDocument = () => {
+  return useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      await fetch('/api/openai/upload-data', {
+        method: 'POST',
+        body: formData,
+      });
+    },
+  });
 };

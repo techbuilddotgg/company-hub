@@ -4,8 +4,6 @@ import formidable, { Fields, Files } from 'formidable';
 import * as fs from 'fs';
 
 const RequestBodySchema = z.object({
-  name: z.string().min(1),
-  description: z.string().min(1),
   file: z.object({
     mimetype: z.string().min(1),
     filepath: z.string().min(1),
