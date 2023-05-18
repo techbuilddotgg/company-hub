@@ -43,7 +43,6 @@ export default async function handler(
   if (!fs.existsSync(companyDir)) {
     fs.mkdirSync(companyDir);
   }
-  console.log(formData.file);
   try {
     await saveFile({
       path: formData.file.filepath,
@@ -51,7 +50,6 @@ export default async function handler(
     });
   } catch (e) {
     const err = e as Error;
-    console.log(err.message);
     res.status(500).send({ error: err.message });
     return;
   }

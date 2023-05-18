@@ -46,4 +46,4 @@ yarn-error.log*
 *.tsbuildinfo
 
 # deveploment
-public/uploads
+public/uploads/*
