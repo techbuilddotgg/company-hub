@@ -14,6 +14,15 @@ function defineNextConfig(config) {
 }
 
 export default defineNextConfig({
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.clerk.dev",
+        pathname: "/uploaded/**"
+      }
+    ]
+  },
   reactStrictMode: false,
   swcMinify: true,
   webpack(config) {

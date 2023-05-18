@@ -14,8 +14,8 @@ const MyApp: AppType = ({ Component, pageProps, router }) => {
   );
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ClerkProvider {...pageProps}>
+    <ClerkProvider {...pageProps}>
+      <QueryClientProvider client={queryClient}>
         {useLayout ? (
           <Layout>
             <Component {...pageProps} />
@@ -24,8 +24,8 @@ const MyApp: AppType = ({ Component, pageProps, router }) => {
         ) : (
           <Component {...pageProps} />
         )}
-      </ClerkProvider>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </ClerkProvider>
   );
 };
 
