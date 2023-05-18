@@ -91,8 +91,12 @@ const EventModalForm = () => {
   });
 
   const onSubmit = (data: AddEventType) => {
-    if (!checkTime(date, startTime, endTime)) {
-      console.log(date);
+    if (date?.from === undefined) {
+      toast({
+        title: 'Invalid date',
+        description: 'Please check your date and try again',
+      });
+    } else if (!checkTime(date, startTime, endTime)) {
       const time = formatTime(startTime, endTime, date as DateRange);
 
       const event = {
