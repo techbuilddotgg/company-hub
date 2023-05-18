@@ -34,10 +34,12 @@ const SearchOptions = () => {
           value={position}
           onValueChange={(value: string) => setPosition(value as SearchOption)}
         >
-          <DropdownMenuRadioItem value={'default'}>
+          <DropdownMenuRadioItem value={SearchOption.DEFAULT}>
             Manual search
           </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value={'ai'}>AI search</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value={SearchOption.AI}>
+            AI search
+          </DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -47,7 +49,7 @@ const SearchOptions = () => {
 export const KnowledgeBaseSearch = () => {
   return (
     <div className={'flex flex-row gap-2'}>
-      <Input placeholder={'Search...'} />
+      <Input placeholder={'What are you looking for?'} />
       <SearchOptions />
     </div>
   );

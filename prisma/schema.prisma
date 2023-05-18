@@ -6,41 +6,29 @@ generator client {
 }
 
 datasource db {
-  provider     = "mysql"
-  url          = env("DATABASE_URL")
-  relationMode = "prisma"
+  provider          = "mysql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  relationMode      = "prisma"
 }
 
-model Question {
-  id              String   @id @default(cuid())
-  title           String
-  description     String
-  answers         Answer[]
-  authorId        String
-  correctAnswerId String?
-  company         Company  @relation(fields: [companyId], references: [id])
-  companyId       String
-  createdAt       DateTime @default(now())
-
-  @@map("questions")
-}
-
-model Answer {
-  id         String   @id @default(cuid())
-  text       String
-  question   Question @relation(fields: [questionId], references: [id])
-  questionId String
-  authorId   String
-  createdAt  DateTime @default(now())
-
-  @@map("answers")
+model Document {
+  id          String   @id @default(cuid())
+  content     String
+  title       String
+  description String?
+  authorId    String
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Company {
   id        String     @id @default(cuid())
   name      String
-  questions Question[]
   Projects  Project[]
+  Documents Document[]
 
   @@map("companies")
 }

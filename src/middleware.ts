@@ -1,7 +1,6 @@
-import { getAuth, withClerkMiddleware } from '@clerk/nextjs/server';
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
 import { AppRoute } from '@constants/app-routes';
+import { getAuth, withClerkMiddleware } from '@clerk/nextjs/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 const publicPaths = [AppRoute.SIGN_IN, AppRoute.SIGN_UP];
 
@@ -27,14 +26,5 @@ export default withClerkMiddleware((request: NextRequest) => {
 
 // Stop Middleware running on static files
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next
-     * - static (static files)
-     * - favicon.ico (favicon file)
-     */
-    '/(.*?trpc.*?|(?!static|.*\\..*|_next|favicon.ico).*)',
-    '/',
-  ],
+  matcher: ['/((?!.*\\..*|_next).*)', '/', '/(api|trpc)(.*)'],
 };

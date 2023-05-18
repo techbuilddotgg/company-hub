@@ -32,3 +32,5 @@ export * from './ui/dropdown-menu';
 export * from './ui/tabs';
 export * from './pages/knowledge-base/upload-knowledge-form';
 export * from './pages/knowledge-base/knowledge-base-search';
+export * from './pages/knowledge-base/document-card';
+export * from './pages/knowledge-base/document-feed';

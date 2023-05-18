@@ -1,5 +1,10 @@
 import React from 'react';
-import { PageHeader, KnowledgeBaseSearch, LinkButton } from '@components';
+import {
+  PageHeader,
+  KnowledgeBaseSearch,
+  LinkButton,
+  DocumentFeed,
+} from '@components';
 
 const KnowledgeBase = () => {
   return (
@@ -22,9 +27,9 @@ const KnowledgeBase = () => {
 
       <div className={'flex w-full grow flex-col gap-4'}>
         <KnowledgeBaseSearch />
-
-        <div className={'flex flex-row'}></div>
-        <div className={'grid grid-cols-4 gap-4'}></div>
+        <div className={'grid grid-cols-4 gap-4'}>
+          <DocumentFeed />
+        </div>
       </div>
 
       {/*<div className={'flex flex-row justify-center gap-1'}>*/}
