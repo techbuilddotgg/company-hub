@@ -6,30 +6,29 @@ import { Markdown } from '@components/pages/knowledge-base/markdown';
 import { Button } from '@components/ui/button';
 import { useToast } from '@hooks';
 import { useForm } from 'react-hook-form';
+import { trpc } from '@utils/trpc';
 
 interface FormData {
   title: string;
-  description: string;
+  content: string;
 }
 
 const initialState: FormData = {
   title: '',
-  description: '',
+  content: '',
 };
 
-export const AskQuestionForm = () => {
+export const AddKnowledgeForm = () => {
   const { toast } = useToast();
 
   const { register, handleSubmit, watch } = useForm<FormData>({
     defaultValues: initialState,
   });
-  console.log(watch('description'));
+
+  const { mutateAsync } = trpc.knowledgeBase.saveDocument.useMutation();
 
   const onSubmit = (data: FormData) => {
-    toast({
-      title: 'Question submitted.',
-      description: 'Your question has been added to Knowledge Base.',
-    });
+    mutateAsync(data);
   };
 
   return (
@@ -39,47 +38,46 @@ export const AskQuestionForm = () => {
           Title
         </label>
         <span className={'text-sm text-gray-500'}>
-          Be specific and imagine you’re asking a question to another person.
+          Knowledge Base works best with a single question that can be answered
         </span>
         <Input
-          placeholder="e.g. Is there an R function for finding the index of an element in a vector?"
+          placeholder="e.g. What is the naming convention for git branches?"
           {...register('title')}
         />
       </div>
 
       <div className={'flex flex-col'}>
         <label htmlFor={'description'} className={'font-semibold'}>
-          What are the details of your problem?
+          What are the details?
         </label>
         <span className={'text-sm text-gray-500'}>
-          Introduce the problem and expand on what you put in the title. Minimum
-          20 characters.
+          Describe all the information someone would need to answer your
         </span>
       </div>
       <div className={'grid grid-cols-2 gap-4'}>
         <Textarea
           placeholder={'Description'}
           rows={20}
-          {...register('description')}
+          {...register('content')}
         />
 
         <Card>
-          <Markdown>{watch('description')}</Markdown>
+          <Markdown>{watch('content')}</Markdown>
         </Card>
       </div>
 
-      <div className={'flex flex-col'}>
-        <label htmlFor={'tags'} className={'font-semibold'}>
-          Tags
-        </label>
-        <span className={'text-sm text-gray-500'}>
-          Add up to 5 tags to describe what your question is about. Start typing
-          to see suggestions.
-        </span>
-        <Input placeholder="#r #dataframe #dplyr" {...register('title')} />
-      </div>
+      {/*<div className={'flex flex-col'}>*/}
+      {/*  <label htmlFor={'tags'} className={'font-semibold'}>*/}
+      {/*    Tags*/}
+      {/*  </label>*/}
+      {/*  <span className={'text-sm text-gray-500'}>*/}
+      {/*    Add up to 5 tags to describe what your question is about. Start typing*/}
+      {/*    to see suggestions.*/}
+      {/*  </span>*/}
+      {/*  <Input placeholder="#r #dataframe #dplyr" {...register('title')} />*/}
+      {/*</div>*/}
       <Button type={'submit'} className={'w-fit'}>
-        Submit
+        Save
       </Button>
     </form>
   );

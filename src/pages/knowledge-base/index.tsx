@@ -1,42 +1,35 @@
 import React from 'react';
-import { Button, Input, PageHeader } from '@components';
-import { CreateKnowledgeBaseModal } from '@components/pages/knowledge-base/create-knowledge-base-modal';
-import { useMutation } from '@tanstack/react-query';
+import {
+  PageHeader,
+  KnowledgeBaseSearch,
+  LinkButton,
+  DocumentFeed,
+} from '@components';
 
 const KnowledgeBase = () => {
-  const { mutate } = useMutation({
-    mutationFn: () => {
-      return fetch('/api/openai/ask-model', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: 'Tell me something about Domen Perko',
-        }),
-      });
-    },
-  });
-
   return (
     <div className={'flex h-full flex-col gap-2'}>
-      <PageHeader title={'Knowledge Base'} />
+      <div className={'flex flex-row items-center'}>
+        <PageHeader
+          title={'Knowledge Base'}
+          description={
+            'Internal knowledge base and issue tracking system. It enables users ' +
+            'to publish and search for internal problems and knowledge, fostering knowledge sharing and efficient problem resolution.'
+          }
+        />
+        <LinkButton
+          href={'/knowledge-base/add-knowledge'}
+          className={'ml-auto'}
+        >
+          Add knowledge
+        </LinkButton>
+      </div>
+
       <div className={'flex w-full grow flex-col gap-4'}>
-        <Input placeholder={'Search...'} />
-        <Button onClick={() => mutate()}>Ask</Button>
-        <div className={'flex flex-row'}>
-          <h2
-            className={
-              'text-2xl font-semibold text-gray-800 dark:text-gray-100'
-            }
-          >
-            Models
-          </h2>
-          <div className={'ml-auto'}>
-            <CreateKnowledgeBaseModal />
-          </div>
+        <KnowledgeBaseSearch />
+        <div className={'grid grid-cols-4 gap-4'}>
+          <DocumentFeed />
         </div>
-        <div className={'grid grid-cols-4 gap-4'}></div>
       </div>
 
       {/*<div className={'flex flex-row justify-center gap-1'}>*/}
