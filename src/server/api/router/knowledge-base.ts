@@ -9,6 +9,7 @@ export const knowledgeBaseRouter = t.router({
       z.object({
         title: z.string(),
         content: z.string(),
+        description: z.string(),
       }),
     )
     .mutation(async ({ input, ctx: { prisma, authedUserId: userId } }) => {
@@ -64,6 +65,38 @@ export const knowledgeBaseRouter = t.router({
       return await ctx.prisma.document.findUnique({
         where: {
           id: input.id,
+        },
+      });
+    }),
+
+  deleteDocument: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      return await ctx.prisma.document.delete({
+        where: {
+          id: input.id,
+        },
+      });
+    }),
+
+  updateDocument: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        title: z.string(),
+        content: z.string(),
+        description: z.string(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      return await ctx.prisma.document.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          title: input.title,
+          content: input.content,
+          description: input.description,
         },
       });
     }),

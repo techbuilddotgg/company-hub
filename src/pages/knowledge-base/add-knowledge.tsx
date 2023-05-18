@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  AddKnowledgeForm,
+  KnowledgeForm,
   Card,
   CardContent,
   CardDescription,
@@ -39,7 +39,7 @@ const AddKnowledge = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <AddKnowledgeForm />
+                <KnowledgeForm />
               </CardContent>
             </Card>
           </TabsContent>

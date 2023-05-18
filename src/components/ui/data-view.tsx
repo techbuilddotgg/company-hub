@@ -3,8 +3,8 @@ import { LoadingPage } from '@components';
 
 interface DataViewProps<T> {
   isLoading: boolean;
-  data: T | null | undefined;
-  children: (data: T) => React.ReactNode;
+  data: T | undefined | null;
+  children: (data: NonNullable<T>) => React.ReactNode;
   fallback?: React.ReactNode;
   isError?: boolean;
 }

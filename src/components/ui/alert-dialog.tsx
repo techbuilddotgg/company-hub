@@ -4,7 +4,7 @@ import * as React from 'react';
 import * as AlertDialogPrimitive from '@radix-ui/react-alert-dialog';
 import { cn } from '@utils/classNames';
 import { Button, buttonVariants } from '@components/ui/button';
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 
 const AlertDialog = AlertDialogPrimitive.Root;
 
@@ -138,8 +138,9 @@ const AlertDialogCancel = React.forwardRef<
 AlertDialogCancel.displayName = AlertDialogPrimitive.Cancel.displayName;
 
 interface AlertDialogProps {
-  buttonVariant?: 'default' | 'secondary' | 'outline';
-  buttonText: string;
+  buttonVariant?: 'default' | 'secondary' | 'outline' | 'ghost';
+  buttonText?: ReactNode;
+  buttonClassName?: string;
   title: string;
   description: string;
   cancelText?: string;
@@ -150,6 +151,7 @@ const AlertDialogButton: FC<AlertDialogProps> = ({
   buttonText,
   buttonVariant,
   title,
+  buttonClassName,
   description,
   cancelText = 'Cancel',
   actionText = 'Continue',
@@ -157,7 +159,9 @@ const AlertDialogButton: FC<AlertDialogProps> = ({
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant={buttonVariant}>{buttonText}</Button>
+        <Button variant={buttonVariant} className={buttonClassName}>
+          {buttonText}
+        </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

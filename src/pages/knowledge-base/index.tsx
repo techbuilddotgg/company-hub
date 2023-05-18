@@ -5,6 +5,7 @@ import {
   LinkButton,
   DocumentFeed,
 } from '@components';
+import { AppRoute } from '@constants/app-routes';
 
 const KnowledgeBase = () => {
   return (
@@ -17,10 +18,7 @@ const KnowledgeBase = () => {
             'to publish and search for internal problems and knowledge, fostering knowledge sharing and efficient problem resolution.'
           }
         />
-        <LinkButton
-          href={'/knowledge-base/add-knowledge'}
-          className={'ml-auto'}
-        >
+        <LinkButton href={AppRoute.ADD_KNOWLEDGE} className={'ml-auto'}>
           Add knowledge
         </LinkButton>
       </div>
