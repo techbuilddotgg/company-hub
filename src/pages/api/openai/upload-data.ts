@@ -81,6 +81,8 @@ async function getFormData(req: NextApiRequest) {
     multiples: true,
     keepExtensions: true,
     maxFiles: 1,
+    // 10 MB
+    maxFileSize: 10 * 1024 * 1024,
     filter: (part) => {
       const allowedFileExtensions = ['pdf', 'txt', 'doc', 'docx'];
       const fileType = part.originalFilename?.split('.').pop() || '';
