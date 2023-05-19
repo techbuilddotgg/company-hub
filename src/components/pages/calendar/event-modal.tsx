@@ -22,7 +22,7 @@ import {
   AddEventType,
   TimePickerTimeFormat,
 } from '../../../shared/types/calendar.types';
-import { AddEventSchema } from '../../../shared/validators/calendar.schemas';
+import { EventSchema } from '../../../shared/validators/calendar.schemas';
 import { useToast } from '@hooks';
 
 interface EventModalFormProps {
@@ -48,7 +48,7 @@ const EventModalForm: FC<EventModalFormProps> = ({ currentDate }) => {
   const [label, setLabel] = useState('blue');
 
   const { register, watch, handleSubmit, setValue } = useForm({
-    resolver: zodResolver(AddEventSchema),
+    resolver: zodResolver(EventSchema),
     defaultValues: {
       title: '',
       description: '',

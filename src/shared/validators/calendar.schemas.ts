@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
-export const AddEventSchema = z.object({
+export const EventSchema = z.object({
+  id: z.string().optional(),
   title: z.string(),
   description: z.string(),
   start: z.string(),

@@ -6,20 +6,36 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import momentPlugin from '@fullcalendar/moment';
 import { trpc } from '@utils/trpc';
 import { EventModal } from '@components/pages/calendar/event-modal';
+import { DateSelectArg, EventChangeArg } from '@fullcalendar/core';
 
 const CalendarScheduler = () => {
-  const [openModal, setOpenModal] = React.useState(false);
+  const { mutate: updateEvent } = trpc.event.update.useMutation({});
   const { data: events } = trpc.event.get.useQuery();
-  const [date, setDate] = React.useState<string>('');
 
-  const handleAddEventSelectAndOpenModal = (info: { dateStr: string }) => {
-    setDate(info.dateStr);
-    setOpenModal(true);
-  };
+  const [openModal, setOpenModal] = React.useState<boolean>(false);
+  const [date, setDate] = React.useState<string>('');
 
   const weekends = {
     weekendsVisible: true,
     currentEvents: [],
+  };
+
+  const handleAddEventSelectAndOpenModal = (selectInfo: DateSelectArg) => {
+    console.log(selectInfo.startStr);
+    setDate(selectInfo.startStr);
+    setOpenModal(true);
+  };
+
+  const handleEditEventSelectAndOpenModal = (clickInfo: EventChangeArg) => {
+    const event = {
+      id: clickInfo.event.id,
+      title: clickInfo.event.title,
+      description: clickInfo.event.extendedProps.description,
+      backgroundColor: clickInfo.event.backgroundColor,
+      start: clickInfo.event.startStr,
+      end: clickInfo.event.endStr,
+    };
+    updateEvent(event);
   };
 
   return (
@@ -44,7 +60,7 @@ const CalendarScheduler = () => {
           center: 'title',
           right: 'dayGridMonth,timeGridWeek,timeGridDay',
         }}
-        locale="en-gb"
+        locale={'en-gb'}
         weekends={weekends.weekendsVisible}
         events={events ? events : []}
         longPressDelay={1000}
@@ -57,8 +73,9 @@ const CalendarScheduler = () => {
         editable={true}
         nowIndicator={true}
         height={'700px'}
-        dateClick={handleAddEventSelectAndOpenModal}
+        eventChange={handleEditEventSelectAndOpenModal}
         eventBorderColor={'#a9a9a9'}
+        select={handleAddEventSelectAndOpenModal}
       />
     </div>
   );

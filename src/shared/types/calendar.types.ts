@@ -1,8 +1,8 @@
-import { AddEventSchema } from '../validators/calendar.schemas';
+import { EventSchema } from '../validators/calendar.schemas';
 import { z } from 'zod';
 import React from 'react';
 
-export type AddEventType = z.infer<typeof AddEventSchema>;
+export type AddEventType = z.infer<typeof EventSchema>;
 
 export interface TimePickerTimeFormat {
   hours: number;

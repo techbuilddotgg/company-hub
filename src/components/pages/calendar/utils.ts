@@ -12,7 +12,8 @@ export const formatTime = (
     from.setHours(0);
     from.setMinutes(0);
     const to = new Date(from);
-    to.setDate(to.getDate() + 1);
+    to.setHours(24);
+    to.setMinutes(0);
 
     return { from: from.toISOString(), to: to.toISOString() };
   }
