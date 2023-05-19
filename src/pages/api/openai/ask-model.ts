@@ -1,13 +1,17 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { OpenAI } from 'langchain';
-import { OpenAIEmbeddings } from 'langchain/embeddings';
-import { HNSWLib } from 'langchain/vectorstores';
-import { RetrievalQAChain } from 'langchain/chains';
+import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
+import { VectorDBQAChain } from 'langchain/chains';
 import { z } from 'zod';
-import { DirectoryLoader, TextLoader } from 'langchain/document_loaders';
+import { PineconeClient } from '@pinecone-database/pinecone';
+import { env } from '@env';
+import { PineconeStore } from 'langchain/vectorstores/pinecone';
 
-const RequestBodySchema = z.object({ message: z.string().min(1) });
+const RequestBodySchema = z.object({
+  prompt: z.string().min(1),
+});
 type RequestBody = z.infer<typeof RequestBodySchema>;
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
@@ -24,23 +28,28 @@ export default async function handler(
     return;
   }
 
-  const directoryPath = './public/uploads/fake-company-id';
-
   try {
-    const loader = new DirectoryLoader(directoryPath, {
-      '.txt': (path) => new TextLoader(path),
+    const client = new PineconeClient();
+    await client.init({
+      apiKey: env.PINECONE_API_KEY,
+      environment: env.PINECONE_ENVIRONMENT,
     });
-    const docs = await loader.load();
-    const vectorStore = await HNSWLib.fromDocuments(
-      docs,
+    const pineconeIndex = client.Index(env.PINECONE_INDEX);
+    const vectorStore = await PineconeStore.fromExistingIndex(
       new OpenAIEmbeddings(),
+      { pineconeIndex },
     );
+
     const model = new OpenAI({ temperature: 0.9 });
-    const chain = RetrievalQAChain.fromLLM(model, vectorStore.asRetriever());
-    const chatResponse = await chain.call({
-      query: body.message,
+    const chain = VectorDBQAChain.fromLLM(model, vectorStore, {
+      k: 1,
+      returnSourceDocuments: true,
     });
-    res.status(200).send({ chatResponse });
+    const chatResponse = await chain.call({
+      query: body.prompt,
+    });
+
+    res.status(200).send({ response: chatResponse.text });
   } catch (e) {
     const err = e as Error;
     res.status(500).send({ error: err.message });

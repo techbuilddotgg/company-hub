@@ -12,7 +12,7 @@ export * from './ui/toast';
 export * from './ui/toaster';
 export * from './ui/accordion';
 export * from './pages/knowledge-base/markdown';
-export * from './pages/knowledge-base/add-knowledge-form';
+export * from './pages/knowledge-base/knowledge-form';
 export * from './pages/project/board';
 export * from './ui/loading-spinner';
 export * from './ui/logo';

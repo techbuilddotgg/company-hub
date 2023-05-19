@@ -4,9 +4,27 @@ import {
   KnowledgeBaseSearch,
   LinkButton,
   DocumentFeed,
+  Button,
 } from '@components';
+import { AppRoute } from '@constants/app-routes';
+import { useForm } from 'react-hook-form';
+import { useDebounce, useGetDocuments, useOpenAI } from '@hooks';
 
 const KnowledgeBase = () => {
+  const { register, watch } = useForm<{ search: string }>({
+    defaultValues: {
+      search: '',
+    },
+  });
+
+  const search = useDebounce(watch('search'));
+
+  const { data, isLoading } = useGetDocuments({
+    title: search,
+  });
+
+  const { data: res, mutate } = useOpenAI();
+
   return (
     <div className={'flex h-full flex-col gap-2'}>
       <div className={'flex flex-row items-center'}>
@@ -17,35 +35,23 @@ const KnowledgeBase = () => {
             'to publish and search for internal problems and knowledge, fostering knowledge sharing and efficient problem resolution.'
           }
         />
-        <LinkButton
-          href={'/knowledge-base/add-knowledge'}
-          className={'ml-auto'}
-        >
+        <LinkButton href={AppRoute.ADD_KNOWLEDGE} className={'ml-auto'}>
           Add knowledge
         </LinkButton>
       </div>
 
       <div className={'flex w-full grow flex-col gap-4'}>
-        <KnowledgeBaseSearch />
+        <KnowledgeBaseSearch register={register} />
         <div className={'grid grid-cols-4 gap-4'}>
-          <DocumentFeed />
+          <DocumentFeed data={data} isLoading={isLoading} />
         </div>
+        <>
+          <Button onClick={() => mutate({ prompt: 'Who is Domen Perko' })}>
+            OpenAI
+          </Button>
+          {res && <p>{JSON.stringify(res)}</p>}
+        </>
       </div>
-
-      {/*<div className={'flex flex-row justify-center gap-1'}>*/}
-      {/*  <LinkButton href={'/knowledge-base?age=1'} variant={'ghost'}>*/}
-      {/*    <ChevronLeft />*/}
-      {/*  </LinkButton>*/}
-      {/*  <div className={'flex flex-row gap-2'}>*/}
-      {/*    <LinkButton href={'/knowledge-base?age=1'}>1</LinkButton>*/}
-      {/*    <LinkButton href={'/knowledge-base?age=2'}>2</LinkButton>*/}
-      {/*    <LinkButton href={'/knowledge-base?age=3'}>3</LinkButton>*/}
-      {/*  </div>*/}
-
-      {/*  <LinkButton href={'/knowledge-base?age=1'} variant={'ghost'}>*/}
-      {/*    <ChevronRight />*/}
-      {/*  </LinkButton>*/}
-      {/*</div>*/}
     </div>
   );
 };

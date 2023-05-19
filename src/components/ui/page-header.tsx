@@ -1,9 +1,9 @@
-import React, { FC } from 'react';
+import React, { FC, ReactNode } from 'react';
 import { cn } from '@utils/classNames';
 
 interface PageHeaderProps {
   title: string;
-  description?: string;
+  description?: ReactNode;
   className?: string;
 }
 

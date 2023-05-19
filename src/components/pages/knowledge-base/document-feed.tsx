@@ -1,15 +1,15 @@
-import React from 'react';
-import { RouterOutput, trpc } from '@utils/trpc';
+import React, { FC } from 'react';
+import { RouterOutput } from '@utils/trpc';
 import { PageHeader } from '@components/ui/page-header';
 import { DataView } from '@components/ui/data-view';
 import { DocumentCard } from '@components/pages/knowledge-base/document-card';
 
 type DocumentFeedData = RouterOutput['knowledgeBase']['findDocuments'];
 
-export const DocumentFeed = () => {
-  const { data, isLoading, isError } =
-    trpc.knowledgeBase.findDocuments.useQuery();
-
+export const DocumentFeed: FC<{
+  data?: DocumentFeedData;
+  isLoading: boolean;
+}> = ({ data, isLoading }) => {
   return (
     <div className={'flex flex-col gap-4'}>
       <PageHeader title={'Documents'} />
