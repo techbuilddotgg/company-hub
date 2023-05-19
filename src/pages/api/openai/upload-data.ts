@@ -80,6 +80,8 @@ async function getFormData(req: NextApiRequest) {
   const form = formidable({
     multiples: true,
     keepExtensions: true,
+    uploadDir: './public/uploads',
+    maxFiles: 1,
   });
 
   const formData = new Promise((resolve, reject) => {
