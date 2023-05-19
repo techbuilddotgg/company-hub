@@ -1,14 +1,27 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { OpenAI } from 'langchain';
-import { OpenAIEmbeddings } from 'langchain/embeddings';
+import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { VectorDBQAChain } from 'langchain/chains';
 import { z } from 'zod';
 import { PineconeClient } from '@pinecone-database/pinecone';
 import { env } from '@env';
 import { PineconeStore } from 'langchain/vectorstores/pinecone';
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
+import { getAuth } from '@clerk/nextjs/server';
 
-const RequestBodySchema = z.object({ prompt: z.string().min(1) });
+const RequestBodySchema = z.object({
+  prompt: z.string().min(1),
+});
 type RequestBody = z.infer<typeof RequestBodySchema>;
+
+// Create a new ratelimiter, that allows 10 requests per 1 minute
+const ratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(10, '1 m'),
+  analytics: true,
+});
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
@@ -22,6 +35,19 @@ export default async function handler(
 
   if (!isValid.success) {
     res.status(400).send({ error: isValid.error });
+    return;
+  }
+
+  const user = getAuth(req);
+
+  if (!user.userId) {
+    res.status(401).send({ error: 'Unauthorized' });
+    return;
+  }
+
+  const { success } = await ratelimit.limit(user.userId);
+  if (!success) {
+    res.status(429).send({ error: 'Rate limit exceeded' });
     return;
   }
 
