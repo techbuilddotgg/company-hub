@@ -8,6 +8,12 @@ env:
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: "fake"
   CLERK_SECRET_KEY: "fake"
   OPENAI_API_KEY: "fake"
+  PINECONE_ENVIRONMENT: "fake"
+  PINECONE_API_KEY: "fake"
+  PINECONE_INDEX_NAME: "fake"
+  UPSTASH_REDIS_REST_URL: "fake"
+  UPSTASH_REDIS_REST_TOKEN: "fake"
+
 
 jobs:
   build:

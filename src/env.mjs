@@ -18,7 +18,7 @@ export const env = createEnv({
   server: {
     NODE_ENV: z.enum(["development", "production", "test"]),
     DATABASE_URL: z.string().url(),
-    SHADOW_DATABASE_URL: z.string().url(),
+    SHADOW_DATABASE_URL: z.string().url().optional(),
     CLERK_SECRET_KEY: z.string().min(1),
     OPENAI_API_KEY: z.string().min(1),
     PINECONE_API_KEY: z.string().min(1),
