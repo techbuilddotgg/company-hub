@@ -11,7 +11,7 @@ env:
   PINECONE_ENVIRONMENT: "fake"
   PINECONE_API_KEY: "fake"
   PINECONE_INDEX_NAME: "fake"
-  UPSTASH_REDIS_REST_URL: "fake"
+  UPSTASH_REDIS_REST_URL: "https://fake.com"
   UPSTASH_REDIS_REST_TOKEN: "fake"
 
 
