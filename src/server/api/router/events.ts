@@ -28,7 +28,7 @@ export const eventRouter = t.router({
             description: input.description,
             start: input.start,
             end: input.end,
-            label: input.label,
+            backgroundColor: input.backgroundColor,
             authorId: authedUserId,
           },
         });

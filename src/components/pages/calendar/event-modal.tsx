@@ -1,9 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import {
   Button,
   Checkbox,
   DatePicker,
-  DialogButton,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
   Input,
   Textarea,
   TimePicker,
@@ -21,10 +25,14 @@ import {
 import { AddEventSchema } from '../../../shared/validators/calendar.schemas';
 import { useToast } from '@hooks';
 
-const EventModalForm = () => {
+interface EventModalFormProps {
+  currentDate: string;
+}
+
+const EventModalForm: FC<EventModalFormProps> = ({ currentDate }) => {
   const { toast } = useToast();
   const [date, setDate] = useState<DateRange | undefined>({
-    from: new Date(),
+    from: new Date(currentDate),
   });
 
   const [startTime, setStartTime] = useState<TimePickerTimeFormat>({
@@ -46,7 +54,7 @@ const EventModalForm = () => {
       description: '',
       start: '',
       end: '',
-      label: label,
+      backgroundColor: label,
       allDay: false,
     },
   });
@@ -84,10 +92,7 @@ const EventModalForm = () => {
   }, []);
 
   const { mutate: addEvent } = trpc.event.add.useMutation({
-    onSuccess: () => {
-      console.log('show toast');
-      //close modal
-    },
+    // onSuccess: () => {},
   });
 
   const onSubmit = (data: AddEventType) => {
@@ -97,16 +102,22 @@ const EventModalForm = () => {
         description: 'Please check your date and try again',
       });
     } else if (!checkTime(date, startTime, endTime)) {
-      const time = formatTime(startTime, endTime, date as DateRange);
+      const time = formatTime(
+        startTime,
+        endTime,
+        date as DateRange,
+        watchAllDay,
+      );
 
       const event = {
         title: data.title,
         description: data.description,
         start: time.from,
         end: time.to,
-        label: label,
+        backgroundColor: label,
       };
 
+      console.log(event);
       addEvent(event);
     } else {
       toast({
@@ -158,16 +169,24 @@ const EventModalForm = () => {
   );
 };
 
-const EventModal = () => {
+interface EventModalProps {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  date: string;
+}
+const EventModal: FC<EventModalProps> = ({ open, setOpen, date }) => {
   return (
-    <div>
-      <DialogButton
-        buttonText={'Add event'}
-        title={'Add new event'}
-        description={'Create new calendar entry'}
-        content={<EventModalForm />}
-      />
-    </div>
+    <Dialog open={open}>
+      <DialogContent className="sm:max-w-[425px]" setDialogOpen={setOpen}>
+        <DialogHeader>
+          <DialogTitle>Add event</DialogTitle>
+          <DialogDescription>Add new calendar entry</DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <EventModalForm currentDate={date} />
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 

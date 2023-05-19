@@ -5,8 +5,18 @@ export const formatTime = (
   startTime: TimePickerTimeFormat,
   endTime: TimePickerTimeFormat,
   date: DateRange,
+  allDay: boolean,
 ) => {
   const from = date.from as Date;
+  if (allDay) {
+    from.setHours(0);
+    from.setMinutes(0);
+    const to = new Date(from);
+    to.setDate(to.getDate() + 1);
+
+    return { from: from.toISOString(), to: to.toISOString() };
+  }
+
   from.setHours(startTime.hours);
   from.setMinutes(startTime.minutes);
 

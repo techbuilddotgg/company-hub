@@ -5,11 +5,16 @@ import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import momentPlugin from '@fullcalendar/moment';
 import { trpc } from '@utils/trpc';
+import { EventModal } from '@components/pages/calendar/event-modal';
 
 const CalendarScheduler = () => {
+  const [openModal, setOpenModal] = React.useState(false);
   const { data: events } = trpc.event.get.useQuery();
-  const handleAddEventSelectAndOpenModal = () => {
-    //should open modal
+  const [date, setDate] = React.useState<string>('');
+
+  const handleAddEventSelectAndOpenModal = (info: { dateStr: string }) => {
+    setDate(info.dateStr);
+    setOpenModal(true);
   };
 
   const weekends = {
@@ -19,6 +24,13 @@ const CalendarScheduler = () => {
 
   return (
     <div>
+      <div className={'mb-3'}>
+        <EventModal
+          open={openModal}
+          setOpen={() => setOpenModal(!openModal)}
+          date={date}
+        />
+      </div>
       <FullCalendar
         plugins={[
           timeGridPlugin,
@@ -38,7 +50,6 @@ const CalendarScheduler = () => {
         longPressDelay={1000}
         eventLongPressDelay={1000}
         selectLongPressDelay={1000}
-        select={handleAddEventSelectAndOpenModal}
         selectable={true}
         selectMirror={true}
         dayMaxEvents={true}
@@ -46,6 +57,8 @@ const CalendarScheduler = () => {
         editable={true}
         nowIndicator={true}
         height={'700px'}
+        dateClick={handleAddEventSelectAndOpenModal}
+        eventBorderColor={'#a9a9a9'}
       />
     </div>
   );

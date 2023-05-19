@@ -5,5 +5,5 @@ export const AddEventSchema = z.object({
   description: z.string(),
   start: z.string(),
   end: z.string(),
-  label: z.string(),
+  backgroundColor: z.string(),
 });
