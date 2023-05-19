@@ -6,8 +6,22 @@ import {
   DocumentFeed,
 } from '@components';
 import { AppRoute } from '@constants/app-routes';
+import { useForm } from 'react-hook-form';
+import { useDebounce, useGetDocuments } from '@hooks';
 
 const KnowledgeBase = () => {
+  const { register, watch } = useForm<{ search: string }>({
+    defaultValues: {
+      search: '',
+    },
+  });
+
+  const search = useDebounce(watch('search'));
+
+  const { data, isLoading } = useGetDocuments({
+    title: search,
+  });
+
   return (
     <div className={'flex h-full flex-col gap-2'}>
       <div className={'flex flex-row items-center'}>
@@ -24,26 +38,11 @@ const KnowledgeBase = () => {
       </div>
 
       <div className={'flex w-full grow flex-col gap-4'}>
-        <KnowledgeBaseSearch />
+        <KnowledgeBaseSearch register={register} />
         <div className={'grid grid-cols-4 gap-4'}>
-          <DocumentFeed />
+          <DocumentFeed data={data} isLoading={isLoading} />
         </div>
       </div>
-
-      {/*<div className={'flex flex-row justify-center gap-1'}>*/}
-      {/*  <LinkButton href={'/knowledge-base?age=1'} variant={'ghost'}>*/}
-      {/*    <ChevronLeft />*/}
-      {/*  </LinkButton>*/}
-      {/*  <div className={'flex flex-row gap-2'}>*/}
-      {/*    <LinkButton href={'/knowledge-base?age=1'}>1</LinkButton>*/}
-      {/*    <LinkButton href={'/knowledge-base?age=2'}>2</LinkButton>*/}
-      {/*    <LinkButton href={'/knowledge-base?age=3'}>3</LinkButton>*/}
-      {/*  </div>*/}
-
-      {/*  <LinkButton href={'/knowledge-base?age=1'} variant={'ghost'}>*/}
-      {/*    <ChevronRight />*/}
-      {/*  </LinkButton>*/}
-      {/*</div>*/}
     </div>
   );
 };

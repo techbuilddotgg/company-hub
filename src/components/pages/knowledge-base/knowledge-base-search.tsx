@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { FC, useState } from 'react';
 import {
   Button,
   DropdownMenu,
@@ -11,6 +11,7 @@ import {
   Input,
 } from '@components';
 import { Settings2 } from 'lucide-react';
+import { UseFormRegister } from 'react-hook-form';
 
 enum SearchOption {
   AI = 'AI',
@@ -46,10 +47,19 @@ const SearchOptions = () => {
   );
 };
 
-export const KnowledgeBaseSearch = () => {
+interface KnowledgeBaseSearchProps {
+  register: UseFormRegister<{ search: string }>;
+}
+
+export const KnowledgeBaseSearch: FC<KnowledgeBaseSearchProps> = ({
+  register,
+}) => {
   return (
     <div className={'flex flex-row gap-2'}>
-      <Input placeholder={'What are you looking for?'} />
+      <Input
+        placeholder={'What are you looking for?'}
+        {...register('search')}
+      />
       <SearchOptions />
     </div>
   );
