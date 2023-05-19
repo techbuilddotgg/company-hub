@@ -4,10 +4,11 @@ import {
   KnowledgeBaseSearch,
   LinkButton,
   DocumentFeed,
+  Button,
 } from '@components';
 import { AppRoute } from '@constants/app-routes';
 import { useForm } from 'react-hook-form';
-import { useDebounce, useGetDocuments } from '@hooks';
+import { useDebounce, useGetDocuments, useOpenAI } from '@hooks';
 
 const KnowledgeBase = () => {
   const { register, watch } = useForm<{ search: string }>({
@@ -21,6 +22,8 @@ const KnowledgeBase = () => {
   const { data, isLoading } = useGetDocuments({
     title: search,
   });
+
+  const { data: res, mutate } = useOpenAI();
 
   return (
     <div className={'flex h-full flex-col gap-2'}>
@@ -42,6 +45,12 @@ const KnowledgeBase = () => {
         <div className={'grid grid-cols-4 gap-4'}>
           <DocumentFeed data={data} isLoading={isLoading} />
         </div>
+        <>
+          <Button onClick={() => mutate({ prompt: 'Who is Domen Perko' })}>
+            OpenAI
+          </Button>
+          {res && <p>{JSON.stringify(res)}</p>}
+        </>
       </div>
     </div>
   );

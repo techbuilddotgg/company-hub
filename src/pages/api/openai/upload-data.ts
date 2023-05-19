@@ -1,7 +1,13 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
 import formidable, { Fields, Files } from 'formidable';
-import * as fs from 'fs';
+import { TextLoader } from 'langchain/document_loaders';
+import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
+import { Document } from 'langchain/document';
+import { PineconeClient } from '@pinecone-database/pinecone';
+import { env } from '@env';
+import { PineconeStore } from 'langchain/vectorstores/pinecone';
+import { OpenAIEmbeddings } from 'langchain/embeddings';
 
 const RequestBodySchema = z.object({
   file: z.object({
@@ -35,31 +41,45 @@ export default async function handler(
   if (!isValid.success) {
     res.status(400).send({ error: isValid.error });
   }
+  const loader = new TextLoader(formData.file.filepath);
+  const doc = await loader.load();
 
-  const companyId = 'fake-company-id';
-  const companyDir = `./public/uploads/${companyId}`;
-  if (!fs.existsSync(companyDir)) {
-    fs.mkdirSync(companyDir);
-  }
+  const splitter = new RecursiveCharacterTextSplitter({
+    chunkSize: 2000,
+    chunkOverlap: 200,
+  });
+
+  const docOutput = await splitter.splitDocuments([
+    new Document({
+      pageContent: doc?.[0]?.pageContent || '',
+      metadata: {
+        companyId: 'fake-company-id',
+      },
+    }),
+  ]);
+
   try {
-    await saveFile({
-      path: formData.file.filepath,
-      location: `${companyDir}/${formData.file.originalFilename}`,
+    const client = new PineconeClient();
+    await client.init({
+      apiKey: env.PINECONE_API_KEY,
+      environment: env.PINECONE_ENVIRONMENT,
     });
+    const pineconeIndex = client.Index(env.PINECONE_INDEX);
+    await PineconeStore.fromDocuments(docOutput, new OpenAIEmbeddings(), {
+      pineconeIndex,
+    });
+    res.status(200).send({ message: 'Success' });
   } catch (e) {
     const err = e as Error;
+    console.log(err);
     res.status(500).send({ error: err.message });
-    return;
   }
-
-  res.status(200).send({ message: 'Success' });
 }
 
 async function getFormData(req: NextApiRequest) {
   const form = formidable({
     multiples: true,
     keepExtensions: true,
-    uploadDir: './public/uploads',
   });
 
   const formData = new Promise((resolve, reject) => {
@@ -75,16 +95,4 @@ async function getFormData(req: NextApiRequest) {
     files: Files;
   };
   return { ...fields, ...files };
-}
-
-async function saveFile({
-  path,
-  location,
-}: {
-  path: string;
-  location: string;
-}) {
-  const data = fs.readFileSync(path);
-  fs.writeFileSync(location, data);
-  await fs.unlinkSync(path);
 }

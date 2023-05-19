@@ -1,5 +1,5 @@
-import { trpc, type RouterInput, type ReactQueryOptions } from '@utils/trpc';
-import { useMutation } from '@tanstack/react-query';
+import { type ReactQueryOptions, type RouterInput, trpc } from '@utils/trpc';
+import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 
 // Knowledge Base
 export const useGetDocuments = (
@@ -34,15 +34,42 @@ export const useUpdateDocument = (
   return trpc.knowledgeBase.updateDocument.useMutation(opts);
 };
 
-export const useUploadDocument = () => {
+export const useUploadDocument = (
+  opts?: UseMutationOptions<{ message: string }, Error, File, unknown>,
+) => {
   return useMutation({
+    ...opts,
     mutationFn: async (file: File) => {
       const formData = new FormData();
       formData.append('file', file);
-      await fetch('/api/openai/upload-data', {
+      const res = await fetch('/api/openai/upload-data', {
         method: 'POST',
         body: formData,
       });
+      return await res.json();
+    },
+  });
+};
+
+export const useOpenAI = (
+  opts?: UseMutationOptions<
+    { response: string },
+    Error,
+    { prompt: string },
+    unknown
+  >,
+) => {
+  return useMutation({
+    ...opts,
+    mutationFn: async ({ prompt }) => {
+      const res = await fetch('/api/openai/ask-model', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt }),
+      });
+      return await res.json();
     },
   });
 };
