@@ -485,4 +485,33 @@ export const boardRouter = t.router({
         });
       }
     }),
+  getTaskPriorities: protectedProcedure
+    .query(async ({  ctx }) => {
+      try {
+        return await ctx.prisma.taskPriority.findMany({});
+      } catch (e) {
+        console.log(e);
+        throw new TRPCError({
+          message: 'Something went wrong. Please try again later.',
+          code: 'INTERNAL_SERVER_ERROR',
+        });
+      }
+    }),
+  getTaskPriority: protectedProcedure
+    .input(z.object({ taskPriorityId: z.string() }))
+    .query(async ({ input, ctx }) => {
+      try {
+        return await ctx.prisma.taskPriority.findUnique({
+          where: {
+            id: input.taskPriorityId,
+          }
+        });
+      } catch (e) {
+        console.log(e);
+        throw new TRPCError({
+          message: 'Something went wrong. Please try again later.',
+          code: 'INTERNAL_SERVER_ERROR',
+        });
+      }
+    }),
 });

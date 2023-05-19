@@ -10,10 +10,11 @@ import {
   DialogContent,
   DialogTrigger,
 } from '@components';
-import { formatDate } from '@utils/format-date';
 import { Project } from '@prisma/client';
 import SaveProjectForm from '@components/pages/project/save-project-form';
 import { ProjectWithBoards } from '../../shared/types/project.types';
+import { Trash2 } from "lucide-react";
+import { format } from "date-fns";
 
 const Projects = () => {
   const [dialogOpened, setDialogOpened] = React.useState(false);
@@ -70,14 +71,14 @@ const Projects = () => {
               <div className="mt-6 flex flex-row justify-between">
                 <div className="flex flex-row">
                   <div>
-                    <p>Start Date</p>
-                    <p>{formatDate(project.startDate)}</p>
+                    <p className="font-bold">Start Date</p>
+                    <p>{format(project.startDate, 'PPP')}</p>
                   </div>
                   <div className="ml-10">
-                    <p>End Date</p>
+                    <p className="font-bold">End Date</p>
                     <p>
                       {project.endDate
-                        ? formatDate(project.endDate)
+                        ? format(project.endDate, 'PPP')
                         : 'Project not closed yet'}
                     </p>
                   </div>
@@ -92,15 +93,16 @@ const Projects = () => {
                   <Button
                     className="ml-2"
                     onClick={() => setSelectedProjectForEditing(project)}
+                    variant="secondary"
                   >
                     Edit
                   </Button>
                   <Button
                     onClick={() => deleteProject(project.id)}
                     className="ml-2"
-                    variant="destructive"
+                    variant="ghost"
                   >
-                    Delete
+                    <Trash2 color="black" size={22} />
                   </Button>
                 </div>
               </div>

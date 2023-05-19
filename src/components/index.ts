@@ -34,3 +34,5 @@ export * from './pages/knowledge-base/upload-knowledge-form';
 export * from './pages/knowledge-base/knowledge-base-search';
 export * from './pages/knowledge-base/document-card';
 export * from './pages/knowledge-base/document-feed';
+export * from './ui/badge';
+
