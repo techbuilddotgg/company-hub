@@ -1,16 +1,13 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
 import formidable, { Fields, Files } from 'formidable';
-import { TextLoader } from 'langchain/document_loaders';
+import { TextLoader } from 'langchain/document_loaders/fs/text';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { Document } from 'langchain/document';
 import { PineconeClient } from '@pinecone-database/pinecone';
 import { env } from '@env';
 import { PineconeStore } from 'langchain/vectorstores/pinecone';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
-import { Ratelimit } from '@upstash/ratelimit';
-import { Redis } from '@upstash/redis';
-import { getAuth } from '@clerk/nextjs/server';
 
 const RequestBodySchema = z.object({
   file: z.object({
@@ -29,32 +26,12 @@ export const config = {
   },
 };
 
-// Create a new ratelimiter, that allows 10 requests per 1 minute
-const ratelimit = new Ratelimit({
-  redis: Redis.fromEnv(),
-  limiter: Ratelimit.slidingWindow(10, '1 m'),
-  analytics: true,
-});
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
   if (req.method !== 'POST') {
     res.status(405).send({ error: 'Allowed method is POST' });
-  }
-
-  const user = getAuth(req);
-
-  if (!user.userId) {
-    res.status(401).send({ error: 'Unauthorized' });
-    return;
-  }
-
-  const { success } = await ratelimit.limit(user.userId);
-  if (!success) {
-    res.status(429).send({ error: 'Rate limit exceeded' });
-    return;
   }
 
   const formData: RequestBody = (await getFormData(
