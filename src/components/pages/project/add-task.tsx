@@ -19,7 +19,7 @@ interface AddTaskProps {
   refetch: () => void;
 }
 const AddTask = ({ columnId, refetch }: AddTaskProps) => {
-  const { register, handleSubmit } = useForm({
+  const { register, handleSubmit, reset } = useForm({
     resolver: zodResolver(AddTaskSchema),
     defaultValues: {
       name: '',
@@ -30,9 +30,10 @@ const AddTask = ({ columnId, refetch }: AddTaskProps) => {
   });
   const onSubmit = (data: AddTaskType) => {
     addTask({ ...data, columnId });
+    reset()
   };
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-row p-4 items-center">
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-row items-center">
       <Input type="text" id="name" {...register('name')} />
       <Button variant="ghost" type="submit" className='w-44'>+ Add a card</Button>
     </form>

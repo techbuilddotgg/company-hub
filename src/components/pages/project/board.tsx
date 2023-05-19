@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
 import Column from '@components/pages/project/column';
 import { DraggableElementType } from '@components/pages/project/types';
@@ -14,6 +14,10 @@ interface BoardProps {
 
 export const Board = ({ data }: BoardProps) => {
   const [columns, setColumns] = useState<ProjectColumnFull[]>([]);
+  const sortedColumns = useMemo(
+    () => columns.sort((a, b) => a.orderIndex - b.orderIndex),
+    [columns],
+  );
   const { data: board, refetch } = trpc.board.getById.useQuery(
     { id: data.id },
     {
@@ -23,66 +27,122 @@ export const Board = ({ data }: BoardProps) => {
     },
   );
 
-  console.log(board);
+  const { mutate: moveTaskMutation } = trpc.board.moveTask.useMutation({
+    onSuccess: () => {
+      refetch();
+    },
+  });
+  const { mutate: reorderTasksInColumnMutation } =
+    trpc.board.reorderTasksInColumn.useMutation({
+      onSuccess: () => {
+        refetch();
+      },
+    });
+  const { mutate: reorderColumnsMutation } =
+    trpc.board.reorderColumns.useMutation({
+      onSuccess: () => {
+        refetch();
+      },
+    });
+
+  const reorderColumns = (sourceIndex: number, destinationIndex: number) => {
+    setColumns((prevState) => {
+      reorderElements(prevState, sourceIndex, destinationIndex);
+
+      reorderColumnsMutation({
+        boardId: board?.id || '',
+        columns: prevState,
+      });
+
+      return [...prevState];
+    });
+  };
+
+  const reorderTasks = (
+    sourceIndex: number,
+    destinationIndex: number,
+    droppableId: string,
+  ) => {
+    setColumns((prevState) => {
+      const columnIndex = prevState.findIndex(
+        (column) => column.id === droppableId,
+      );
+      const column = prevState[columnIndex];
+      if (columnIndex === -1 || !column) return prevState;
+
+      reorderElements(column.projectBoardTasks, sourceIndex, destinationIndex);
+      prevState[columnIndex] = column;
+
+      reorderTasksInColumnMutation({
+        columnId: droppableId,
+        tasks: column.projectBoardTasks,
+      });
+
+      return [...prevState];
+    });
+  };
+
+  const moveTask = (
+    sourceIndex: number,
+    destinationIndex: number,
+    sourceDroppableId: string,
+    destinationDroppableId: string,
+  ) => {
+    const sourceColumnIndex = columns.findIndex(
+      (column) => column.id === sourceDroppableId,
+    );
+    const sourceColumn = columns[sourceColumnIndex];
+    const destColumnIndex = columns.findIndex(
+      (column) => column.id === destinationDroppableId,
+    );
+    const destColumn = columns[destColumnIndex];
+    const task = sourceColumn?.projectBoardTasks[sourceIndex];
+
+    if (!sourceColumn || !destColumn || !task) return;
+
+    setColumns((prevState) => {
+      const [removed] = sourceColumn.projectBoardTasks.splice(sourceIndex, 1);
+
+      if (removed)
+        destColumn.projectBoardTasks.splice(destinationIndex, 0, removed);
+
+      prevState[sourceColumnIndex] = sourceColumn;
+      prevState[destColumnIndex] = destColumn;
+
+      moveTaskMutation({
+        taskId: task.id,
+        sourceColumnId: sourceDroppableId,
+        sourceOrderIndex: sourceIndex,
+        targetColumnId: destinationDroppableId,
+        targetOrderIndex: destinationIndex,
+      });
+
+      return [...prevState];
+    });
+  };
 
   const onDragEnd = (result: DropResult) => {
     if (!result.destination || !columns) return;
     const { source, destination } = result;
 
     if (result.type === DraggableElementType.COLUMN) {
-      setColumns((prevState) => {
-        reorderElements(prevState, source.index, destination.index);
-        return [...prevState];
-      });
+      reorderColumns(source.index, destination.index);
     } else {
       if (source.droppableId === destination.droppableId) {
-        setColumns((prevState) => {
-          const columnIndex = prevState.findIndex(
-            (column) => column.id === source.droppableId,
-          );
-          const column = prevState[columnIndex];
-          if (columnIndex === -1 || !column) return prevState;
-
-          reorderElements(
-            column.projectBoardTasks,
-            source.index,
-            destination.index,
-          );
-          prevState[columnIndex] = column;
-          return [...prevState];
-        });
+        reorderTasks(source.index, destination.index, source.droppableId);
       } else {
-        const sourceColumnIndex = columns.findIndex(
-          (column) => column.id === source.droppableId,
+        moveTask(
+          source.index,
+          destination.index,
+          source.droppableId,
+          destination.droppableId,
         );
-        const sourceColumn = columns[sourceColumnIndex];
-        const destColumnIndex = columns.findIndex(
-          (column) => column.id === destination.droppableId,
-        );
-        const destColumn = columns[destColumnIndex];
-
-        if (!sourceColumn || !destColumn) return;
-
-        setColumns((prevState) => {
-          const [removed] = sourceColumn.projectBoardTasks.splice(
-            source.index,
-            1,
-          );
-
-          if (removed)
-            destColumn.projectBoardTasks.splice(destination.index, 0, removed);
-
-          prevState[sourceColumnIndex] = sourceColumn;
-          prevState[destColumnIndex] = destColumn;
-
-          return [...prevState];
-        });
       }
     }
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', height: '100%' }}>
+    <div className="h-full max-h-full">
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable
           droppableId="board"
@@ -95,7 +155,7 @@ export const Board = ({ data }: BoardProps) => {
               ref={provided.innerRef}
               {...provided.droppableProps}
             >
-              {columns.map((column, index) => (
+              {sortedColumns.map((column, index) => (
                 <Column
                   data={column}
                   key={column.id}
@@ -103,6 +163,7 @@ export const Board = ({ data }: BoardProps) => {
                   refetch={refetch}
                 />
               ))}
+              {provided.placeholder}
               <AddColumn refetch={refetch} boardId={board?.id || ''} />
             </div>
           )}
