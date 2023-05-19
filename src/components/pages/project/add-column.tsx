@@ -20,7 +20,7 @@ interface AddColumnProps {
   refetch: () => void;
 }
 const AddColumn = ({ boardId, refetch }: AddColumnProps) => {
-  const { register, handleSubmit } = useForm({
+  const { register, handleSubmit , reset} = useForm({
     resolver: zodResolver(AddColumnSchema),
     defaultValues: {
       name: '',
@@ -32,6 +32,7 @@ const AddColumn = ({ boardId, refetch }: AddColumnProps) => {
   });
   const onSubmit = (data: AddColumnType) => {
     addColumn({ ...data, boardId });
+    reset()
   };
   return (
     <div className="flex flex-row items-start">

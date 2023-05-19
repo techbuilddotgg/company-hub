@@ -12,7 +12,7 @@ import {
   Separator, Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectLabel, SelectItem
 } from "@components";
 import { trpc } from "@utils/trpc";
-import { Trash2, Send } from "lucide-react";
+import { Trash2, Send, User2 } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import PickDate from "@components/pages/project/pick-date";
 import { ProjectBoardTask } from "@prisma/client";
@@ -32,27 +32,36 @@ interface TaskModalProps {
   refetch: () => void;
   setOpenTaskDialog: (open: boolean) => void;
   task: ProjectBoardTask;
+  taskPriorityName: string | undefined;
+  taskTypeName: string | undefined;
 }
 
 export const TaskModal = ({
   refetch,
   setOpenTaskDialog,
-  task
+  task,
+  taskPriorityName,
+  taskTypeName
 }: TaskModalProps) => {
 
   const user = useUser();
   const { toast } = useToast();
 
-  const {data: taskType} = trpc.board.getTaskType.useQuery({ taskTypeId: task.taskTypeId || ''});
+  const [selectedTaskType, setSelectedTaskType] = useState<string | undefined >(taskTypeName)
+  const [selectedTaskPriority, setSelectedTaskPriority] = useState<string | undefined >(taskPriorityName)
 
-  const [selectedTaskType, setSelectedTaskType] = useState<string | undefined >( taskType?.name)
   const [date, setDate] = useState<Date | undefined >(task?.deadLine ? task?.deadLine: undefined)
 
+  useEffect(() => {
+    if(taskTypeName)
+      setSelectedTaskType(taskTypeName)
+  }, [taskTypeName]);
 
   useEffect(() => {
-    if(taskType && typeof taskType.name === 'string')
-      setSelectedTaskType(taskType.name)
-  }, [taskType]);
+    if (taskPriorityName) {
+      setSelectedTaskPriority(taskPriorityName);
+    }
+  }, [taskPriorityName]);
 
   const { register, handleSubmit } = useForm<FormData>({
     defaultValues: {
@@ -91,6 +100,8 @@ export const TaskModal = ({
 
   const {data: comments, refetch: refetchComments} = trpc.board.getTaskComments.useQuery({ taskId: task.id});
   const {data: taskTypes} = trpc.board.getTaskTypes.useQuery();
+  const {data: taskPriorities} = trpc.board.getTaskPriorities.useQuery();
+
 
   const { mutate: removeUserFromTask } = trpc.board.removeUserFromTask.useMutation({
     onSuccess: () => {
@@ -110,15 +121,16 @@ export const TaskModal = ({
 
   const { mutate: updateTask } = trpc.board.updateTask.useMutation({
     onSuccess: () => {
+      toast({ title: "Task update", description: "Task was updated successfully."})
       refetch()
       setOpenTaskDialog(false);
     },
   });
 
   const onSubmitTask = (data: FormData) => {
-    const taskId = taskTypes?.find(taskType => taskType.name === selectedTaskType)?.id;
-    updateTask({ id: task.id, name: data.name, description: data.description, deadLine: date, taskTypeId: taskId})
-    toast({ title: "Task update", description: "Task was updated successfully."})
+    const taskTypeId = taskTypes?.find(taskType => taskType.name === selectedTaskType)?.id;
+    const taskPriorityId = taskPriorities?.find(taskPriority => taskPriority.name === selectedTaskPriority)?.id;
+    updateTask({ id: task.id, name: data.name, description: data.description, deadLine: date, taskTypeId: taskTypeId, taskPriorityId: taskPriorityId})
   };
 
   const onSubmitComment = (data: FormDataComment) => {
@@ -135,6 +147,10 @@ export const TaskModal = ({
     setSelectedTaskType(selected);
   };
 
+  const handleTaskPriorityChange = (selected: string) => {
+    setSelectedTaskPriority(selected);
+  };
+
   return (
     <DialogContent setDialogOpen={setOpenTaskDialog}>
       <DialogHeader>
@@ -144,7 +160,7 @@ export const TaskModal = ({
         <AccordionItem value={"item-1"} >
           <AccordionTrigger>{`Edit task: ${task.name}`}</AccordionTrigger>
           <AccordionContent className='m-2'>
-            <form className={'flex flex-col gap-4'} onSubmit={handleSubmit(onSubmitTask)}>
+            <form className={'flex flex-col gap-4 px-1'} onSubmit={handleSubmit(onSubmitTask)}>
               <Input  label={'Name'} {...register('name')} defaultValue={task?.name} />
               <Textarea label={'Description'} {...register('description') } defaultValue={task?.description || ''} rows={5} />
               <p className='font-semibold'>Deadline</p>
@@ -159,6 +175,20 @@ export const TaskModal = ({
                     <SelectLabel>Types</SelectLabel>
                     {taskTypes && taskTypes.map((taskType) => (
                       <SelectItem key={taskType.name} value={taskType.name}>{taskType.name}</SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              <p className='font-semibold'>Task priority</p>
+              <Select onValueChange={(selected) => handleTaskPriorityChange(selected)} defaultValue={selectedTaskPriority}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select task priority" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Priorities</SelectLabel>
+                    {taskPriorities && taskPriorities.map((taskPriority) => (
+                      <SelectItem key={taskPriority.name} value={taskPriority.name}>{taskPriority.name}</SelectItem>
                     ))}
                   </SelectGroup>
                 </SelectContent>
@@ -195,24 +225,25 @@ export const TaskModal = ({
             </ScrollArea>
           </AccordionContent>
         </AccordionItem>
-
         <AccordionItem value={"item-3"}>
           <AccordionTrigger>{`Comments (${comments?.length})`}</AccordionTrigger>
           <AccordionContent className='m-2'>
-            <form onSubmit={handleSubmitComment(onSubmitComment)}>
-              <div className="flex w-full max-w-sm items-center space-x-2 mb-2">
+            <form className='p-1' onSubmit={handleSubmitComment(onSubmitComment)}>
+              <div className="flex w-full space-x-2 mb-2">
                 <Input {...registerComment('comment')} placeholder="Comment" />
-                <Button type="submit" variant="secondary">            <Send color="black" size={22} />
+                <Button type="submit" variant="secondary"><Send color="black" size={22} />
                 </Button>
               </div>
             </form>
-
-            <ScrollArea className="h-44 w-full rounded-md border">
+            <ScrollArea className="h-96 w-full rounded-md border">
               <div className="p-4">
                 {comments && comments.map((comment) => (
                   <div key={comment.id}>
                     <p key={comment.authorId} className='font-bold'>{comment.text}</p>
-                    <p className='ml-4'>{`~ ${comment.email}`}</p>
+                    <div className="flex items-center mt-1">
+                      <User2 color="gray" size={18} />
+                      <p className='ml-2'>{`${comment.email}`}</p>
+                    </div>
                     <Separator className="my-4" />
                   </div>
                 ))}
