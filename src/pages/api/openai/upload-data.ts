@@ -80,8 +80,12 @@ async function getFormData(req: NextApiRequest) {
   const form = formidable({
     multiples: true,
     keepExtensions: true,
-    uploadDir: './public/uploads',
     maxFiles: 1,
+    filter: (part) => {
+      const allowedFileExtensions = ['pdf', 'txt', 'doc', 'docx'];
+      const fileType = part.originalFilename?.split('.').pop() || '';
+      return allowedFileExtensions.includes(fileType);
+    },
   });
 
   const formData = new Promise((resolve, reject) => {
