@@ -5,6 +5,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
+  AlertDialogButton,
   Button,
   Dialog,
   DialogContent,
@@ -13,8 +14,8 @@ import {
 import { Project } from '@prisma/client';
 import SaveProjectForm from '@components/pages/project/save-project-form';
 import { ProjectWithBoards } from '../../shared/types/project.types';
-import { Trash2 } from "lucide-react";
-import { format } from "date-fns";
+import { Trash2 } from 'lucide-react';
+import { format } from 'date-fns';
 
 const Projects = () => {
   const [dialogOpened, setDialogOpened] = React.useState(false);
@@ -97,13 +98,16 @@ const Projects = () => {
                   >
                     Edit
                   </Button>
-                  <Button
-                    onClick={() => deleteProject(project.id)}
-                    className="ml-2"
-                    variant="ghost"
-                  >
-                    <Trash2 color="black" size={22} />
-                  </Button>
+                  <AlertDialogButton
+                    handleAction={() => deleteProject(project.id)}
+                    buttonVariant={'ghost'}
+                    buttonClassName={'ml-2'}
+                    buttonText={<Trash2 color="black" size={22} />}
+                    title={'Delete project'}
+                    description={
+                      'Are you sure you want to delete this project?'
+                    }
+                  />
                 </div>
               </div>
             </AccordionContent>

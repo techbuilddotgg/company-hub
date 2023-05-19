@@ -57,7 +57,6 @@
     "date-fns": "^2.30.0",
     "dotenv": "^16.0.3",
     "formidable": "^2.1.1",
-    "hnswlib-node": "^1.4.2",
     "langchain": "^0.0.75",
     "lucide-react": "^0.214.0",
     "next": "12.3.1",

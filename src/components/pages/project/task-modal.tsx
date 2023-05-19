@@ -1,22 +1,33 @@
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import {
-  Accordion, AccordionContent, AccordionItem, AccordionTrigger,
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
   Button,
   Checkbox,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  Input, ScrollArea,
+  Input,
+  ScrollArea,
   Textarea,
-  Separator, Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectLabel, SelectItem
-} from "@components";
-import { trpc } from "@utils/trpc";
-import { Trash2, Send, User2 } from "lucide-react";
-import { useUser } from "@clerk/nextjs";
-import PickDate from "@components/pages/project/pick-date";
-import { ProjectBoardTask } from "@prisma/client";
-import { useToast } from "@hooks";
+  Separator,
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectGroup,
+  SelectLabel,
+  SelectItem,
+} from '@components';
+import { trpc } from '@utils/trpc';
+import { Trash2, Send, User2 } from 'lucide-react';
+import { useUser } from '@clerk/nextjs';
+import PickDate from '@components/pages/project/pick-date';
+import { ProjectBoardTask } from '@prisma/client';
+import { useToast } from '@hooks';
 
 interface FormData {
   name: string;
@@ -26,7 +37,6 @@ interface FormData {
 interface FormDataComment {
   comment: string;
 }
-
 
 interface TaskModalProps {
   refetch: () => void;
@@ -41,20 +51,24 @@ export const TaskModal = ({
   setOpenTaskDialog,
   task,
   taskPriorityName,
-  taskTypeName
+  taskTypeName,
 }: TaskModalProps) => {
-
   const user = useUser();
   const { toast } = useToast();
 
-  const [selectedTaskType, setSelectedTaskType] = useState<string | undefined >(taskTypeName)
-  const [selectedTaskPriority, setSelectedTaskPriority] = useState<string | undefined >(taskPriorityName)
+  const [selectedTaskType, setSelectedTaskType] = useState<string | undefined>(
+    taskTypeName,
+  );
+  const [selectedTaskPriority, setSelectedTaskPriority] = useState<
+    string | undefined
+  >(taskPriorityName);
 
-  const [date, setDate] = useState<Date | undefined >(task?.deadLine ? task?.deadLine: undefined)
+  const [date, setDate] = useState<Date | undefined>(
+    task?.deadLine ? task?.deadLine : undefined,
+  );
 
   useEffect(() => {
-    if(taskTypeName)
-      setSelectedTaskType(taskTypeName)
+    if (taskTypeName) setSelectedTaskType(taskTypeName);
   }, [taskTypeName]);
 
   useEffect(() => {
@@ -70,7 +84,11 @@ export const TaskModal = ({
     },
   });
 
-  const { register: registerComment, handleSubmit: handleSubmitComment , reset: resetComment} = useForm<FormDataComment>({
+  const {
+    register: registerComment,
+    handleSubmit: handleSubmitComment,
+    reset: resetComment,
+  } = useForm<FormDataComment>({
     defaultValues: {
       comment: '',
     },
@@ -83,60 +101,79 @@ export const TaskModal = ({
     },
   });
 
-  const {data: assignedUsers, refetch: refetchAssignedUsers} = trpc.board.getUsersAssignedToTask.useQuery({ taskId: task.id});
+  const { data: assignedUsers, refetch: refetchAssignedUsers } =
+    trpc.board.getUsersAssignedToTask.useQuery({ taskId: task.id });
   const { mutate: addUserToTask } = trpc.board.addUserToTask.useMutation({
     onSuccess: () => {
-      refetchAssignedUsers()
+      refetchAssignedUsers();
       setOpenTaskDialog(true);
     },
   });
 
   const { mutate: commentTicket } = trpc.board.commentTicket.useMutation({
     onSuccess: () => {
-      refetchComments()
+      refetchComments();
       setOpenTaskDialog(true);
     },
   });
 
-  const {data: comments, refetch: refetchComments} = trpc.board.getTaskComments.useQuery({ taskId: task.id});
-  const {data: taskTypes} = trpc.board.getTaskTypes.useQuery();
-  const {data: taskPriorities} = trpc.board.getTaskPriorities.useQuery();
+  const { data: comments, refetch: refetchComments } =
+    trpc.board.getTaskComments.useQuery({ taskId: task.id });
+  const { data: taskTypes } = trpc.board.getTaskTypes.useQuery();
+  const { data: taskPriorities } = trpc.board.getTaskPriorities.useQuery();
 
-
-  const { mutate: removeUserFromTask } = trpc.board.removeUserFromTask.useMutation({
-    onSuccess: () => {
-      refetchAssignedUsers()
-      setOpenTaskDialog(true);
-    },
-  });
+  const { mutate: removeUserFromTask } =
+    trpc.board.removeUserFromTask.useMutation({
+      onSuccess: () => {
+        refetchAssignedUsers();
+        setOpenTaskDialog(true);
+      },
+    });
 
   const { data: users } = trpc.users.findAll.useQuery();
 
-  const onUserCheckedChange = (userId: string, checked: string |boolean) => {
-    if(checked)
-      addUserToTask({ userId: userId, taskId: task.id })
-    if(!checked)
-      removeUserFromTask({ userId: userId, taskId: task.id })
-  }
+  const onUserCheckedChange = (userId: string, checked: string | boolean) => {
+    if (checked) addUserToTask({ userId: userId, taskId: task.id });
+    if (!checked) removeUserFromTask({ userId: userId, taskId: task.id });
+  };
 
   const { mutate: updateTask } = trpc.board.updateTask.useMutation({
     onSuccess: () => {
-      toast({ title: "Task update", description: "Task was updated successfully."})
-      refetch()
+      toast({
+        title: 'Task update',
+        description: 'Task was updated successfully.',
+      });
+      refetch();
       setOpenTaskDialog(false);
     },
   });
 
   const onSubmitTask = (data: FormData) => {
-    const taskTypeId = taskTypes?.find(taskType => taskType.name === selectedTaskType)?.id;
-    const taskPriorityId = taskPriorities?.find(taskPriority => taskPriority.name === selectedTaskPriority)?.id;
-    updateTask({ id: task.id, name: data.name, description: data.description, deadLine: date, taskTypeId: taskTypeId, taskPriorityId: taskPriorityId})
+    const taskTypeId = taskTypes?.find(
+      (taskType) => taskType.name === selectedTaskType,
+    )?.id;
+    const taskPriorityId = taskPriorities?.find(
+      (taskPriority) => taskPriority.name === selectedTaskPriority,
+    )?.id;
+    updateTask({
+      id: task.id,
+      name: data.name,
+      description: data.description,
+      deadLine: date,
+      taskTypeId: taskTypeId,
+      taskPriorityId: taskPriorityId,
+    });
   };
 
   const onSubmitComment = (data: FormDataComment) => {
-    if(user.user?.id.toString() && user.user?.emailAddresses[0]?.emailAddress)
-      commentTicket({ comment: data.comment, taskId: task.id, userId: user.user?.id.toString(), email: user.user?.emailAddresses[0]?.emailAddress})
-    resetComment()
+    if (user.user?.id.toString() && user.user?.emailAddresses[0]?.emailAddress)
+      commentTicket({
+        comment: data.comment,
+        taskId: task.id,
+        userId: user.user?.id.toString(),
+        email: user.user?.emailAddresses[0]?.emailAddress,
+      });
+    resetComment();
   };
 
   const deleteTask = () => {
@@ -157,39 +194,66 @@ export const TaskModal = ({
         <DialogTitle>Task</DialogTitle>
       </DialogHeader>
       <Accordion type="single" collapsible>
-        <AccordionItem value={"item-1"} >
+        <AccordionItem value={'item-1'}>
           <AccordionTrigger>{`Edit task: ${task.name}`}</AccordionTrigger>
-          <AccordionContent className='m-2'>
-            <form className={'flex flex-col gap-4 px-1'} onSubmit={handleSubmit(onSubmitTask)}>
-              <Input  label={'Name'} {...register('name')} defaultValue={task?.name} />
-              <Textarea label={'Description'} {...register('description') } defaultValue={task?.description || ''} rows={5} />
-              <p className='font-semibold'>Deadline</p>
+          <AccordionContent className="m-2">
+            <form
+              className={'flex flex-col gap-4 px-1'}
+              onSubmit={handleSubmit(onSubmitTask)}
+            >
+              <Input
+                label={'Name'}
+                {...register('name')}
+                defaultValue={task?.name}
+              />
+              <Textarea
+                label={'Description'}
+                {...register('description')}
+                defaultValue={task?.description || ''}
+                rows={5}
+              />
+              <p className="font-semibold">Deadline</p>
               <PickDate date={date} setDate={setDate} />
-              <p className='font-semibold'>Task type</p>
-              <Select onValueChange={(selected) => handleTaskTypeChange(selected)} defaultValue={selectedTaskType}>
+              <p className="font-semibold">Task type</p>
+              <Select
+                onValueChange={(selected) => handleTaskTypeChange(selected)}
+                defaultValue={selectedTaskType}
+              >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Select task type" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Types</SelectLabel>
-                    {taskTypes && taskTypes.map((taskType) => (
-                      <SelectItem key={taskType.name} value={taskType.name}>{taskType.name}</SelectItem>
-                    ))}
+                    {taskTypes &&
+                      taskTypes.map((taskType) => (
+                        <SelectItem key={taskType.name} value={taskType.name}>
+                          {taskType.name}
+                        </SelectItem>
+                      ))}
                   </SelectGroup>
                 </SelectContent>
               </Select>
-              <p className='font-semibold'>Task priority</p>
-              <Select onValueChange={(selected) => handleTaskPriorityChange(selected)} defaultValue={selectedTaskPriority}>
+              <p className="font-semibold">Task priority</p>
+              <Select
+                onValueChange={(selected) => handleTaskPriorityChange(selected)}
+                defaultValue={selectedTaskPriority}
+              >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Select task priority" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Priorities</SelectLabel>
-                    {taskPriorities && taskPriorities.map((taskPriority) => (
-                      <SelectItem key={taskPriority.name} value={taskPriority.name}>{taskPriority.name}</SelectItem>
-                    ))}
+                    {taskPriorities &&
+                      taskPriorities.map((taskPriority) => (
+                        <SelectItem
+                          key={taskPriority.name}
+                          value={taskPriority.name}
+                        >
+                          {taskPriority.name}
+                        </SelectItem>
+                      ))}
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -203,58 +267,78 @@ export const TaskModal = ({
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value={"item-2"}>
-          <AccordionTrigger>{`Assign user to task (${assignedUsers?.length ? assignedUsers?.length : 0})`}</AccordionTrigger>
-          <AccordionContent className='m-2'>
+        <AccordionItem value={'item-2'}>
+          <AccordionTrigger>{`Assign user to task (${
+            assignedUsers?.length ? assignedUsers?.length : 0
+          })`}</AccordionTrigger>
+          <AccordionContent className="m-2">
             <ScrollArea className="h-44 w-72 rounded-md border">
               <div className="p-4">
-                {users && users.map((user) => (
-                  <div className="items-top flex space-x-2 my-2" key={user.id}>
-                    <Checkbox id={`terms${user.id}`} checked={assignedUsers ? assignedUsers.includes(user.id) : false} onCheckedChange={(checked) => onUserCheckedChange(user.id, checked)} />
-                    <div className="grid gap-1.5 leading-none">
-                      <label
-                        htmlFor={`terms${user.id}`}
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >
-                        {user.emailAddresses[0]?.emailAddress}
-                      </label>
+                {users &&
+                  users.map((user) => (
+                    <div
+                      className="items-top my-2 flex space-x-2"
+                      key={user.id}
+                    >
+                      <Checkbox
+                        id={`terms${user.id}`}
+                        checked={
+                          assignedUsers
+                            ? assignedUsers.includes(user.id)
+                            : false
+                        }
+                        onCheckedChange={(checked) =>
+                          onUserCheckedChange(user.id, checked)
+                        }
+                      />
+                      <div className="grid gap-1.5 leading-none">
+                        <label
+                          htmlFor={`terms${user.id}`}
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          {user.emailAddresses[0]?.emailAddress}
+                        </label>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </ScrollArea>
           </AccordionContent>
         </AccordionItem>
-        <AccordionItem value={"item-3"}>
+        <AccordionItem value={'item-3'}>
           <AccordionTrigger>{`Comments (${comments?.length})`}</AccordionTrigger>
-          <AccordionContent className='m-2'>
-            <form className='p-1' onSubmit={handleSubmitComment(onSubmitComment)}>
-              <div className="flex w-full space-x-2 mb-2">
+          <AccordionContent className="m-2">
+            <form
+              className="p-1"
+              onSubmit={handleSubmitComment(onSubmitComment)}
+            >
+              <div className="mb-2 flex w-full space-x-2">
                 <Input {...registerComment('comment')} placeholder="Comment" />
-                <Button type="submit" variant="secondary"><Send color="black" size={22} />
+                <Button type="submit" variant="secondary">
+                  <Send color="black" size={22} />
                 </Button>
               </div>
             </form>
             <ScrollArea className="h-96 w-full rounded-md border">
               <div className="p-4">
-                {comments && comments.map((comment) => (
-                  <div key={comment.id}>
-                    <p key={comment.authorId} className='font-bold'>{comment.text}</p>
-                    <div className="flex items-center mt-1">
-                      <User2 color="gray" size={18} />
-                      <p className='ml-2'>{`${comment.email}`}</p>
+                {comments &&
+                  comments.map((comment) => (
+                    <div key={comment.id}>
+                      <p key={comment.authorId} className="font-bold">
+                        {comment.text}
+                      </p>
+                      <div className="mt-1 flex items-center">
+                        <User2 color="gray" size={18} />
+                        <p className="ml-2">{`${comment.email}`}</p>
+                      </div>
+                      <Separator className="my-4" />
                     </div>
-                    <Separator className="my-4" />
-                  </div>
-                ))}
+                  ))}
               </div>
             </ScrollArea>
           </AccordionContent>
         </AccordionItem>
       </Accordion>
     </DialogContent>
-
   );
 };
-
-

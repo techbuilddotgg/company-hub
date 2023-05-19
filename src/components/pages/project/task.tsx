@@ -69,7 +69,7 @@ const Task = ({ task, index, refetch }: TicketProps) => {
                   </Badge>
                 )}
                 {assignedUsers && users && assignedUsers.length !== 0 && (
-                  <div className="flex items-center">
+                  <div className="flex flex-wrap items-center">
                     <User2 color="gray" size={18} />
                     {assignedUsers.map((assignedUserId, index) => {
                       const user = users.find(
