@@ -27,9 +27,10 @@ import { useToast } from '@hooks';
 
 interface EventModalFormProps {
   currentDate: string;
+  event?: AddEventType;
 }
 
-const EventModalForm: FC<EventModalFormProps> = ({ currentDate }) => {
+const EventModalForm: FC<EventModalFormProps> = ({ currentDate, event }) => {
   const { toast } = useToast();
   const [date, setDate] = useState<DateRange | undefined>({
     from: new Date(currentDate),
@@ -50,11 +51,11 @@ const EventModalForm: FC<EventModalFormProps> = ({ currentDate }) => {
   const { register, watch, handleSubmit, setValue } = useForm({
     resolver: zodResolver(EventSchema),
     defaultValues: {
-      title: '',
-      description: '',
+      title: event?.title || '',
+      description: event?.description || '',
       start: '',
       end: '',
-      backgroundColor: label,
+      backgroundColor: event?.backgroundColor || label,
       allDay: false,
     },
   });
@@ -95,6 +96,10 @@ const EventModalForm: FC<EventModalFormProps> = ({ currentDate }) => {
     // onSuccess: () => {},
   });
 
+  const { mutate: updateEvent } = trpc.event.update.useMutation({
+    // onSuccess: () => {},
+  });
+
   const onSubmit = (data: AddEventType) => {
     if (date?.from === undefined) {
       toast({
@@ -109,7 +114,7 @@ const EventModalForm: FC<EventModalFormProps> = ({ currentDate }) => {
         watchAllDay,
       );
 
-      const event = {
+      const newEvent = {
         title: data.title,
         description: data.description,
         start: time.from,
@@ -117,8 +122,9 @@ const EventModalForm: FC<EventModalFormProps> = ({ currentDate }) => {
         backgroundColor: label,
       };
 
-      console.log(event);
-      addEvent(event);
+      console.log(newEvent);
+      if (event) updateEvent({ id: event.id, ...newEvent });
+      else addEvent(newEvent);
     } else {
       toast({
         title: 'Invalid time format',
@@ -173,8 +179,9 @@ interface EventModalProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   date: string;
+  event?: AddEventType;
 }
-const EventModal: FC<EventModalProps> = ({ open, setOpen, date }) => {
+const EventModal: FC<EventModalProps> = ({ open, setOpen, date, event }) => {
   return (
     <Dialog open={open}>
       <DialogContent className="sm:max-w-[425px]" setDialogOpen={setOpen}>
@@ -183,7 +190,7 @@ const EventModal: FC<EventModalProps> = ({ open, setOpen, date }) => {
           <DialogDescription>Add new calendar entry</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <EventModalForm currentDate={date} />
+          <EventModalForm currentDate={date} event={event} />
         </div>
       </DialogContent>
     </Dialog>
