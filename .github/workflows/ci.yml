@@ -10,7 +10,7 @@ env:
   OPENAI_API_KEY: "fake"
   PINECONE_ENVIRONMENT: "fake"
   PINECONE_API_KEY: "fake"
-  PINECONE_INDEX_NAME: "fake"
+  PINECONE_INDEX: "fake"
   UPSTASH_REDIS_REST_URL: "https://fake.com"
   UPSTASH_REDIS_REST_TOKEN: "fake"
 
