@@ -13,7 +13,7 @@
     "lint": "next lint",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "test:unit": "vitest run",
+    "test:unit": "npm run with-test-env vitest run",
     "studio": "npm run with-env npx prisma studio",
     "push": "npm run with-env npx prisma db push",
     "pull": "npm run with-env npx prisma db pull",
@@ -21,7 +21,8 @@
     "migrate": "npm run with-env npx prisma migrate dev",
     "seed:db": "npm run with-env npx prisma db seed",
     "reset:db": "npm run with-env npx prisma migrate reset --skip-seed",
-    "with-env": "dotenv -e .env.local --"
+    "with-env": "dotenv -e .env.local --",
+    "with-test-env": "dotenv -e .env.test --"
   },
   "dependencies": {
     "@clerk/nextjs": "4.11.7",
@@ -76,6 +77,7 @@
     "zod": "^3.18.0"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.0.1",
     "@types/formidable": "^2.0.6",
     "@types/node": "18.0.0",
     "@types/react": "18.0.14",
