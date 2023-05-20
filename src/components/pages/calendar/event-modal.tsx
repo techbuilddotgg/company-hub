@@ -81,7 +81,7 @@ const EventModalForm: FC<EventModalFormProps> = ({ currentDate, event }) => {
 
   const handleOnCheckedChange = (value: CheckedState) => {
     setValue('allDay', Boolean(value));
-    setStartTime({ hours: 24, minutes: 0 });
+    setStartTime({ hours: 0, minutes: 0 });
     setEndTime({ hours: 24, minutes: 0 });
   };
 
@@ -99,7 +99,7 @@ const EventModalForm: FC<EventModalFormProps> = ({ currentDate, event }) => {
       setStartTime({ hours: start.getHours(), minutes: start.getMinutes() });
       setEndTime({ hours: end.getHours(), minutes: end.getMinutes() });
     } else {
-      const now = new Date();
+      const now = new Date(currentDate);
       let currentHour = now.getHours();
       let currentMinute = Math.round(now.getMinutes() / 15) * 15;
 
@@ -120,15 +120,17 @@ const EventModalForm: FC<EventModalFormProps> = ({ currentDate, event }) => {
     // onSuccess: () => {},
   });
 
+  const { mutate: deleteEvent } = trpc.event.delete.useMutation({
+    // onSuccess: () => {},
+  });
+
   const onSubmit = (data: AddEventType) => {
-    console.log(startTime);
-    console.log(endTime);
     if (date?.from === undefined) {
       toast({
         title: 'Invalid date',
         description: 'Please check your date and try again',
       });
-    } else if (!checkTime(date, startTime, endTime)) {
+    } else if (checkTime(date, startTime, endTime)) {
       const time = formatTime(
         startTime,
         endTime,
@@ -190,9 +192,20 @@ const EventModalForm: FC<EventModalFormProps> = ({ currentDate, event }) => {
       <div className={'my-2'}>
         <Labels selected={label} handleLabelChange={handleLabelChange} />
       </div>
-      <Button className={'ml-auto'} type={'submit'}>
-        Add
-      </Button>
+      <div className={'flex items-center justify-between'}>
+        <Button type={'submit'}>Add</Button>
+        {event && (
+          <Button
+            onClick={() => {
+              event.id && deleteEvent(event.id);
+            }}
+            variant="destructive"
+            type={'button'}
+          >
+            Delete
+          </Button>
+        )}
+      </div>
     </form>
   );
 };

@@ -1,4 +1,5 @@
 import { protectedProcedure, t } from '../trpc';
+import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { EventSchema } from '../../../shared/validators/calendar.schemas';
 
@@ -55,6 +56,23 @@ export const eventRouter = t.router({
             end: input.end,
             backgroundColor: input.backgroundColor,
             authorId: authedUserId,
+          },
+        });
+      } catch (e) {
+        console.log(e);
+        throw new TRPCError({
+          message: 'Something went wrong. Please try again later.',
+          code: 'INTERNAL_SERVER_ERROR',
+        });
+      }
+    }),
+  delete: protectedProcedure
+    .input(z.string())
+    .mutation(async ({ input, ctx: { prisma } }) => {
+      try {
+        await prisma.event.delete({
+          where: {
+            id: input,
           },
         });
       } catch (e) {

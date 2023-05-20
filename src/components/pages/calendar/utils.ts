@@ -45,8 +45,8 @@ export const checkTime = (
       startTime.hours = 0;
     }
     if (
-      startTime.hours >= endTime.hours &&
-      startTime.minutes >= endTime.minutes
+      startTime.hours <= endTime.hours &&
+      startTime.minutes <= endTime.minutes
     ) {
       return true;
     }
