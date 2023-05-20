@@ -193,7 +193,7 @@ const EventModalForm: FC<EventModalFormProps> = ({ currentDate, event }) => {
         <Labels selected={label} handleLabelChange={handleLabelChange} />
       </div>
       <div className={'flex items-center justify-between'}>
-        <Button type={'submit'}>Add</Button>
+        <Button type={'submit'}>Save</Button>
         {event && (
           <Button
             onClick={() => {

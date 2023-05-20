@@ -8,30 +8,35 @@ export const formatTime = (
   allDay: boolean,
 ) => {
   const from = date.from as Date;
+  let to = date.to as Date;
+
   if (allDay) {
     from.setHours(0);
     from.setMinutes(0);
-    const to = new Date(from);
-    to.setHours(24);
-    to.setMinutes(0);
-
-    return { from: from.toISOString(), to: to.toISOString() };
+    if (to === undefined) {
+      const to = new Date(from);
+      to.setHours(24);
+      to.setMinutes(0);
+      return { from: from.toISOString(), to: to.toISOString() };
+    } else {
+      to.setHours(24);
+      to.setMinutes(0);
+      return { from: from.toISOString(), to: to.toISOString() };
+    }
   }
 
   from.setHours(startTime.hours);
   from.setMinutes(startTime.minutes);
 
-  if (date.to !== undefined) {
-    const to = new Date(date.to);
+  if (to !== undefined) {
     to.setHours(endTime.hours);
     to.setMinutes(endTime.minutes);
     return { from: from.toISOString(), to: to.toISOString() };
   }
 
-  const to = new Date(from);
+  to = new Date(from);
   to.setHours(endTime.hours);
   to.setMinutes(endTime.minutes);
-
   return { from: from.toISOString(), to: to.toISOString() };
 };
 
@@ -50,5 +55,7 @@ export const checkTime = (
     ) {
       return true;
     }
+  } else {
+    return true;
   }
 };
