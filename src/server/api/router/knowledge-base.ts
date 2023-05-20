@@ -2,25 +2,39 @@ import { protectedProcedure, t } from '../trpc';
 import { z } from 'zod';
 import { clerkClient } from '@clerk/nextjs/server';
 import { filterUserForClient } from '@server/helpers/filterUserForClient';
+import {
+  CreateDocumentValidator,
+  UpdateDocumentValidator,
+} from '@shared/validators/knowledge-base-validators';
+import { prepareDocument, textToDocument } from '@server/libs/langchain';
+import { uploadDocumentsToPinecone } from '@server/libs/pinecone';
 
 export const knowledgeBaseRouter = t.router({
   saveDocument: protectedProcedure
-    .input(
-      z.object({
-        title: z.string(),
-        content: z.string(),
-        description: z.string(),
-      }),
-    )
+    .input(CreateDocumentValidator)
     .mutation(async ({ input, ctx: { prisma, authedUserId: userId } }) => {
       const user = await clerkClient.users.getUser(userId);
-      return await prisma.document.create({
+
+      const result = await prisma.document.create({
         data: {
           ...input,
           authorId: userId,
           companyId: user.privateMetadata.companyId as string,
         },
       });
+
+      const doc = textToDocument(input.content);
+
+      const metadata = {
+        authorId: userId,
+        companyId: user.privateMetadata.companyId as string,
+        documentId: result.id,
+      };
+
+      const docs = await prepareDocument([doc], metadata);
+      await uploadDocumentsToPinecone(docs);
+
+      return result;
     }),
 
   findDocuments: protectedProcedure
@@ -80,14 +94,7 @@ export const knowledgeBaseRouter = t.router({
     }),
 
   updateDocument: protectedProcedure
-    .input(
-      z.object({
-        id: z.string(),
-        title: z.string(),
-        content: z.string(),
-        description: z.string(),
-      }),
-    )
+    .input(UpdateDocumentValidator)
     .mutation(async ({ input, ctx }) => {
       return await ctx.prisma.document.update({
         where: {

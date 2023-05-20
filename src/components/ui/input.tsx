@@ -2,16 +2,18 @@ import * as React from 'react';
 import { cn } from '@utils/classNames';
 import { forwardRef, InputHTMLAttributes } from 'react';
 import { InputWrapper } from '@components/ui/input-wrapper';
+import { FieldError } from 'react-hook-form';
 
 export type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   label?: string;
   info?: string;
+  error?: FieldError;
 };
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, label, info, ...props }, ref) => {
+  ({ className, type, error, label, info, ...props }, ref) => {
     return (
-      <InputWrapper label={label} name={props.name} info={info}>
+      <InputWrapper error={error} label={label} name={props.name} info={info}>
         <input
           type={type}
           className={cn(

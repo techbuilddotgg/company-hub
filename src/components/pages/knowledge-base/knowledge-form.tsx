@@ -3,10 +3,12 @@ import { Input } from '@components/ui/input';
 import { Textarea } from '@components/ui/textarea';
 import { Card } from '@components/ui/card';
 import { Markdown } from '@components/pages/knowledge-base/markdown';
-import { Button } from '@components/ui/button';
+import { LoaderButton } from '@components/ui/button';
 import { useToast, useUpdateDocument } from '@hooks';
 import { useForm } from 'react-hook-form';
 import { useSaveDocument } from '@hooks';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { CreateDocumentValidator } from '@shared/validators/knowledge-base-validators';
 
 interface FormData {
   title: string;
@@ -54,9 +56,14 @@ export const KnowledgeForm: FC<KnowledgeFormProps> = ({
 }) => {
   const { toast } = useToast();
 
-  const { register, handleSubmit, watch, reset } = useForm<FormData>({
-    defaultValues: initialValues,
-  });
+  const { register, handleSubmit, watch, formState, reset } = useForm<FormData>(
+    {
+      resolver: zodResolver(CreateDocumentValidator),
+      defaultValues: initialValues,
+    },
+  );
+
+  const { errors } = formState;
 
   const handleSuccess = (cb?: () => void) => {
     toast({
@@ -71,17 +78,31 @@ export const KnowledgeForm: FC<KnowledgeFormProps> = ({
     }
   };
 
-  const { mutate: handleSaveDocument } = useSaveDocument({
+  const { mutate: handleSaveDocument, isLoading: isSaving } = useSaveDocument({
     onSuccess: () => {
       handleSuccess();
     },
-  });
-
-  const { mutate: handleUpdateDocument } = useUpdateDocument({
-    onSuccess: () => {
-      handleSuccess(refetch);
+    onError: (error) => {
+      console.log(error.shape?.data.zodError);
+      toast({
+        title: 'Document save failed',
+        description: `The document could not be saved.`,
+      });
     },
   });
+
+  const { mutate: handleUpdateDocument, isLoading: isUpdating } =
+    useUpdateDocument({
+      onSuccess: () => {
+        handleSuccess(refetch);
+      },
+      onError: () => {
+        toast({
+          title: 'Document update failed',
+          description: `The document could not be updated.`,
+        });
+      },
+    });
 
   const onSubmit = (data: FormData) => {
     if (type === KnowledgeFormType.ADD) {
@@ -95,6 +116,7 @@ export const KnowledgeForm: FC<KnowledgeFormProps> = ({
     <form className={'flex flex-col gap-4'} onSubmit={handleSubmit(onSubmit)}>
       <Input
         label={'Title'}
+        error={errors.title}
         info={
           'Knowledge Base works best with a single question that can be answered'
         }
@@ -104,16 +126,18 @@ export const KnowledgeForm: FC<KnowledgeFormProps> = ({
 
       <Input
         label={'Description'}
+        error={errors.description}
         info={
           'A short description of the knowledge. This will be shown in the search results.'
         }
-        placeholder="e.g. What is the naming convention for git branches?"
+        placeholder="e.g. Branch naming conventions"
         {...register('description')}
       />
 
       <div className={'flex flex-col gap-4'}>
         <Textarea
           label={'Content'}
+          error={errors.content}
           info={
             'Describe all the information someone would need to answer your'
           }
@@ -121,18 +145,24 @@ export const KnowledgeForm: FC<KnowledgeFormProps> = ({
           rows={20}
           {...register('content')}
         />
-        <div>
-          <label htmlFor={'content'} className={'font-semibold'}>
-            Preview
-          </label>
-          <Card>
-            <Markdown>{watch('content')}</Markdown>
-          </Card>
-        </div>
+        {watch('content') && (
+          <div>
+            <label htmlFor={'content'} className={'font-semibold'}>
+              Preview
+            </label>
+            <Card>
+              <Markdown>{watch('content')}</Markdown>
+            </Card>
+          </div>
+        )}
       </div>
-      <Button type={'submit'} className={'w-fit'}>
+      <LoaderButton
+        isLoading={isSaving || isUpdating}
+        type={'submit'}
+        className={'w-fit'}
+      >
         Save
-      </Button>
+      </LoaderButton>
     </form>
   );
 };

@@ -1,29 +1,44 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
-  PageHeader,
+  DocumentFeed,
   KnowledgeBaseSearch,
   LinkButton,
-  DocumentFeed,
-  Button,
+  Markdown,
+  PageHeader,
+  SearchOption,
 } from '@components';
 import { AppRoute } from '@constants/app-routes';
 import { useForm } from 'react-hook-form';
 import { useDebounce, useGetDocuments, useOpenAI } from '@hooks';
+import Image from 'next/image';
 
 const KnowledgeBase = () => {
-  const { register, watch } = useForm<{ search: string }>({
+  const { register, watch } = useForm<{
+    manualSearch: string;
+    aiSearch: string;
+  }>({
     defaultValues: {
-      search: '',
+      manualSearch: '',
+      aiSearch: '',
     },
   });
 
-  const search = useDebounce(watch('search'));
+  const manualSearch = useDebounce(watch('manualSearch'));
+  const aiSearch = useDebounce(watch('aiSearch'));
 
   const { data, isLoading } = useGetDocuments({
-    title: search,
+    title: manualSearch,
   });
 
-  const { data: res, mutate } = useOpenAI();
+  const { data: res, mutate, isLoading: isLoadingAIResponse } = useOpenAI();
+
+  const [searchOption, setSearchOption] = useState<SearchOption>(
+    SearchOption.DEFAULT,
+  );
+
+  const handleAISearch = () => {
+    mutate({ prompt: aiSearch });
+  };
 
   return (
     <div className={'flex h-full flex-col gap-2'}>
@@ -41,16 +56,35 @@ const KnowledgeBase = () => {
       </div>
 
       <div className={'flex w-full grow flex-col gap-4'}>
-        <KnowledgeBaseSearch register={register} />
-        <div className={'grid grid-cols-4 gap-4'}>
+        <KnowledgeBaseSearch
+          isSearching={isLoadingAIResponse}
+          register={register}
+          setSearchOption={setSearchOption}
+          searchOption={searchOption}
+          handleAISearch={handleAISearch}
+        />
+        {searchOption === SearchOption.DEFAULT && (
           <DocumentFeed data={data} isLoading={isLoading} />
-        </div>
-        <>
-          <Button onClick={() => mutate({ prompt: 'Who is Domen Perko' })}>
-            OpenAI
-          </Button>
-          {res && <p>{JSON.stringify(res)}</p>}
-        </>
+        )}
+        {searchOption === SearchOption.AI && (
+          <>
+            <PageHeader
+              title={'AI response'}
+              description={
+                'This is a response from OpenAI based on your uploaded documents.'
+              }
+            />
+            {isLoadingAIResponse && (
+              <div className={'flex flex-col items-center'}>
+                <Image src={'/robot.gif'} width={600} height={300} />
+                <p className={'font-semibold text-gray-400'}>
+                  Please wait while im searching for results ...
+                </p>
+              </div>
+            )}
+            {!isLoadingAIResponse && res && <Markdown>{res.response}</Markdown>}
+          </>
+        )}
       </div>
     </div>
   );

@@ -13,13 +13,15 @@ export const DocumentFeed: FC<{
   return (
     <div className={'flex flex-col gap-4'}>
       <PageHeader title={'Documents'} />
-      <DataView<DocumentFeedData> isLoading={isLoading} data={data}>
-        {(data) =>
-          data.map((document) => (
-            <DocumentCard key={document.id} document={document} />
-          ))
-        }
-      </DataView>
+      <div className={'grid grid-cols-4 gap-4'}>
+        <DataView<DocumentFeedData> isLoading={isLoading} data={data}>
+          {(data) =>
+            data.map((document) => (
+              <DocumentCard key={document.id} document={document} />
+            ))
+          }
+        </DataView>
+      </div>
     </div>
   );
 };
