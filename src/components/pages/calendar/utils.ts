@@ -40,11 +40,15 @@ export const checkTime = (
   startTime: TimePickerTimeFormat,
   endTime: TimePickerTimeFormat,
 ) => {
-  if (
-    date?.to === undefined &&
-    startTime.hours >= endTime.hours &&
-    startTime.minutes >= endTime.minutes
-  ) {
-    return true;
+  if (date?.to === undefined) {
+    if (startTime.hours === 24) {
+      startTime.hours = 0;
+    }
+    if (
+      startTime.hours >= endTime.hours &&
+      startTime.minutes >= endTime.minutes
+    ) {
+      return true;
+    }
   }
 };

@@ -19,13 +19,7 @@ const CalendarScheduler = () => {
 
   const [openModal, setOpenModal] = React.useState<boolean>(false);
   const [date, setDate] = React.useState<string>('');
-  const [event, setEvent] = React.useState<AddEventType>({
-    title: '',
-    description: '',
-    backgroundColor: '',
-    start: '',
-    end: '',
-  });
+  const [event, setEvent] = React.useState<AddEventType | undefined>();
 
   const weekends = {
     weekendsVisible: true,
@@ -33,7 +27,7 @@ const CalendarScheduler = () => {
   };
 
   const handleAddEventSelectAndOpenModal = (selectInfo: DateSelectArg) => {
-    console.log(selectInfo);
+    setEvent(undefined);
     setDate(selectInfo.startStr);
     setOpenModal(true);
   };
@@ -93,16 +87,15 @@ const CalendarScheduler = () => {
         eventLongPressDelay={1000}
         selectLongPressDelay={1000}
         selectable={true}
-        selectMirror={true}
         dayMaxEvents={true}
         allDaySlot={false}
         editable={true}
         nowIndicator={true}
         height={'700px'}
-        eventChange={handleUpdateEventSelect}
         eventBorderColor={'#a9a9a9'}
-        select={handleAddEventSelectAndOpenModal}
+        eventChange={handleUpdateEventSelect}
         eventClick={handleEditEventSelectAndOpenModal}
+        select={handleAddEventSelectAndOpenModal}
       />
     </div>
   );

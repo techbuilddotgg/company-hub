@@ -24,6 +24,7 @@ import {
 } from '../../../shared/types/calendar.types';
 import { EventSchema } from '../../../shared/validators/calendar.schemas';
 import { useToast } from '@hooks';
+import { CheckedState } from '@radix-ui/react-checkbox';
 
 interface EventModalFormProps {
   currentDate: string;
@@ -78,18 +79,37 @@ const EventModalForm: FC<EventModalFormProps> = ({ currentDate, event }) => {
     setLabel(label);
   };
 
+  const handleOnCheckedChange = (value: CheckedState) => {
+    setValue('allDay', Boolean(value));
+    setStartTime({ hours: 24, minutes: 0 });
+    setEndTime({ hours: 24, minutes: 0 });
+  };
+
   useEffect(() => {
-    const now = new Date();
-    let currentHour = now.getHours();
-    let currentMinute = Math.round(now.getMinutes() / 15) * 15;
+    if (event) {
+      const start = new Date(event.start);
+      const end = new Date(event.end);
 
-    if (currentMinute === 60) {
-      currentMinute = 0;
-      currentHour += 1;
+      if (
+        start.getHours() === end.getHours() &&
+        start.getMinutes() === end.getMinutes()
+      ) {
+        handleOnCheckedChange(true);
+      }
+      setStartTime({ hours: start.getHours(), minutes: start.getMinutes() });
+      setEndTime({ hours: end.getHours(), minutes: end.getMinutes() });
+    } else {
+      const now = new Date();
+      let currentHour = now.getHours();
+      let currentMinute = Math.round(now.getMinutes() / 15) * 15;
+
+      if (currentMinute === 60) {
+        currentMinute = 0;
+        currentHour += 1;
+      }
+      setStartTime({ hours: currentHour, minutes: currentMinute });
+      setEndTime({ hours: currentHour + 1, minutes: currentMinute });
     }
-
-    setStartTime({ hours: currentHour, minutes: currentMinute });
-    setEndTime({ hours: currentHour + 1, minutes: currentMinute });
   }, []);
 
   const { mutate: addEvent } = trpc.event.add.useMutation({
@@ -101,6 +121,8 @@ const EventModalForm: FC<EventModalFormProps> = ({ currentDate, event }) => {
   });
 
   const onSubmit = (data: AddEventType) => {
+    console.log(startTime);
+    console.log(endTime);
     if (date?.from === undefined) {
       toast({
         title: 'Invalid date',
@@ -143,7 +165,7 @@ const EventModalForm: FC<EventModalFormProps> = ({ currentDate, event }) => {
         <Checkbox
           id="allDay"
           checked={watchAllDay}
-          onCheckedChange={(value) => setValue('allDay', Boolean(value))}
+          onCheckedChange={handleOnCheckedChange}
         />
         <label
           htmlFor="allDay"

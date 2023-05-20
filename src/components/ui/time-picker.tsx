@@ -15,6 +15,7 @@ const TimePicker: FC<TimePickerProps> = ({ defaultTime, onTimeChange }) => {
         onChange={handleTimeChange}
         value={defaultTime.hours}
       >
+        <option value="24">00</option>
         <option value="1">01</option>
         <option value="2">02</option>
         <option value="2">03</option>
@@ -38,7 +39,6 @@ const TimePicker: FC<TimePickerProps> = ({ defaultTime, onTimeChange }) => {
         <option value="21">21</option>
         <option value="22">22</option>
         <option value="23">23</option>
-        <option value="24">00</option>
       </select>
       <span className="px-2">:</span>
       <select
