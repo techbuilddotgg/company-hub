@@ -76,6 +76,7 @@ model ProjectBoard {
   project             Project              @relation(fields: [projectId], references: [id], onDelete: Cascade)
   projectId           String
   projectBoardColumns ProjectBoardColumn[]
+  githubData          GithubData[]
 
   @@map("project_boards")
 }
@@ -143,4 +144,12 @@ model ProjectBoardTaskUser {
   projectBoardTaskId String
 
   @@map("project_board_task_user")
+}
+
+model GithubData {
+  id             String       @id @default(cuid())
+  repository     String
+  owner          String
+  projectBoard   ProjectBoard @relation(fields: [projectBoardId], references: [id], onDelete: Cascade)
+  projectBoardId String
 }

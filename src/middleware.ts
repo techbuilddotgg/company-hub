@@ -1,6 +1,6 @@
 import { getAuth, withClerkMiddleware } from '@clerk/nextjs/server';
-import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import { AppRoute } from '@constants/app-routes';
 
 const publicPaths = [AppRoute.SIGN_IN, AppRoute.SIGN_UP];
@@ -34,7 +34,7 @@ export const config = {
      * - static (static files)
      * - favicon.ico (favicon file)
      */
-    '/(.*?trpc.*?|(?!static|.*\\..*|_next|favicon.ico).*)',
+    '/(.*?trpc.*?|(?!static|.*\\..*|_next|favicon.ico|api/github/.*).*)',
     '/',
   ],
 };
