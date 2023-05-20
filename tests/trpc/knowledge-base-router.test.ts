@@ -5,6 +5,7 @@ import { appRouter } from '@server/api/router';
 import { type RouterInput } from '@utils/trpc';
 import { clerkClient } from '@clerk/nextjs/server';
 import type { User } from '@clerk/nextjs/dist/api';
+import * as Pinecone from '@server/libs/pinecone';
 
 describe('knowledge-base-router test', () => {
   const userId = faker.string.uuid();
@@ -24,6 +25,10 @@ describe('knowledge-base-router test', () => {
       privateMetadata: { companyId },
     },
   ] as unknown as User[]);
+
+  vi.spyOn(Pinecone, 'uploadDocumentsToPinecone').mockImplementation(
+    async () => {},
+  );
 
   beforeAll(async () => {
     ctx.prisma.company.create({
