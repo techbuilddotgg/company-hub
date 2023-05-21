@@ -109,11 +109,12 @@ export const boardRouter = t.router({
           },
         });
       } catch (e) {
-        console.log(e);
-        throw new TRPCError({
-          message: 'Something went wrong. Please try again later.',
-          code: 'INTERNAL_SERVER_ERROR',
-        });
+        const message =
+          e instanceof TRPCError
+            ? e.message
+            : 'Something went wrong. Please try again later.';
+        const code = e instanceof TRPCError ? e.code : 'INTERNAL_SERVER_ERROR';
+        throw new TRPCError({ message, code });
       }
     }),
   updateColumn: protectedProcedure
@@ -189,11 +190,12 @@ export const boardRouter = t.router({
           },
         });
       } catch (e) {
-        console.log(e);
-        throw new TRPCError({
-          message: 'Something went wrong. Please try again later.',
-          code: 'INTERNAL_SERVER_ERROR',
-        });
+        const message =
+          e instanceof TRPCError
+            ? e.message
+            : 'Something went wrong. Please try again later.';
+        const code = e instanceof TRPCError ? e.code : 'INTERNAL_SERVER_ERROR';
+        throw new TRPCError({ message, code });
       }
     }),
   updateTask: protectedProcedure
