@@ -46,17 +46,24 @@ export const knowledgeBaseRouter = t.router({
       z
         .object({
           title: z.string().optional(),
+          order: z.string().optional(),
         })
         .optional(),
     )
     .query(async ({ input, ctx }) => {
       const user = await clerkClient.users.getUser(ctx.authedUserId);
+
+      const order = input?.order === 'asc' ? 'asc' : 'desc';
+
       const docs = await ctx.prisma.document.findMany({
         where: {
           title: {
             contains: input?.title,
           },
           companyId: user.privateMetadata.companyId as string,
+        },
+        orderBy: {
+          createdAt: order,
         },
       });
 

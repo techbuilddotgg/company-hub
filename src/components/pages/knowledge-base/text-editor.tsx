@@ -14,6 +14,8 @@ const Editor = dynamic(
 );
 
 interface TextEditorProps {
+  editorState: EditorState;
+  setEditorState: React.Dispatch<React.SetStateAction<EditorState>>;
   setValue: UseFormSetValue<AddKnowledgeFormData>;
   label?: string;
   info?: string;
@@ -25,9 +27,9 @@ export const TextEditor: FC<TextEditorProps> = ({
   error,
   label,
   info,
+  editorState,
+  setEditorState,
 }) => {
-  const [editorState, setEditorState] = useState(EditorState.createEmpty());
-
   const onEditorStateChange = (editorState: EditorState) => {
     setEditorState(editorState);
     const rawContentState = convertToRaw(editorState.getCurrentContent());

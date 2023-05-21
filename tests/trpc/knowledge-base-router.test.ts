@@ -109,8 +109,7 @@ describe('knowledge-base-router test', () => {
       id: faker.string.uuid(),
     };
 
-    const doc = await api.knowledgeBase.findById(input);
-    expect(doc).toBeNull();
+    await expect(api.knowledgeBase.findById(input)).rejects.toThrowError();
   });
   it('should update document', async () => {
     const document: RouterInput['knowledgeBase']['saveDocument'] = {

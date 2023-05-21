@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { Input } from '@components/ui/input';
 
 import { LoaderButton } from '@components/ui/button';
@@ -8,6 +8,7 @@ import { useSaveDocument } from '@hooks';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CreateDocumentValidator } from '@shared/validators/knowledge-base-validators';
 import dynamic from 'next/dynamic';
+import { EditorState } from 'draft-js';
 
 const TextEditor = dynamic(
   () =>
@@ -64,8 +65,9 @@ export const KnowledgeForm: FC<KnowledgeFormProps> = ({
   type = KnowledgeFormType.ADD,
 }) => {
   const { toast } = useToast();
+  const [editorState, setEditorState] = useState(EditorState.createEmpty());
 
-  const { register, handleSubmit, watch, setValue, formState, reset } =
+  const { register, handleSubmit, setValue, formState, reset } =
     useForm<AddKnowledgeFormData>({
       resolver: zodResolver(CreateDocumentValidator),
       defaultValues: initialValues,
@@ -83,6 +85,7 @@ export const KnowledgeForm: FC<KnowledgeFormProps> = ({
       cb();
     } else {
       reset();
+      setEditorState(EditorState.createEmpty());
     }
   };
 
@@ -144,6 +147,8 @@ export const KnowledgeForm: FC<KnowledgeFormProps> = ({
 
       <div className={'flex flex-col gap-4'}>
         <TextEditor
+          editorState={editorState}
+          setEditorState={setEditorState}
           label={'Content'}
           error={errors.content}
           info={

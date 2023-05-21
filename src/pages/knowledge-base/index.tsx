@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import {
+  AiResponse,
   DocumentFeed,
   KnowledgeBaseSearch,
   LinkButton,
-  Markdown,
   PageHeader,
   SearchOption,
 } from '@components';
 import { AppRoute } from '@constants/app-routes';
 import { useForm } from 'react-hook-form';
 import { useDebounce, useGetDocuments, useOpenAI } from '@hooks';
-import Image from 'next/image';
+import { FilterOption } from '@components/pages/knowledge-base/knowledge-base-filter-options';
 
 const KnowledgeBase = () => {
   const { register, watch } = useForm<{
@@ -26,16 +26,20 @@ const KnowledgeBase = () => {
   const manualSearch = useDebounce(watch('manualSearch'));
   const aiSearch = useDebounce(watch('aiSearch'));
 
-  const { data, isLoading } = useGetDocuments({
-    title: manualSearch,
-  });
-
   const { data: res, mutate, isLoading: isLoadingAIResponse } = useOpenAI();
 
   const [searchOption, setSearchOption] = useState<SearchOption>(
     SearchOption.DEFAULT,
   );
 
+  const [filterOption, setFilterOption] = useState<FilterOption>(
+    FilterOption.CREATED_AT_DESC,
+  );
+
+  const { data, isLoading } = useGetDocuments({
+    title: manualSearch,
+    order: filterOption.toLowerCase(),
+  });
   const handleAISearch = () => {
     mutate({ prompt: aiSearch });
   };
@@ -64,31 +68,15 @@ const KnowledgeBase = () => {
           handleAISearch={handleAISearch}
         />
         {searchOption === SearchOption.DEFAULT && (
-          <DocumentFeed data={data} isLoading={isLoading} />
+          <DocumentFeed
+            setFilterOption={setFilterOption}
+            filterOption={filterOption}
+            data={data}
+            isLoading={isLoading}
+          />
         )}
         {searchOption === SearchOption.AI && (
-          <>
-            <PageHeader
-              title={'AI response'}
-              description={
-                'This is a response from OpenAI based on your uploaded documents.'
-              }
-            />
-            {isLoadingAIResponse && (
-              <div className={'flex flex-col items-center'}>
-                <Image
-                  src={'/assets/robot.gif'}
-                  width={600}
-                  height={300}
-                  alt={'loading'}
-                />
-                <p className={'font-semibold text-gray-400'}>
-                  Please wait while im searching for results ...
-                </p>
-              </div>
-            )}
-            {!isLoadingAIResponse && res && <Markdown>{res.response}</Markdown>}
-          </>
+          <AiResponse isLoading={isLoadingAIResponse} data={res} />
         )}
       </div>
     </div>
