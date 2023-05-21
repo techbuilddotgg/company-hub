@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { Dispatch, FC, SetStateAction } from 'react';
 import {
   Button,
   DropdownMenu,
@@ -9,18 +9,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   Input,
+  LoaderButton,
 } from '@components';
-import { Settings2 } from 'lucide-react';
+import { Bot, FileSearch, Settings2 } from 'lucide-react';
 import { UseFormRegister } from 'react-hook-form';
 
-enum SearchOption {
+export enum SearchOption {
   AI = 'AI',
   DEFAULT = 'DEFAULT',
 }
 
-const SearchOptions = () => {
-  const [position, setPosition] = useState<SearchOption>(SearchOption.DEFAULT);
-
+const SearchOptions: FC<{
+  searchOption: SearchOption;
+  setSearchOption: Dispatch<SetStateAction<SearchOption>>;
+}> = ({ searchOption, setSearchOption }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -28,18 +30,27 @@ const SearchOptions = () => {
           <Settings2 />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-36">
+      <DropdownMenuContent>
         <DropdownMenuLabel>Search options</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuRadioGroup
-          value={position}
-          onValueChange={(value: string) => setPosition(value as SearchOption)}
+          value={searchOption}
+          onValueChange={(value: string) =>
+            setSearchOption(value as SearchOption)
+          }
         >
-          <DropdownMenuRadioItem value={SearchOption.DEFAULT}>
+          <DropdownMenuRadioItem
+            value={SearchOption.DEFAULT}
+            className={'flex flex-row items-center gap-2'}
+          >
+            <FileSearch className={'h-4 w-4'} />
             Manual search
           </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value={SearchOption.AI}>
-            AI search
+          <DropdownMenuRadioItem
+            value={SearchOption.AI}
+            className={'flex flex-row items-center gap-2'}
+          >
+            <Bot className={'h-4 w-4'} /> AI search
           </DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>
@@ -48,19 +59,57 @@ const SearchOptions = () => {
 };
 
 interface KnowledgeBaseSearchProps {
-  register: UseFormRegister<{ search: string }>;
+  register: UseFormRegister<{
+    manualSearch: string;
+    aiSearch: string;
+  }>;
+  searchOption: SearchOption;
+  setSearchOption: Dispatch<SetStateAction<SearchOption>>;
+  handleAISearch: () => void;
+  isSearching: boolean;
 }
 
 export const KnowledgeBaseSearch: FC<KnowledgeBaseSearchProps> = ({
   register,
+  searchOption,
+  setSearchOption,
+  handleAISearch,
+  isSearching,
 }) => {
   return (
     <div className={'flex flex-row gap-2'}>
-      <Input
-        placeholder={'What are you looking for?'}
-        {...register('search')}
-      />
-      <SearchOptions />
+      {searchOption === SearchOption.DEFAULT && (
+        <>
+          <Input
+            placeholder={'What are you looking for?'}
+            {...register('manualSearch')}
+          />
+          <SearchOptions
+            searchOption={searchOption}
+            setSearchOption={setSearchOption}
+          />
+        </>
+      )}
+
+      {searchOption === SearchOption.AI && (
+        <>
+          <Input
+            placeholder={'What are you looking for?'}
+            {...register('aiSearch')}
+          />
+          <LoaderButton
+            isLoading={isSearching}
+            onClick={handleAISearch}
+            hideLoadingText
+          >
+            Ask
+          </LoaderButton>
+          <SearchOptions
+            searchOption={searchOption}
+            setSearchOption={setSearchOption}
+          />
+        </>
+      )}
     </div>
   );
 };

@@ -12,18 +12,13 @@ type ProjectWithBoard = RouterOutput['project']['getById'];
 
 const Project = () => {
   const router = useRouter();
-  const {
-    data: project,
-    isLoading,
-    isError,
-  } = trpc.project.getById.useQuery({
+  const { data: project, isLoading } = trpc.project.getById.useQuery({
     id: router.query.id as string,
   });
 
   return (
     <DataView<ProjectWithBoard>
       isLoading={isLoading}
-      isError={isError}
       data={project}
       fallback={<div>Project not found</div>}
     >

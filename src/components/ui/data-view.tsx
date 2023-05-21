@@ -6,25 +6,23 @@ interface DataViewProps<T> {
   data: T | undefined | null;
   children: (data: NonNullable<T>) => React.ReactNode;
   fallback?: React.ReactNode;
-  isError?: boolean;
+  loadingComponent?: React.ReactNode;
 }
 
 export const DataView = <T,>({
   isLoading,
-  isError,
+  loadingComponent,
   data,
   children,
   fallback,
 }: DataViewProps<T>) => {
   return (
     <>
-      {isLoading ? (
-        <LoadingPage />
-      ) : !data ? (
-        fallback ?? <div>no data</div>
-      ) : (
-        children(data)
-      )}
+      {isLoading
+        ? loadingComponent ?? <LoadingPage />
+        : !data
+        ? fallback ?? <div>no data</div>
+        : children(data)}
     </>
   );
 };
