@@ -73,6 +73,21 @@ export const boardRouter = t.router({
         });
       }
     }),
+  getColumns: protectedProcedure
+    .input(z.object({ boardId: z.string() }))
+    .query(async ({ input, ctx }) => {
+      try {
+        return await ctx.prisma.projectBoardColumn.findMany({
+          where: { projectBoardId: input.boardId },
+        });
+      } catch (e) {
+        console.log(e);
+        throw new TRPCError({
+          message: 'Something went wrong. Please try again later.',
+          code: 'INTERNAL_SERVER_ERROR',
+        });
+      }
+    }),
   addColumn: protectedProcedure
     .input(z.object({ name: z.string(), boardId: z.string() }))
     .mutation(async ({ input, ctx }) => {
@@ -121,8 +136,29 @@ export const boardRouter = t.router({
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
       try {
-        await ctx.prisma.projectBoardColumn.delete({
-          where: { id: input.id },
+        await ctx.prisma.$transaction(async (tx) => {
+          const deleted = await tx.projectBoardColumn.delete({
+            where: { id: input.id },
+          });
+          await tx.projectBoard.update({
+            where: { id: deleted.projectBoardId },
+            data: {
+              projectBoardColumns: {
+                updateMany: {
+                  where: {
+                    orderIndex: {
+                      gt: deleted.orderIndex,
+                    },
+                  },
+                  data: {
+                    orderIndex: {
+                      decrement: 1,
+                    },
+                  },
+                },
+              },
+            },
+          });
         });
       } catch (e) {
         console.log(e);
@@ -338,10 +374,31 @@ export const boardRouter = t.router({
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       try {
-        await ctx.prisma.projectBoardTask.delete({
-          where: {
-            id: input,
-          },
+        await ctx.prisma.$transaction(async (tx) => {
+          const deletedTask = await tx.projectBoardTask.delete({
+            where: {
+              id: input,
+            },
+          });
+          await tx.projectBoardColumn.update({
+            where: { id: deletedTask.projectBoardColumnId },
+            data: {
+              projectBoardTasks: {
+                updateMany: {
+                  where: {
+                    orderIndex: {
+                      gt: deletedTask.orderIndex,
+                    },
+                  },
+                  data: {
+                    orderIndex: {
+                      decrement: 1,
+                    },
+                  },
+                },
+              },
+            },
+          });
         });
       } catch (e) {
         console.log(e);

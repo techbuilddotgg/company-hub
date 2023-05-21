@@ -7,6 +7,7 @@ import { Button, Card } from '@components';
 import { trpc } from '@utils/trpc';
 import { Trash2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
+import { capitalize } from '@utils/capitalize';
 
 const Draggable = dynamic(
   () =>
@@ -38,14 +39,14 @@ const Column = ({ data, index, refetch }: ColumnProps) => {
 
   const setColumnName = (e: FormEvent) => {
     if (e.currentTarget.textContent) {
-      form.setValue('name', e.currentTarget.textContent);
+      form.setValue('name', capitalize(e.currentTarget.textContent));
     }
   };
 
   const saveColumnName = () => {
     updateColumnMutation({
       id: data.id,
-      name: form.getValues('name'),
+      name: capitalize(form.getValues('name')),
     });
   };
 
@@ -69,6 +70,7 @@ const Column = ({ data, index, refetch }: ColumnProps) => {
               suppressContentEditableWarning
               onInput={setColumnName}
               onBlur={saveColumnName}
+              autoCapitalize="on"
             >
               {form.getValues('name')}
             </h2>

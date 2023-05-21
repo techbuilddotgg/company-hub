@@ -5,7 +5,6 @@ import { trpc } from '@utils/trpc';
 import { useRouter } from 'next/router';
 import { Project, ProjectBoard } from '@prisma/client';
 import React from 'react';
-import GithubIntegrationDialog from '@components/pages/project/github-integration-dialog';
 
 const Project = () => {
   const router = useRouter();
@@ -21,12 +20,8 @@ const Project = () => {
     >
       {(data) => (
         <div className="ml-10">
-          <div className="flex flex-row justify-between">
-            <h1 className="my-4 text-2xl font-bold">{data.name}</h1>
-            <GithubIntegrationDialog
-              boardId={data.projectBoards[0]?.id || ''}
-            />
-          </div>
+          <h1 className="my-4 text-2xl font-bold">{data.name}</h1>
+
           {data.projectBoards.length !== 0 && data.projectBoards[0] ? (
             <Board data={data.projectBoards[0]} />
           ) : (

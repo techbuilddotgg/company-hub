@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getTaskNameFromBranch, isSignatureValid } from '@utils/github';
 import { prisma } from '@server/db/client';
+import { ProjectBoardColumn } from '@prisma/client';
 
 export default async function handler(
   req: NextApiRequest,
@@ -21,12 +22,30 @@ export default async function handler(
       },
     });
 
-    const doingColumn = await prisma.projectBoardColumn.findFirst({
+    if (!githubData) return res.status(400).end();
+
+    const githubWebhookAction = await prisma.githubWebhookAction.findUnique({
       where: {
-        OR: [{ name: 'Doing' }, { name: 'doing' }],
+        githubDataId_actionType: {
+          githubDataId: githubData.id,
+          actionType: 'CREATE',
+        },
       },
     });
 
+    const targetColumn = await prisma.$queryRaw<
+      ProjectBoardColumn[]
+    >`SELECT * FROM project_board_columns WHERE LOWER(name) = LOWER(${githubWebhookAction?.projectBoardColumnName}) AND projectBoardId = ${githubData?.projectBoardId} LIMIT 1`;
+
+    const test = await prisma.projectBoardTask.findMany({
+      where: {
+        name: branch,
+        projectBoardColumn: {
+          projectBoard: { id: githubData?.projectBoardId },
+        },
+      },
+    });
+    console.log(test, targetColumn);
     const task = await prisma.projectBoardTask.updateMany({
       where: {
         name: branch,
@@ -35,7 +54,7 @@ export default async function handler(
         },
       },
       data: {
-        projectBoardColumnId: doingColumn?.id,
+        projectBoardColumnId: targetColumn[0]?.id,
       },
     });
     console.log(task);

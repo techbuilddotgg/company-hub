@@ -7,6 +7,7 @@ import { ProjectBoard } from '@prisma/client';
 import { trpc } from '@utils/trpc';
 import AddColumn from '@components/pages/project/add-column';
 import { ProjectColumnFull } from '../../../shared/types/board.types';
+import GithubIntegrationDialog from '@components/pages/project/github-integration-dialog';
 
 interface BoardProps {
   data: ProjectBoard;
@@ -143,6 +144,7 @@ export const Board = ({ data }: BoardProps) => {
 
   return (
     <div className="h-full max-h-full">
+      <GithubIntegrationDialog boardId={data.id} />
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable
           droppableId="board"
