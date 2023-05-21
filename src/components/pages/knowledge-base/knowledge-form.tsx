@@ -1,22 +1,31 @@
 import React, { FC } from 'react';
 import { Input } from '@components/ui/input';
-import { Textarea } from '@components/ui/textarea';
-import { Card } from '@components/ui/card';
-import { Markdown } from '@components/pages/knowledge-base/markdown';
+
 import { LoaderButton } from '@components/ui/button';
 import { useToast, useUpdateDocument } from '@hooks';
 import { useForm } from 'react-hook-form';
 import { useSaveDocument } from '@hooks';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CreateDocumentValidator } from '@shared/validators/knowledge-base-validators';
+import dynamic from 'next/dynamic';
 
-interface FormData {
+const TextEditor = dynamic(
+  () =>
+    import('@components/pages/knowledge-base/text-editor').then(
+      (mod) => mod.TextEditor,
+    ),
+  {
+    ssr: false,
+  },
+);
+
+export interface AddKnowledgeFormData {
   title: string;
   content: string;
   description: string;
 }
 
-const initialState: FormData = {
+const initialState: AddKnowledgeFormData = {
   title: '',
   content: '',
   description: '',
@@ -29,7 +38,7 @@ export enum KnowledgeFormType {
 
 interface KnowledgeFormProps {
   id?: string;
-  initialValues?: FormData;
+  initialValues?: AddKnowledgeFormData;
   type?: KnowledgeFormType;
   refetch?: () => void;
 }
@@ -56,12 +65,11 @@ export const KnowledgeForm: FC<KnowledgeFormProps> = ({
 }) => {
   const { toast } = useToast();
 
-  const { register, handleSubmit, watch, formState, reset } = useForm<FormData>(
-    {
+  const { register, handleSubmit, watch, setValue, formState, reset } =
+    useForm<AddKnowledgeFormData>({
       resolver: zodResolver(CreateDocumentValidator),
       defaultValues: initialValues,
-    },
-  );
+    });
 
   const { errors } = formState;
 
@@ -104,7 +112,7 @@ export const KnowledgeForm: FC<KnowledgeFormProps> = ({
       },
     });
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = (data: AddKnowledgeFormData) => {
     if (type === KnowledgeFormType.ADD) {
       handleSaveDocument(data);
     } else {
@@ -135,26 +143,14 @@ export const KnowledgeForm: FC<KnowledgeFormProps> = ({
       />
 
       <div className={'flex flex-col gap-4'}>
-        <Textarea
+        <TextEditor
           label={'Content'}
           error={errors.content}
           info={
             'Describe all the information someone would need to answer your'
           }
-          placeholder={'Write your knowledge here (it supports markdown)'}
-          rows={20}
-          {...register('content')}
+          setValue={setValue}
         />
-        {watch('content') && (
-          <div>
-            <label htmlFor={'content'} className={'font-semibold'}>
-              Preview
-            </label>
-            <Card>
-              <Markdown>{watch('content')}</Markdown>
-            </Card>
-          </div>
-        )}
       </div>
       <LoaderButton
         isLoading={isSaving || isUpdating}
