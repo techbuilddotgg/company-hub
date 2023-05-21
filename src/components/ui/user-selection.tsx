@@ -23,7 +23,7 @@ const UserSelection: FC<UserSelectionProps> = ({
   handleCheckedChange,
 }) => {
   const { data: users } = trpc.users.findAll.useQuery();
-  const [test, setTest] = React.useState<User[] | undefined>([]);
+  const [list, setList] = React.useState<User[] | undefined>([]);
 
   const { register, handleSubmit } = useForm({
     defaultValues: {
@@ -32,17 +32,17 @@ const UserSelection: FC<UserSelectionProps> = ({
   });
 
   const search = (searchQuery: string) => {
-    if (searchQuery === '') return setTest(users);
+    if (searchQuery === '') return setList(users);
     const result = users?.filter((user) =>
       user?.emailAddresses[0]?.emailAddress
         .toLowerCase()
         .includes(searchQuery.toLowerCase()),
     );
-    setTest(result);
+    setList(result);
   };
 
   useEffect(() => {
-    setTest(users);
+    setList(users);
   }, [users]);
 
   return (
@@ -59,8 +59,8 @@ const UserSelection: FC<UserSelectionProps> = ({
               {...register('search')}
             />
             <ScrollArea className="h-44 rounded-md border">
-              {test ? (
-                test.map((user, index) => (
+              {list ? (
+                list.map((user, index) => (
                   <div key={index}>
                     {user?.emailAddresses[0]?.emailAddress && (
                       <div className="overflow-auto px-2 py-1">
