@@ -3,7 +3,8 @@ import { trpc } from '@utils/trpc';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Card, Input } from '@components';
+import { Card, Input, Button } from "@components";
+
 
 export const AddColumnSchema = z.object({
   name: z
@@ -19,7 +20,7 @@ interface AddColumnProps {
   refetch: () => void;
 }
 const AddColumn = ({ boardId, refetch }: AddColumnProps) => {
-  const { register, handleSubmit } = useForm({
+  const { register, handleSubmit , reset} = useForm({
     resolver: zodResolver(AddColumnSchema),
     defaultValues: {
       name: '',
@@ -30,19 +31,15 @@ const AddColumn = ({ boardId, refetch }: AddColumnProps) => {
     onSuccess: () => refetch(),
   });
   const onSubmit = (data: AddColumnType) => {
-    addColumn({ ...data, boardId: boardId + 'ghtztuztu' });
+    addColumn({ ...data, boardId });
+    reset()
   };
   return (
     <div className="flex flex-row items-start">
-      <Card className="bg-gray-100">
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-row items-center gap-4"
-        >
+      <Card className='bg-gray-100'>
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-row items-center gap-4">
           <Input type="text" id="name" {...register('name')} />
-          <Button type="submit" className="w-44" variant="ghost">
-            + Add a column
-          </Button>
+          <Button type="submit" className='w-44' variant='ghost'>+ Add a column</Button>
         </form>
       </Card>
     </div>

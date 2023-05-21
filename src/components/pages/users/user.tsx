@@ -1,4 +1,4 @@
-import { User as UserType } from '@clerk/backend';
+import type { User as UserType } from '@clerk/nextjs/dist/api';
 import React from 'react';
 import { XCircle } from 'lucide-react';
 
@@ -6,6 +6,7 @@ interface UserProps {
   user: UserType;
   deleteUser: (id: string) => void;
 }
+
 const User = ({ user, deleteUser }: UserProps) => {
   return (
     <div className="mt-1 flex flex-row justify-between rounded-md border p-3 text-gray-600">

@@ -3,25 +3,33 @@ import { GetServerSideProps } from 'next';
 import { resetServerContext } from 'react-beautiful-dnd';
 import { trpc } from '@utils/trpc';
 import { useRouter } from 'next/router';
-import { Project, ProjectBoard } from '@prisma/client';
-import React from 'react';
+
+import type { inferRouterOutputs } from '@trpc/server';
+import type { AppRouter } from '@server/api/router';
+
+type RouterOutput = inferRouterOutputs<AppRouter>;
+type ProjectWithBoard = RouterOutput['project']['getById'];
 
 const Project = () => {
   const router = useRouter();
-  const { data: project, isLoading } = trpc.project.getById.useQuery({
+  const {
+    data: project,
+    isLoading,
+    isError,
+  } = trpc.project.getById.useQuery({
     id: router.query.id as string,
   });
 
   return (
-    <DataView<Project & { projectBoards: ProjectBoard[] }>
-      loading={isLoading}
+    <DataView<ProjectWithBoard>
+      isLoading={isLoading}
+      isError={isError}
       data={project}
       fallback={<div>Project not found</div>}
     >
       {(data) => (
         <div className="ml-10">
           <h1 className="my-4 text-2xl font-bold">{data.name}</h1>
-
           {data.projectBoards.length !== 0 && data.projectBoards[0] ? (
             <Board data={data.projectBoards[0]} />
           ) : (

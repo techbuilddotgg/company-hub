@@ -20,6 +20,18 @@ export const projectBoardTaskSchema = z.object({
   orderIndex: z.number(),
 });
 
+export const projectBoardTaskSchemaOptional = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string().nullable().optional(),
+  projectBoardColumnId: z.string().optional(),
+  createdAt: z.date().optional(),
+  deadLine: z.date().optional(),
+  taskPriorityId: z.string().nullable().optional(),
+  taskTypeId: z.string().nullable().optional(),
+  orderIndex: z.number().optional(),
+});
+
 export const projectBoardColumnSchema = z.object({
   id: z.string(),
   name: z.string(),
