@@ -64,7 +64,7 @@ export const UploadKnowledgeForm = () => {
       />
       <Input
         label={'File with knowledge'}
-        info={'Supported file extensions are .docx, .pdf, .txt, .md'}
+        info={'Supported file extensions are: .txt'}
         type={'file'}
         accept={'.txt'}
         {...register('fileList')}
