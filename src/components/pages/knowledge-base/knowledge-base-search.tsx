@@ -11,7 +11,7 @@ import {
   Input,
   LoaderButton,
 } from '@components';
-import { Bot, FileSearch, ListFilter, Settings2 } from 'lucide-react';
+import { Bot, FileSearch, Settings2 } from 'lucide-react';
 import { UseFormRegister } from 'react-hook-form';
 
 export enum SearchOption {

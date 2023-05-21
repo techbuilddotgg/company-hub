@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import draftToMarkdown from 'draftjs-to-markdown';
 import { EditorState, convertToRaw } from 'draft-js';
