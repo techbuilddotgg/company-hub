@@ -1,10 +1,10 @@
 import React, { FC } from 'react';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import draftToMarkdown from 'draftjs-to-markdown';
 import { EditorState, convertToRaw } from 'draft-js';
 import dynamic from 'next/dynamic';
 import { FieldError, UseFormSetValue } from 'react-hook-form';
 import { AddKnowledgeFormData, InputWrapper } from '@components';
+import { draftToMarkdown } from 'markdown-draft-js';
 
 const Editor = dynamic(
   () => import('react-draft-wysiwyg').then((mod) => mod.Editor),
@@ -33,16 +33,7 @@ export const TextEditor: FC<TextEditorProps> = ({
   const onEditorStateChange = (editorState: EditorState) => {
     setEditorState(editorState);
     const rawContentState = convertToRaw(editorState.getCurrentContent());
-    const markdown = draftToMarkdown(
-      rawContentState,
-      { trigger: '#', separator: ' ' },
-      {},
-      {
-        blockTypesMapping: {
-          'unordered-list-item': '* ',
-        },
-      },
-    );
+    const markdown = draftToMarkdown(rawContentState);
     setValue('content', markdown);
   };
 

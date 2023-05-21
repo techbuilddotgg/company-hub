@@ -7,6 +7,7 @@ import {
   FilterOption,
   KnowledgeBaseFilterOptions,
 } from '@components/pages/knowledge-base/knowledge-base-filter-options';
+import { useAutoAnimate } from '@formkit/auto-animate/react';
 
 type DocumentFeedData = RouterOutput['knowledgeBase']['findDocuments'];
 
@@ -16,6 +17,8 @@ export const DocumentFeed: FC<{
   filterOption: FilterOption;
   setFilterOption: Dispatch<SetStateAction<FilterOption>>;
 }> = ({ data, isLoading, filterOption, setFilterOption }) => {
+  const [parent] = useAutoAnimate();
+
   return (
     <div className={'flex flex-col gap-4'}>
       <div className={'flex flex-row items-center'}>
@@ -31,7 +34,7 @@ export const DocumentFeed: FC<{
         </div>
       </div>
 
-      <div className={'grid grid-cols-4 gap-4'}>
+      <div className={'grid grid-cols-4 gap-4'} ref={parent}>
         <DataView<DocumentFeedData> isLoading={isLoading} data={data}>
           {(data) =>
             data.map((document) => (

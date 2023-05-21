@@ -1,6 +1,5 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { Input } from '@components/ui/input';
-
 import { LoaderButton } from '@components/ui/button';
 import { useToast, useUpdateDocument } from '@hooks';
 import { useForm } from 'react-hook-form';
@@ -8,7 +7,8 @@ import { useSaveDocument } from '@hooks';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CreateDocumentValidator } from '@shared/validators/knowledge-base-validators';
 import dynamic from 'next/dynamic';
-import { EditorState } from 'draft-js';
+import { convertFromRaw, EditorState } from 'draft-js';
+import { markdownToDraft } from 'markdown-draft-js';
 
 const TextEditor = dynamic(
   () =>
@@ -65,7 +65,13 @@ export const KnowledgeForm: FC<KnowledgeFormProps> = ({
   type = KnowledgeFormType.ADD,
 }) => {
   const { toast } = useToast();
-  const [editorState, setEditorState] = useState(EditorState.createEmpty());
+
+  const rawData = markdownToDraft(initialValues.content);
+  const contentState = convertFromRaw(rawData);
+
+  const [editorState, setEditorState] = useState<EditorState>(
+    EditorState.createWithContent(contentState),
+  );
 
   const { register, handleSubmit, setValue, formState, reset } =
     useForm<AddKnowledgeFormData>({
