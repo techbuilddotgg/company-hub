@@ -8,11 +8,13 @@ import {
   KnowledgeForm,
   KnowledgeFormType,
   PageHeader,
+  PageUnavailable,
 } from '@components';
 import { useDeleteDocument, useGetDocument } from '@hooks';
 import { useRouter } from 'next/router';
-import { RouterOutput } from '@utils/trpc';
+import { RouterOutput, trpc } from '@utils/trpc';
 import { X } from 'lucide-react';
+import { AppRoute } from '@constants/app-routes';
 
 type KnowledgeDocument = RouterOutput['knowledgeBase']['findById'];
 const EditKnowledgePage = () => {
@@ -27,15 +29,25 @@ const EditKnowledgePage = () => {
     },
   );
 
-  const { mutate } = useDeleteDocument();
-  const handleDelete = () => {
-    mutate({ id: id as string });
-    router.push('/knowledge-base');
+  const utils = trpc.useContext();
+  const { mutateAsync } = useDeleteDocument({
+    onSuccess: () => {
+      utils.knowledgeBase.findDocuments.invalidate();
+    },
+  });
+
+  const handleDelete = async () => {
+    await mutateAsync({ id: id as string });
+    await router.push(AppRoute.KNOWLEDGE_BASE);
   };
 
   return (
     <div className={'flex flex-col gap-4'}>
-      <DataView<KnowledgeDocument> isLoading={isLoading} data={data}>
+      <DataView<KnowledgeDocument>
+        isLoading={isLoading}
+        data={data}
+        fallback={<PageUnavailable />}
+      >
         {(data) => {
           return (
             <>
@@ -59,6 +71,7 @@ const EditKnowledgePage = () => {
                         buttonVariant={'ghost'}
                         buttonClassName={'rounded-full p-0 w-10'}
                         buttonText={<X className={'h-6 w-6 cursor-pointer'} />}
+                        actionText={'Delete'}
                         title={'Delete document'}
                         description={
                           'Are you sure you want to delete this document?'

@@ -1,5 +1,6 @@
 import { type ReactQueryOptions, type RouterInput, trpc } from '@utils/trpc';
 import { useMutation, UseMutationOptions } from '@tanstack/react-query';
+import { UploadFormData } from '@components';
 
 // Knowledge Base
 export const useGetDocuments = (
@@ -35,13 +36,24 @@ export const useUpdateDocument = (
 };
 
 export const useUploadDocument = (
-  opts?: UseMutationOptions<{ message: string }, Error, File, unknown>,
+  opts?: UseMutationOptions<
+    { message: string },
+    Error,
+    UploadFormData,
+    unknown
+  >,
 ) => {
   return useMutation({
     ...opts,
-    mutationFn: async (file: File) => {
+    mutationFn: async ({ fileList, title, description }) => {
+      const file = fileList[0];
+      if (!file) throw new Error('No file provided');
+
       const formData = new FormData();
       formData.append('file', file);
+      formData.append('title', title);
+      formData.append('description', description);
+
       const res = await fetch('/api/openai/upload-data', {
         method: 'POST',
         body: formData,

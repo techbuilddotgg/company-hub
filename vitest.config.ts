@@ -13,6 +13,7 @@ export default defineConfig({
       '@server': join(__dirname, './src/server/'),
       '@constants': join(__dirname, './src/constants/'),
       '@env': './src/env.mjs',
+      '@shared': join(__dirname, './src/shared/'),
     },
   },
 });

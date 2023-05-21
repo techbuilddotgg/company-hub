@@ -1,29 +1,51 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
-  PageHeader,
+  AiResponse,
+  DocumentFeed,
   KnowledgeBaseSearch,
   LinkButton,
-  DocumentFeed,
-  Button,
+  PageHeader,
+  SearchOption,
 } from '@components';
 import { AppRoute } from '@constants/app-routes';
 import { useForm } from 'react-hook-form';
 import { useDebounce, useGetDocuments, useOpenAI } from '@hooks';
+import { FilterOption } from '@components/pages/knowledge-base/knowledge-base-filter-options';
+import { useAutoAnimate } from '@formkit/auto-animate/react';
 
 const KnowledgeBase = () => {
-  const { register, watch } = useForm<{ search: string }>({
+  const { register, watch } = useForm<{
+    manualSearch: string;
+    aiSearch: string;
+  }>({
     defaultValues: {
-      search: '',
+      manualSearch: '',
+      aiSearch: '',
     },
   });
 
-  const search = useDebounce(watch('search'));
+  const manualSearch = useDebounce(watch('manualSearch'));
+  const aiSearch = useDebounce(watch('aiSearch'));
+
+  const { data: res, mutate, isLoading: isLoadingAIResponse } = useOpenAI();
+
+  const [searchOption, setSearchOption] = useState<SearchOption>(
+    SearchOption.DEFAULT,
+  );
+
+  const [filterOption, setFilterOption] = useState<FilterOption>(
+    FilterOption.CREATED_AT_DESC,
+  );
 
   const { data, isLoading } = useGetDocuments({
-    title: search,
+    title: manualSearch,
+    order: filterOption.toLowerCase(),
   });
+  const handleAISearch = () => {
+    mutate({ prompt: aiSearch });
+  };
 
-  const { data: res, mutate } = useOpenAI();
+  const [parent] = useAutoAnimate();
 
   return (
     <div className={'flex h-full flex-col gap-2'}>
@@ -40,17 +62,25 @@ const KnowledgeBase = () => {
         </LinkButton>
       </div>
 
-      <div className={'flex w-full grow flex-col gap-4'}>
-        <KnowledgeBaseSearch register={register} />
-        <div className={'grid grid-cols-4 gap-4'}>
-          <DocumentFeed data={data} isLoading={isLoading} />
-        </div>
-        <>
-          <Button onClick={() => mutate({ prompt: 'Who is Domen Perko' })}>
-            OpenAI
-          </Button>
-          {res && <p>{JSON.stringify(res)}</p>}
-        </>
+      <div className={'flex w-full grow flex-col gap-4'} ref={parent}>
+        <KnowledgeBaseSearch
+          isSearching={isLoadingAIResponse}
+          register={register}
+          setSearchOption={setSearchOption}
+          searchOption={searchOption}
+          handleAISearch={handleAISearch}
+        />
+        {searchOption === SearchOption.DEFAULT && (
+          <DocumentFeed
+            setFilterOption={setFilterOption}
+            filterOption={filterOption}
+            data={data}
+            isLoading={isLoading}
+          />
+        )}
+        {searchOption === SearchOption.AI && (
+          <AiResponse isLoading={isLoadingAIResponse} data={res} />
+        )}
       </div>
     </div>
   );

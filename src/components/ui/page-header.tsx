@@ -17,7 +17,7 @@ export const PageHeader: FC<PageHeaderProps> = ({
       <h1 className={'text-2xl font-semibold text-gray-800 dark:text-gray-100'}>
         {title}
       </h1>
-      <p className={'text-sm text-gray-500'}>{description}</p>
+      <div className={'text-sm text-gray-500'}>{description}</div>
     </div>
   );
 };
