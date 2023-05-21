@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useState } from 'react';
 import { Input } from '@components/ui/input';
 import { LoaderButton } from '@components/ui/button';
 import { useToast, useUpdateDocument } from '@hooks';

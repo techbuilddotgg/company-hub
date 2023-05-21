@@ -36,3 +36,4 @@ export * from './pages/knowledge-base/document-card';
 export * from './pages/knowledge-base/document-feed';
 export * from './pages/knowledge-base/ai-response';
 export * from './ui/badge';
+export * from './ui/skeleton';

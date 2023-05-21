@@ -11,6 +11,7 @@ import { AppRoute } from '@constants/app-routes';
 import { useForm } from 'react-hook-form';
 import { useDebounce, useGetDocuments, useOpenAI } from '@hooks';
 import { FilterOption } from '@components/pages/knowledge-base/knowledge-base-filter-options';
+import { useAutoAnimate } from '@formkit/auto-animate/react';
 
 const KnowledgeBase = () => {
   const { register, watch } = useForm<{
@@ -44,6 +45,8 @@ const KnowledgeBase = () => {
     mutate({ prompt: aiSearch });
   };
 
+  const [parent] = useAutoAnimate();
+
   return (
     <div className={'flex h-full flex-col gap-2'}>
       <div className={'flex flex-row items-center'}>
@@ -59,7 +62,7 @@ const KnowledgeBase = () => {
         </LinkButton>
       </div>
 
-      <div className={'flex w-full grow flex-col gap-4'}>
+      <div className={'flex w-full grow flex-col gap-4'} ref={parent}>
         <KnowledgeBaseSearch
           isSearching={isLoadingAIResponse}
           register={register}

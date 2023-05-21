@@ -8,6 +8,17 @@ import {
   KnowledgeBaseFilterOptions,
 } from '@components/pages/knowledge-base/knowledge-base-filter-options';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
+import dynamic from 'next/dynamic';
+
+const DocumentCardSkeletonList = dynamic(
+  () =>
+    import('@components/pages/knowledge-base/document-card').then(
+      (mod) => mod.DocumentCardSkeletonList,
+    ),
+  {
+    ssr: false,
+  },
+);
 
 type DocumentFeedData = RouterOutput['knowledgeBase']['findDocuments'];
 
@@ -35,7 +46,11 @@ export const DocumentFeed: FC<{
       </div>
 
       <div className={'grid grid-cols-4 gap-4'} ref={parent}>
-        <DataView<DocumentFeedData> isLoading={isLoading} data={data}>
+        <DataView<DocumentFeedData>
+          isLoading={isLoading}
+          loadingComponent={<DocumentCardSkeletonList />}
+          data={data}
+        >
           {(data) =>
             data.map((document) => (
               <DocumentCard key={document.id} document={document} />
