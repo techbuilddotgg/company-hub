@@ -11,6 +11,7 @@ import {
   Input,
   Textarea,
   TimePicker,
+  UserSelection,
 } from '@components';
 import Labels from '@components/pages/calendar/labels';
 import { useForm } from 'react-hook-form';
@@ -49,6 +50,8 @@ const EventModalForm: FC<EventModalFormProps> = ({ currentDate, event }) => {
 
   const [label, setLabel] = useState('blue');
 
+  const [selected, setSelected] = React.useState<string[]>([]);
+
   const { register, watch, handleSubmit, setValue } = useForm({
     resolver: zodResolver(EventSchema),
     defaultValues: {
@@ -83,6 +86,14 @@ const EventModalForm: FC<EventModalFormProps> = ({ currentDate, event }) => {
     setValue('allDay', Boolean(value));
     setStartTime({ hours: 0, minutes: 0 });
     setEndTime({ hours: 24, minutes: 0 });
+  };
+
+  const handleSelectionChange = (checked: boolean, user: string) => {
+    if (checked) {
+      setSelected([...selected, user]);
+    } else {
+      setSelected(selected.filter((item) => item !== user));
+    }
   };
 
   useEffect(() => {
@@ -189,6 +200,10 @@ const EventModalForm: FC<EventModalFormProps> = ({ currentDate, event }) => {
         </div>
       )}
       <Textarea label={'Description'} {...register('description')} rows={3} />
+      <UserSelection
+        handleCheckedChange={handleSelectionChange}
+        selected={selected}
+      />
       <div className={'my-2'}>
         <Labels selected={label} handleLabelChange={handleLabelChange} />
       </div>
