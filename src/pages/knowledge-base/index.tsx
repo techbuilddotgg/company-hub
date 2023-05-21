@@ -77,7 +77,7 @@ const KnowledgeBase = () => {
             {isLoadingAIResponse && (
               <div className={'flex flex-col items-center'}>
                 <Image
-                  src={'/robot.gif'}
+                  src={'/assets/robot.gif'}
                   width={600}
                   height={300}
                   alt={'loading'}

@@ -7,7 +7,11 @@ import {
   UpdateDocumentValidator,
 } from '@shared/validators/knowledge-base-validators';
 import { prepareDocument, textToDocument } from '@server/libs/langchain';
-import { uploadDocumentsToPinecone } from '@server/libs/pinecone';
+import {
+  deleteDocumentFromPinecone,
+  uploadDocumentsToPinecone,
+} from '@server/libs/pinecone';
+import { TRPCError } from '@trpc/server';
 
 export const knowledgeBaseRouter = t.router({
   saveDocument: protectedProcedure
@@ -76,16 +80,27 @@ export const knowledgeBaseRouter = t.router({
   findById: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
-      return await ctx.prisma.document.findUnique({
+      const doc = await ctx.prisma.document.findUnique({
         where: {
           id: input.id,
         },
       });
+      if (!doc)
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Document not found',
+        });
+      const user = await clerkClient.users.getUser(doc?.authorId);
+      return { ...doc, author: filterUserForClient(user) };
     }),
 
   deleteDocument: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
+      await deleteDocumentFromPinecone({
+        documentId: input.id,
+      });
+
       return await ctx.prisma.document.delete({
         where: {
           id: input.id,

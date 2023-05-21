@@ -27,7 +27,15 @@ describe('knowledge-base-router test', () => {
   ] as unknown as User[]);
 
   vi.spyOn(Pinecone, 'uploadDocumentsToPinecone').mockImplementation(
-    async () => {},
+    async () => {
+      return;
+    },
+  );
+
+  vi.spyOn(Pinecone, 'deleteDocumentFromPinecone').mockImplementation(
+    async () => {
+      return;
+    },
   );
 
   beforeAll(async () => {

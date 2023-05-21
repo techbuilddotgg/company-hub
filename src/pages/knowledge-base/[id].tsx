@@ -18,6 +18,7 @@ import { RouterOutput } from '@utils/trpc';
 import { Edit, MoreVertical } from 'lucide-react';
 import Link from 'next/link';
 import { AppRoute } from '@constants/app-routes';
+import moment from 'moment';
 
 type DocumentData = RouterOutput['knowledgeBase']['findById'];
 
@@ -48,7 +49,7 @@ const DocumentPage = () => {
   const router = useRouter();
   const { id } = router.query;
 
-  const { data, isLoading, isError } = useGetDocument(
+  const { data, isLoading } = useGetDocument(
     {
       id: id as string,
     },
@@ -62,9 +63,28 @@ const DocumentPage = () => {
       {(data) => (
         <div className={'flex flex-col gap-4'}>
           <div className={'flex flex-row items-center'}>
-            <PageHeader title={data.title} description={data.description} />
+            <PageHeader
+              title={data.title}
+              description={
+                <>
+                  <p>{data.description}</p>
+                  <p>Author: {data.author.username}</p>
+                  <p>
+                    {data.createdAt >= data.updatedAt ? 'Created' : 'Updated'}:{' '}
+                    {moment(
+                      data.createdAt >= data.updatedAt
+                        ? data.createdAt
+                        : data.updatedAt,
+                    )
+                      .startOf('seconds')
+                      .fromNow()}
+                  </p>
+                </>
+              }
+            />
             <DocumentActions documentId={data.id} />
           </div>
+
           <Markdown>{data.content}</Markdown>
         </div>
       )}
