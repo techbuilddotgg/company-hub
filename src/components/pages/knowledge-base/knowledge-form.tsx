@@ -124,9 +124,9 @@ export const KnowledgeForm: FC<KnowledgeFormProps> = ({
     onSuccess: () => {
       handleSuccess();
     },
-    onError: (error) => {
-      console.log(error.shape?.data.zodError);
+    onError: () => {
       toast({
+        variant: 'destructive',
         title: 'Document save failed',
         description: `The document could not be saved.`,
       });

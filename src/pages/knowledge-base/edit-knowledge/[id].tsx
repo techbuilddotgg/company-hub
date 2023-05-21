@@ -8,6 +8,7 @@ import {
   KnowledgeForm,
   KnowledgeFormType,
   PageHeader,
+  PageUnavailable,
 } from '@components';
 import { useDeleteDocument, useGetDocument } from '@hooks';
 import { useRouter } from 'next/router';
@@ -42,7 +43,11 @@ const EditKnowledgePage = () => {
 
   return (
     <div className={'flex flex-col gap-4'}>
-      <DataView<KnowledgeDocument> isLoading={isLoading} data={data}>
+      <DataView<KnowledgeDocument>
+        isLoading={isLoading}
+        data={data}
+        fallback={<PageUnavailable />}
+      >
         {(data) => {
           return (
             <>

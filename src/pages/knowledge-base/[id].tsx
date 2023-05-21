@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
   Markdown,
   PageHeader,
+  PageUnavailable,
 } from '@components';
 import { RouterOutput } from '@utils/trpc';
 import { Edit, MoreVertical } from 'lucide-react';
@@ -59,7 +60,11 @@ const DocumentPage = () => {
   );
 
   return (
-    <DataView<DocumentData> isLoading={isLoading} data={data}>
+    <DataView<DocumentData>
+      isLoading={isLoading}
+      data={data}
+      fallback={<PageUnavailable />}
+    >
       {(data) => (
         <div className={'flex flex-col gap-4'}>
           <div className={'flex flex-row items-center'}>

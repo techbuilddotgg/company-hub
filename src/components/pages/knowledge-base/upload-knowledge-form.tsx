@@ -61,6 +61,7 @@ export const UploadKnowledgeForm = () => {
     },
     onError: () => {
       toast({
+        variant: 'destructive',
         title: 'Document upload failed',
         description: `Could not upload document.`,
       });
