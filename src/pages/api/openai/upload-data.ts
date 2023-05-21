@@ -87,7 +87,7 @@ async function getFormData(req: NextApiRequest) {
     // 10 MB
     maxFileSize: 10 * 1024 * 1024,
     filter: (part) => {
-      const allowedFileExtensions = ['txt'];
+      const allowedFileExtensions = ['txt', 'docx', 'pdf', '.md'];
       const fileType = part.originalFilename?.split('.').pop() || '';
       return allowedFileExtensions.includes(fileType);
     },

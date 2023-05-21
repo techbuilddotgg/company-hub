@@ -9,6 +9,13 @@ import { CreateDocumentValidator } from '@shared/validators/knowledge-base-valid
 import dynamic from 'next/dynamic';
 import { convertFromRaw, EditorState } from 'draft-js';
 import { markdownToDraft } from 'markdown-draft-js';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@components/ui/tooltip';
+import { Info } from 'lucide-react';
 
 const TextEditor = dynamic(
   () =>
@@ -19,6 +26,24 @@ const TextEditor = dynamic(
     ssr: false,
   },
 );
+
+const EditorTooltip = () => {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger type={'button'}>
+          <Info className={'h-4 w-4 text-blue-600'} />
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>
+            If you want to display code in your knowledge, you can use backticks
+            (<span className={'font-semibold'}>`</span>) to wrap your code.
+          </p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+};
 
 export interface AddKnowledgeFormData {
   title: string;
@@ -157,6 +182,7 @@ export const KnowledgeForm: FC<KnowledgeFormProps> = ({
           setEditorState={setEditorState}
           label={'Content'}
           error={errors.content}
+          tooltip={<EditorTooltip />}
           info={
             'Describe all the information someone would need to answer your'
           }

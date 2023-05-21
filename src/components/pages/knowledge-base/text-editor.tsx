@@ -20,6 +20,7 @@ interface TextEditorProps {
   label?: string;
   info?: string;
   error?: FieldError;
+  tooltip?: React.ReactNode;
 }
 
 export const TextEditor: FC<TextEditorProps> = ({
@@ -29,6 +30,7 @@ export const TextEditor: FC<TextEditorProps> = ({
   info,
   editorState,
   setEditorState,
+  tooltip,
 }) => {
   const onEditorStateChange = (editorState: EditorState) => {
     setEditorState(editorState);
@@ -38,7 +40,7 @@ export const TextEditor: FC<TextEditorProps> = ({
   };
 
   return (
-    <InputWrapper error={error} label={label} info={info}>
+    <InputWrapper error={error} label={label} info={info} tooltip={tooltip}>
       <Editor
         placeholder="Write your knowledge here..."
         editorState={editorState}

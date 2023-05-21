@@ -7,6 +7,7 @@ import { PineconeStore } from 'langchain/vectorstores/pinecone';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { OpenAI } from 'langchain';
 import { VectorDBQAChain } from 'langchain/chains';
+import { DocxLoader, PDFLoader } from 'langchain/document_loaders';
 
 export interface DocumentMetadata {
   authorId: string;
@@ -23,21 +24,31 @@ export const prepareDocument = async (
     chunkOverlap: 200,
   });
 
-  const docOutput = await splitter.splitDocuments([
+  return await splitter.splitDocuments([
     new Document({
       pageContent: document?.[0]?.pageContent || '',
       metadata: metadata,
     }),
   ]);
-
-  return docOutput;
 };
 
-export const loadDocument = async (filepath: string) => {
-  const loader = new TextLoader(filepath);
-  const doc = await loader.load();
+export const loadDocument = async (filepath: string): Promise<Document[]> => {
+  const fileExtension = filepath.split('.').pop();
 
-  return doc;
+  switch (fileExtension) {
+    case 'md':
+    case 'txt':
+      const textLoader = new TextLoader(filepath);
+      return await textLoader.load();
+    case 'pdf':
+      const pdfLoader = new PDFLoader(filepath);
+      return await pdfLoader.load();
+    case 'docx':
+      const docxLoader = new DocxLoader(filepath);
+      return await docxLoader.load();
+    default:
+      throw new Error('File type not supported.');
+  }
 };
 
 export const initializeVectorDBQAChain = async (
