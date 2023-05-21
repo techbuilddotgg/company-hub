@@ -31,11 +31,10 @@ export const projectRouter = t.router({
     }),
   get: protectedProcedure.query(async ({ ctx: { prisma, authedUserId } }) => {
     const user = await clerkClient.users.getUser(authedUserId);
-
     try {
       return await prisma.project.findMany({
         where: {
-          companyId: user.privateMetadata.companyId as string,
+          companyId: user.privateMetadata.companyId || '',
         },
         include: {
           projectBoards: true,
