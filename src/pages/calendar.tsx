@@ -5,7 +5,13 @@ const Calendar = () => {
   return (
     <div>
       <div>Calendar</div>
-      <CalendarScheduler />
+      <div className="md:flex">
+        <div className="md:flex-grow">
+          <div className="md:flex md:flex-col">
+            <CalendarScheduler />
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

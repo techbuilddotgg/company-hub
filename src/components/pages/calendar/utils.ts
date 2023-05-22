@@ -50,7 +50,9 @@ export const checkTime = (
     }
     if (
       startTime.hours === 0 ||
-      (startTime.hours <= endTime.hours && startTime.minutes < endTime.minutes)
+      (startTime.hours === endTime.hours &&
+        startTime.minutes < endTime.minutes) ||
+      startTime.hours < endTime.hours
     ) {
       return true;
     }

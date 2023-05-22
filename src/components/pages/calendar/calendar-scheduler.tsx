@@ -66,7 +66,7 @@ const CalendarScheduler = () => {
   };
 
   return (
-    <div>
+    <div className={'container-calendar'}>
       <div className={'mb-3'}>
         {user?.id && (
           <EventModal
@@ -103,11 +103,13 @@ const CalendarScheduler = () => {
         allDaySlot={false}
         editable={true}
         nowIndicator={true}
-        height={'700px'}
+        height={'85vh'}
         eventBorderColor={'#a9a9a9'}
         eventChange={handleUpdateEventSelect}
         eventClick={handleEditEventSelectAndOpenModal}
         select={handleAddEventSelectAndOpenModal}
+        dayHeaderClassNames={'text-sm text-gray-500 font-semibold'}
+        viewHeight={'auto'}
       />
     </div>
   );
