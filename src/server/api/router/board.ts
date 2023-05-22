@@ -1,11 +1,16 @@
-import { boardProcedure, protectedProcedure, t } from '../trpc';
+import {
+  adminBoardProcedure,
+  boardProcedure,
+  protectedProcedure,
+  t,
+} from '../trpc';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import {
   projectBoardColumnSchema,
   projectBoardTaskSchema,
   projectBoardTaskSchemaOptional,
-} from '../../../shared/validators/board.schemes';
+} from '@shared/validators/board.schemes';
 
 export const boardRouter = t.router({
   getById: protectedProcedure
@@ -89,7 +94,7 @@ export const boardRouter = t.router({
         });
       }
     }),
-  addColumn: boardProcedure
+  addColumn: adminBoardProcedure
     .input(z.object({ name: z.string(), boardId: z.string() }))
     .mutation(async ({ input, ctx }) => {
       try {
@@ -118,7 +123,7 @@ export const boardRouter = t.router({
         throw new TRPCError({ message, code });
       }
     }),
-  updateColumn: boardProcedure
+  updateColumn: adminBoardProcedure
     .input(z.object({ id: z.string(), name: z.string() }))
     .mutation(async ({ input, ctx }) => {
       try {
@@ -134,7 +139,7 @@ export const boardRouter = t.router({
         });
       }
     }),
-  deleteColumn: boardProcedure
+  deleteColumn: adminBoardProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
       try {
@@ -206,7 +211,7 @@ export const boardRouter = t.router({
         return await ctx.prisma.projectBoardTask.findUnique({
           where: {
             id: input.taskId,
-          }
+          },
         });
       } catch (e) {
         console.log(e);
@@ -234,7 +239,7 @@ export const boardRouter = t.router({
         });
       }
     }),
-  reorderColumns: boardProcedure
+  reorderColumns: adminBoardProcedure
     .input(
       z.object({
         boardId: z.string(),
@@ -495,7 +500,7 @@ export const boardRouter = t.router({
             text: input.comment,
             projectBoardTaskId: input.taskId,
             authorId: input.userId,
-            email: input.email
+            email: input.email,
           },
         });
       } catch (e) {
@@ -513,7 +518,7 @@ export const boardRouter = t.router({
         return await ctx.prisma.projectBoardTaskComment.findMany({
           where: {
             projectBoardTaskId: input.taskId,
-          }
+          },
         });
       } catch (e) {
         console.log(e);
@@ -541,7 +546,7 @@ export const boardRouter = t.router({
         return await ctx.prisma.taskType.findUnique({
           where: {
             id: input.taskTypeId,
-          }
+          },
         });
       } catch (e) {
         console.log(e);
@@ -569,7 +574,7 @@ export const boardRouter = t.router({
         return await ctx.prisma.taskPriority.findUnique({
           where: {
             id: input.taskPriorityId,
-          }
+          },
         });
       } catch (e) {
         console.log(e);

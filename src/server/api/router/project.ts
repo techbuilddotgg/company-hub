@@ -2,8 +2,8 @@ import { adminProcedure, protectedProcedure, t } from '../trpc';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { clerkClient } from '@clerk/nextjs/server';
-import { projectSchema } from '../../../shared/validators/board.schemes';
-import { AddProjectSchema } from '../../../shared/validators/project.schemes';
+import { projectSchema } from '@shared/validators/board.schemes';
+import { AddProjectSchema } from '@shared/validators/project.schemes';
 
 export const projectRouter = t.router({
   add: adminProcedure
@@ -13,7 +13,7 @@ export const projectRouter = t.router({
 
       try {
         const company = await prisma.company.findUnique({
-          where: { id: user.privateMetadata.companyId as string | undefined },
+          where: { id: user.publicMetadata.companyId as string | undefined },
         });
         if (!company)
           throw new TRPCError({

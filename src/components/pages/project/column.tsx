@@ -2,12 +2,13 @@ import React, { FormEvent } from 'react';
 import dynamic from 'next/dynamic';
 import TaskList from '@components/pages/project/task-list';
 import AddTask from '@components/pages/project/add-task';
-import { ProjectColumnFull } from '../../../shared/types/board.types';
+import { ProjectColumnFull } from '@shared/types/board.types';
 import { AlertDialogButton, Card } from '@components';
 import { trpc } from '@utils/trpc';
 import { Trash2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { capitalize } from '@utils/capitalize';
+import { useUser } from '@clerk/nextjs';
 
 const Draggable = dynamic(
   () =>
@@ -33,6 +34,7 @@ const Column = ({ data, index, refetch }: ColumnProps) => {
   const { mutate: deleteColumnMutation } = trpc.board.deleteColumn.useMutation({
     onSuccess: () => refetch(),
   });
+  const { user } = useUser();
 
   const { mutate: updateColumnMutation } =
     trpc.board.updateColumn.useMutation();
@@ -55,7 +57,11 @@ const Column = ({ data, index, refetch }: ColumnProps) => {
   };
 
   return (
-    <Draggable draggableId={data.id} index={index}>
+    <Draggable
+      draggableId={data.id}
+      index={index}
+      isDragDisabled={user?.publicMetadata.isAdmin == false}
+    >
       {(provided) => (
         <Card
           ref={provided.innerRef}
@@ -66,7 +72,7 @@ const Column = ({ data, index, refetch }: ColumnProps) => {
           <div className="flex w-full flex-row justify-between">
             <h2
               className="px-2 py-1"
-              contentEditable
+              contentEditable={Boolean(user?.publicMetadata.isAdmin)}
               suppressContentEditableWarning
               onInput={setColumnName}
               onBlur={saveColumnName}
@@ -74,13 +80,17 @@ const Column = ({ data, index, refetch }: ColumnProps) => {
             >
               {form.getValues('name')}
             </h2>
-            <AlertDialogButton
-              handleAction={deleteColumn}
-              buttonVariant={'ghost'}
-              buttonText={<Trash2 color="black" size={22} />}
-              title={'Delete column'}
-              description={'Are you sure you want to delete this column?'}
-            />
+            <>
+              {user?.publicMetadata.isAdmin && (
+                <AlertDialogButton
+                  handleAction={deleteColumn}
+                  buttonVariant={'ghost'}
+                  buttonText={<Trash2 color="black" size={22} />}
+                  title={'Delete column'}
+                  description={'Are you sure you want to delete this column?'}
+                />
+              )}
+            </>
           </div>
 
           <div>

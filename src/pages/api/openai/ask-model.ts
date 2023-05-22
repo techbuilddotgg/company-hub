@@ -33,7 +33,7 @@ export default async function handler(
 
   try {
     const chain = await initializeVectorDBQAChain({
-      companyId: user.user?.privateMetadata.compant as string,
+      companyId: user.user?.publicMetadata.compant as string,
     });
     const chatResponse = await chain.call({
       query: body.prompt,

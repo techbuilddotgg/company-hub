@@ -12,9 +12,12 @@ type ProjectWithBoard = RouterOutput['project']['getById'];
 
 const Project = () => {
   const router = useRouter();
-  const { data: project, isLoading } = trpc.project.getById.useQuery({
-    id: router.query.id as string,
-  });
+  const { data: project, isLoading } = trpc.project.getById.useQuery(
+    {
+      id: router.query.id as string,
+    },
+    { enabled: !!router.query.id },
+  );
 
   return (
     <DataView<ProjectWithBoard>
@@ -24,7 +27,7 @@ const Project = () => {
     >
       {(data) => (
         <div className="ml-10">
-          <h1 className="my-4 text-2xl font-bold">{data.name}</h1>
+          <h1 className="mb-10 mt-4 text-2xl font-bold">{data.name}</h1>
           {data.projectBoards.length !== 0 && data.projectBoards[0] ? (
             <Board data={data.projectBoards[0]} />
           ) : (

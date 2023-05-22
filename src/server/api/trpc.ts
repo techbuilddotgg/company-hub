@@ -61,3 +61,4 @@ export const publicProcedure = t.procedure;
 export const protectedProcedure = t.procedure.use(isAuthed);
 export const boardProcedure = protectedProcedure.use(triggerBoardRefetch);
 export const adminProcedure = t.procedure.use(isAdmin);
+export const adminBoardProcedure = adminProcedure.use(triggerBoardRefetch);
