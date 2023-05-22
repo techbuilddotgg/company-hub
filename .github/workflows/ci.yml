@@ -15,6 +15,12 @@ env:
   UPSTASH_REDIS_REST_TOKEN: "fake"
   GITHUB_WEBHOOK_SECRET: "fake"
   GITHUB_WEBHOOK_LISTENER_URL: "https://fake.com"
+  PUSHER_APP_ID: "fake"
+  PUSHER_KEY: "fake"
+  PUSHER_SECRET: "fake"
+  PUSHER_CLUSTER: "fake"
+  NEXT_PUBLIC_PUSHER_APP_KEY: "fake"
+  NEXT_PUBLIC_PUSHER_APP_CLUSTER: "fake"
 
 
 jobs:
