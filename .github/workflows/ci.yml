@@ -35,7 +35,7 @@ jobs:
         run: npm run lint
 
       - name: push prisma schema
-        run: npx prisma push --accept-data-loss
+        run: npx prisma db push --accept-data-loss
 
       - name: Unit Tests
         run: npm run test:ci
