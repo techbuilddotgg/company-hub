@@ -12,8 +12,10 @@ import {
   EventClickArg,
 } from '@fullcalendar/core';
 import { AddEventType } from '../../../shared/types/calendar.types';
+import { useUser } from '@clerk/nextjs';
 
 const CalendarScheduler = () => {
+  const { user } = useUser();
   const { mutate: updateEvent } = trpc.event.update.useMutation({});
   const { data: events } = trpc.event.get.useQuery();
 
@@ -33,6 +35,7 @@ const CalendarScheduler = () => {
   };
 
   const handleUpdateEventSelect = (clickInfo: EventChangeArg) => {
+    if (clickInfo.event.extendedProps.authorId !== user?.id) return;
     const event = {
       id: clickInfo.event.id,
       title: clickInfo.event.title,
@@ -40,11 +43,14 @@ const CalendarScheduler = () => {
       backgroundColor: clickInfo.event.backgroundColor,
       start: clickInfo.event.startStr,
       end: clickInfo.event.endStr,
+      authorId: clickInfo.event.extendedProps.authorId,
+      users: [],
     };
     updateEvent(event);
   };
 
   const handleEditEventSelectAndOpenModal = (clickInfo: EventClickArg) => {
+    if (clickInfo.event.extendedProps.authorId !== user?.id) return;
     setEvent({
       id: clickInfo.event.id,
       title: clickInfo.event.title,
@@ -52,6 +58,8 @@ const CalendarScheduler = () => {
       backgroundColor: clickInfo.event.backgroundColor,
       start: clickInfo.event.startStr,
       end: clickInfo.event.endStr,
+      authorId: clickInfo.event.extendedProps.authorId,
+      users: [],
     });
     setDate(clickInfo.event.startStr);
     setOpenModal(true);
@@ -60,12 +68,15 @@ const CalendarScheduler = () => {
   return (
     <div>
       <div className={'mb-3'}>
-        <EventModal
-          open={openModal}
-          setOpen={() => setOpenModal(!openModal)}
-          date={date}
-          event={event}
-        />
+        {user?.id && (
+          <EventModal
+            open={openModal}
+            setOpen={() => setOpenModal(!openModal)}
+            date={date}
+            event={event}
+            user={user}
+          />
+        )}
       </div>
       <FullCalendar
         plugins={[

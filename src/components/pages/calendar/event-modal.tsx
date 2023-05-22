@@ -26,13 +26,19 @@ import {
 import { EventSchema } from '../../../shared/validators/calendar.schemas';
 import { useToast } from '@hooks';
 import { CheckedState } from '@radix-ui/react-checkbox';
+import { authUser } from '../../../shared/types/user.types';
 
 interface EventModalFormProps {
   currentDate: string;
   event?: AddEventType;
+  user: authUser;
 }
 
-const EventModalForm: FC<EventModalFormProps> = ({ currentDate, event }) => {
+const EventModalForm: FC<EventModalFormProps> = ({
+  currentDate,
+  event,
+  user,
+}) => {
   const { toast } = useToast();
   const [date, setDate] = useState<DateRange | undefined>({
     from: new Date(currentDate),
@@ -52,6 +58,15 @@ const EventModalForm: FC<EventModalFormProps> = ({ currentDate, event }) => {
 
   const [selected, setSelected] = React.useState<string[]>([]);
 
+  const { data: assignedUsers } = trpc.event.getEventUsers.useQuery(
+    event?.id || '',
+  );
+
+  useEffect(() => {
+    if (assignedUsers)
+      setSelected(assignedUsers.users.map((user) => user.userId));
+  }, [assignedUsers]);
+
   const { register, watch, handleSubmit, setValue } = useForm({
     resolver: zodResolver(EventSchema),
     defaultValues: {
@@ -61,6 +76,7 @@ const EventModalForm: FC<EventModalFormProps> = ({ currentDate, event }) => {
       end: '',
       backgroundColor: event?.backgroundColor || label,
       allDay: false,
+      users: selected,
     },
   });
 
@@ -155,6 +171,7 @@ const EventModalForm: FC<EventModalFormProps> = ({ currentDate, event }) => {
         start: time.from,
         end: time.to,
         backgroundColor: label,
+        users: selected,
       };
 
       console.log(newEvent);
@@ -200,10 +217,13 @@ const EventModalForm: FC<EventModalFormProps> = ({ currentDate, event }) => {
         </div>
       )}
       <Textarea label={'Description'} {...register('description')} rows={3} />
-      <UserSelection
-        handleCheckedChange={handleSelectionChange}
-        selected={selected}
-      />
+      {(user?.id === event?.authorId || !event) && (
+        <UserSelection
+          handleCheckedChange={handleSelectionChange}
+          selected={selected}
+          author={user?.id as string}
+        />
+      )}
       <div className={'my-2'}>
         <Labels selected={label} handleLabelChange={handleLabelChange} />
       </div>
@@ -230,8 +250,15 @@ interface EventModalProps {
   setOpen: (open: boolean) => void;
   date: string;
   event?: AddEventType;
+  user: authUser;
 }
-const EventModal: FC<EventModalProps> = ({ open, setOpen, date, event }) => {
+const EventModal: FC<EventModalProps> = ({
+  open,
+  setOpen,
+  date,
+  event,
+  user,
+}) => {
   return (
     <Dialog open={open}>
       <DialogContent className="sm:max-w-[425px]" setDialogOpen={setOpen}>
@@ -240,7 +267,7 @@ const EventModal: FC<EventModalProps> = ({ open, setOpen, date, event }) => {
           <DialogDescription>Add new calendar entry</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <EventModalForm currentDate={date} event={event} />
+          <EventModalForm currentDate={date} event={event} user={user} />
         </div>
       </DialogContent>
     </Dialog>

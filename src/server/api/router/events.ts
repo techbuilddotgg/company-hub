@@ -8,7 +8,18 @@ export const eventRouter = t.router({
     try {
       return await prisma.event.findMany({
         where: {
-          authorId: authedUserId,
+          OR: [
+            {
+              authorId: authedUserId,
+            },
+            {
+              users: {
+                some: {
+                  userId: authedUserId,
+                },
+              },
+            },
+          ],
         },
       });
     } catch (e) {
@@ -31,6 +42,7 @@ export const eventRouter = t.router({
             end: input.end,
             backgroundColor: input.backgroundColor,
             authorId: authedUserId,
+            users: { create: input.users.map((userId) => ({ userId })) },
           },
         });
       } catch (e) {
@@ -45,6 +57,26 @@ export const eventRouter = t.router({
     .input(EventSchema)
     .mutation(async ({ input, ctx: { prisma, authedUserId } }) => {
       try {
+        const existingEvent = await prisma.event.findUnique({
+          where: {
+            id: input.id,
+          },
+          include: {
+            users: true,
+          },
+        });
+        if (!existingEvent) {
+          throw new TRPCError({
+            message: 'Event not found.',
+            code: 'NOT_FOUND',
+          });
+        }
+        if (existingEvent.authorId !== authedUserId) {
+          throw new TRPCError({
+            message: 'You are not authorized to update this event.',
+            code: 'UNAUTHORIZED',
+          });
+        }
         await prisma.event.update({
           where: {
             id: input.id,
@@ -55,7 +87,29 @@ export const eventRouter = t.router({
             start: input.start,
             end: input.end,
             backgroundColor: input.backgroundColor,
-            authorId: authedUserId,
+            users: {
+              deleteMany: {},
+              create: input.users.map((userId) => ({ userId })),
+            },
+          },
+        });
+        return true;
+      } catch (e) {
+        console.log(e);
+        throw new TRPCError({
+          message: 'Something went wrong. Please try again later.',
+          code: 'INTERNAL_SERVER_ERROR',
+        });
+      }
+    }),
+
+  delete: protectedProcedure
+    .input(z.string())
+    .mutation(async ({ input, ctx: { prisma } }) => {
+      try {
+        await prisma.event.delete({
+          where: {
+            id: input,
           },
         });
       } catch (e) {
@@ -66,13 +120,20 @@ export const eventRouter = t.router({
         });
       }
     }),
-  delete: protectedProcedure
+  getEventUsers: protectedProcedure
     .input(z.string())
-    .mutation(async ({ input, ctx: { prisma } }) => {
+    .query(async ({ input, ctx: { prisma } }) => {
       try {
-        await prisma.event.delete({
+        return await prisma.event.findUnique({
           where: {
             id: input,
+          },
+          select: {
+            users: {
+              select: {
+                userId: true,
+              },
+            },
           },
         });
       } catch (e) {

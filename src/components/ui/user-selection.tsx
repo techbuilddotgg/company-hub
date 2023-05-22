@@ -16,14 +16,17 @@ import { User } from '@clerk/backend';
 interface UserSelectionProps {
   selected: string[];
   handleCheckedChange: (checked: boolean, user: string) => void;
+  author: string;
 }
 
 const UserSelection: FC<UserSelectionProps> = ({
   selected,
   handleCheckedChange,
+  author,
 }) => {
   const { data: users } = trpc.users.findAll.useQuery();
   const [list, setList] = React.useState<User[] | undefined>([]);
+  const filtered = users?.filter((user) => user.id !== author);
 
   const { register, handleSubmit } = useForm({
     defaultValues: {
@@ -32,8 +35,9 @@ const UserSelection: FC<UserSelectionProps> = ({
   });
 
   const search = (searchQuery: string) => {
-    if (searchQuery === '') return setList(users);
-    const result = users?.filter((user) =>
+    console.log(filtered);
+    if (searchQuery === '') return setList(filtered);
+    const result = filtered?.filter((user) =>
       user?.emailAddresses[0]?.emailAddress
         .toLowerCase()
         .includes(searchQuery.toLowerCase()),
@@ -42,11 +46,11 @@ const UserSelection: FC<UserSelectionProps> = ({
   };
 
   useEffect(() => {
-    setList(users);
+    setList(filtered);
   }, [users]);
 
   return (
-    <form onChange={handleSubmit((data) => search(data.search))}>
+    <div onChange={handleSubmit((data) => search(data.search))}>
       <Accordion type="single" collapsible>
         <AccordionItem value={'item-2'}>
           <AccordionTrigger className={'text-base font-semibold'}>
@@ -62,19 +66,14 @@ const UserSelection: FC<UserSelectionProps> = ({
               {list ? (
                 list.map((user, index) => (
                   <div key={index}>
-                    {user?.emailAddresses[0]?.emailAddress && (
+                    {user.id && (
                       <div className="overflow-auto px-2 py-1">
                         <div className="items-top my-2 flex space-x-2">
                           <Checkbox
                             id={user?.emailAddresses[0]?.emailAddress}
-                            checked={selected.includes(
-                              user?.emailAddresses[0]?.emailAddress,
-                            )}
+                            checked={selected.includes(user.id)}
                             onCheckedChange={(checked) =>
-                              handleCheckedChange(
-                                checked as boolean,
-                                user?.emailAddresses[0]?.emailAddress as string,
-                              )
+                              handleCheckedChange(checked as boolean, user.id)
                             }
                           />
                           <div className="grid gap-1.5 leading-none">
@@ -96,7 +95,7 @@ const UserSelection: FC<UserSelectionProps> = ({
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-    </form>
+    </div>
   );
 };
 

@@ -46,15 +46,25 @@ model Company {
 }
 
 model Event {
-  id              String @id @default(cuid())
+  id              String      @id @default(cuid())
   title           String
   description     String
   start           String
   end             String
   backgroundColor String
   authorId        String
+  users           UserEvent[]
 
   @@map("events")
+}
+
+model UserEvent {
+  id      String @id @default(cuid())
+  userId  String
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@map("user_events")
 }
 
 model Project {

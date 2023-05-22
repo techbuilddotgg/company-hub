@@ -7,4 +7,6 @@ export const EventSchema = z.object({
   start: z.string(),
   end: z.string(),
   backgroundColor: z.string(),
+  users: z.array(z.string()),
+  authorId: z.string().optional(),
 });
