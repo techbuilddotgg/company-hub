@@ -3,7 +3,7 @@ name: CI
 on: [ push, pull_request ]
 
 env:
-  DATABASE_URL: { { secrets.DATABASE_URL } }
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
   NODE_ENV: "development"
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: "fake"
   CLERK_SECRET_KEY: "fake"
