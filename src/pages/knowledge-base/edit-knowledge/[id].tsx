@@ -13,7 +13,7 @@ import {
 import { useDeleteDocument, useGetDocument } from '@hooks';
 import { useRouter } from 'next/router';
 import { RouterOutput, trpc } from '@utils/trpc';
-import { X } from 'lucide-react';
+import { Trash } from 'lucide-react';
 import { AppRoute } from '@constants/app-routes';
 
 type KnowledgeDocument = RouterOutput['knowledgeBase']['findById'];
@@ -42,7 +42,7 @@ const EditKnowledgePage = () => {
   };
 
   return (
-    <div className={'flex flex-col gap-4'}>
+    <div className={'flex w-full flex-col gap-4'}>
       <DataView<KnowledgeDocument>
         isLoading={isLoading}
         data={data}
@@ -63,14 +63,16 @@ const EditKnowledgePage = () => {
                 }
               />
               <div className={'flex w-full flex-row justify-center'}>
-                <Card className="w-2/3">
+                <Card className="w-full sm:w-full md:w-full lg:w-2/3">
                   <CardHeader className={'p-0'}>
                     <div className={'ml-auto'}>
                       <AlertDialogButton
                         handleAction={handleDelete}
                         buttonVariant={'ghost'}
                         buttonClassName={'rounded-full p-0 w-10'}
-                        buttonText={<X className={'h-6 w-6 cursor-pointer'} />}
+                        buttonText={
+                          <Trash className={'h-5 w-5 cursor-pointer'} />
+                        }
                         actionText={'Delete'}
                         title={'Delete document'}
                         description={

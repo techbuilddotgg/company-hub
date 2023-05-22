@@ -1,4 +1,4 @@
-import { expect, it, describe, vi, beforeAll, afterAll } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { faker } from '@faker-js/faker';
 import { createContextInner } from '@server/api/context';
 import { appRouter } from '@server/api/router';
@@ -14,7 +14,7 @@ describe('knowledge-base-router test', () => {
   const companyId = faker.string.uuid();
 
   vi.spyOn(clerkClient.users, 'getUser').mockResolvedValue({
-    privateMetadata: { companyId },
+    publicMetadata: { companyId },
   } as unknown as User);
 
   vi.spyOn(clerkClient.users, 'getUserList').mockResolvedValue([
@@ -22,7 +22,7 @@ describe('knowledge-base-router test', () => {
       id: userId,
       username: faker.internet.userName(),
       profileImageUrl: faker.image.url(),
-      privateMetadata: { companyId },
+      publicMetadata: { companyId },
     },
   ] as unknown as User[]);
 

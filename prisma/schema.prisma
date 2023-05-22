@@ -64,6 +64,7 @@ model ProjectBoard {
   project             Project              @relation(fields: [projectId], references: [id], onDelete: Cascade)
   projectId           String
   projectBoardColumns ProjectBoardColumn[]
+  githubData          GithubData[]
 
   @@map("project_boards")
 }
@@ -76,6 +77,7 @@ model ProjectBoardColumn {
   projectBoardTasks ProjectBoardTask[]
   orderIndex        Int
 
+  @@unique([name, projectBoardId])
   @@map("project_board_columns")
 }
 
@@ -133,4 +135,32 @@ model ProjectBoardTaskUser {
   projectBoardTaskId String
 
   @@map("project_board_task_user")
+}
+
+model GithubData {
+  id             String                @id @default(cuid())
+  repository     String
+  owner          String
+  projectBoard   ProjectBoard          @relation(fields: [projectBoardId], references: [id], onDelete: Cascade)
+  projectBoardId String
+  githubWebhooks GithubWebhookAction[]
+
+  @@unique([owner, repository, projectBoardId])
+  @@map("github_data")
+}
+
+model GithubWebhookAction {
+  id                     String                  @id @default(cuid())
+  actionType             GighubWebhookActionType
+  githubData             GithubData              @relation(fields: [githubDataId], references: [id], onDelete: Cascade)
+  githubDataId           String
+  projectBoardColumnName String
+
+  @@unique([githubDataId, actionType])
+  @@map("github_webhook_actions")
+}
+
+enum GighubWebhookActionType {
+  CREATE
+  PULL_REQUEST
 }
