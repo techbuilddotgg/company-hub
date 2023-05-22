@@ -193,152 +193,159 @@ export const TaskModal = ({
       <DialogHeader>
         <DialogTitle>Task</DialogTitle>
       </DialogHeader>
-      <Accordion type="single" collapsible>
-        <AccordionItem value={'item-1'}>
-          <AccordionTrigger>{`Edit task: ${task.name}`}</AccordionTrigger>
-          <AccordionContent className="m-2">
-            <form
-              className={'flex flex-col gap-4 px-1'}
-              onSubmit={handleSubmit(onSubmitTask)}
-            >
-              <Input
-                label={'Name'}
-                {...register('name')}
-                defaultValue={task?.name}
-              />
-              <Textarea
-                label={'Description'}
-                {...register('description')}
-                defaultValue={task?.description || ''}
-                rows={5}
-              />
-              <p className="font-semibold">Deadline</p>
-              <PickDate date={date} setDate={setDate} />
-              <p className="font-semibold">Task type</p>
-              <Select
-                onValueChange={(selected) => handleTaskTypeChange(selected)}
-                defaultValue={selectedTaskType}
+      <ScrollArea className="max-h-[80vh] px-3">
+        <Accordion type="single" collapsible>
+          <AccordionItem value={'item-1'}>
+            <AccordionTrigger>{`Edit task: ${task.name}`}</AccordionTrigger>
+            <AccordionContent className="m-2">
+              <form
+                className={'flex flex-col gap-4 px-1'}
+                onSubmit={handleSubmit(onSubmitTask)}
               >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select task type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Types</SelectLabel>
-                    {taskTypes &&
-                      taskTypes.map((taskType) => (
-                        <SelectItem key={taskType.name} value={taskType.name}>
-                          {taskType.name}
-                        </SelectItem>
-                      ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-              <p className="font-semibold">Task priority</p>
-              <Select
-                onValueChange={(selected) => handleTaskPriorityChange(selected)}
-                defaultValue={selectedTaskPriority}
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select task priority" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Priorities</SelectLabel>
-                    {taskPriorities &&
-                      taskPriorities.map((taskPriority) => (
-                        <SelectItem
-                          key={taskPriority.name}
-                          value={taskPriority.name}
-                        >
-                          {taskPriority.name}
-                        </SelectItem>
-                      ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-              <div className="flex justify-between">
-                <Button onClick={deleteTask} variant="ghost" type="submit">
-                  <Trash2 color="black" size={22} />
-                </Button>
-                <Button type={'submit'}>Update</Button>
-              </div>
-            </form>
-          </AccordionContent>
-        </AccordionItem>
+                <Input
+                  label={'Name'}
+                  {...register('name')}
+                  defaultValue={task?.name}
+                />
+                <Textarea
+                  label={'Description'}
+                  {...register('description')}
+                  defaultValue={task?.description || ''}
+                  rows={5}
+                />
+                <p className="font-semibold">Deadline</p>
+                <PickDate date={date} setDate={setDate} />
+                <p className="font-semibold">Task type</p>
+                <Select
+                  onValueChange={(selected) => handleTaskTypeChange(selected)}
+                  defaultValue={selectedTaskType}
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select task type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Types</SelectLabel>
+                      {taskTypes &&
+                        taskTypes.map((taskType) => (
+                          <SelectItem key={taskType.name} value={taskType.name}>
+                            {taskType.name}
+                          </SelectItem>
+                        ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <p className="font-semibold">Task priority</p>
+                <Select
+                  onValueChange={(selected) =>
+                    handleTaskPriorityChange(selected)
+                  }
+                  defaultValue={selectedTaskPriority}
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select task priority" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Priorities</SelectLabel>
+                      {taskPriorities &&
+                        taskPriorities.map((taskPriority) => (
+                          <SelectItem
+                            key={taskPriority.name}
+                            value={taskPriority.name}
+                          >
+                            {taskPriority.name}
+                          </SelectItem>
+                        ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <div className="flex justify-between">
+                  <Button onClick={deleteTask} variant="ghost" type="submit">
+                    <Trash2 color="black" size={22} />
+                  </Button>
+                  <Button type={'submit'}>Update</Button>
+                </div>
+              </form>
+            </AccordionContent>
+          </AccordionItem>
 
-        <AccordionItem value={'item-2'}>
-          <AccordionTrigger>{`Assign user to task (${
-            assignedUsers?.length ? assignedUsers?.length : 0
-          })`}</AccordionTrigger>
-          <AccordionContent className="m-2">
-            <ScrollArea className="h-44 w-72 rounded-md border">
-              <div className="p-4">
-                {users &&
-                  users.map((user) => (
-                    <div
-                      className="items-top my-2 flex space-x-2"
-                      key={user.id}
-                    >
-                      <Checkbox
-                        id={`terms${user.id}`}
-                        checked={
-                          assignedUsers
-                            ? assignedUsers.includes(user.id)
-                            : false
-                        }
-                        onCheckedChange={(checked) =>
-                          onUserCheckedChange(user.id, checked)
-                        }
-                      />
-                      <div className="grid gap-1.5 leading-none">
-                        <label
-                          htmlFor={`terms${user.id}`}
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          {user.emailAddresses[0]?.emailAddress}
-                        </label>
+          <AccordionItem value={'item-2'}>
+            <AccordionTrigger>{`Assign user to task (${
+              assignedUsers?.length ? assignedUsers?.length : 0
+            })`}</AccordionTrigger>
+            <AccordionContent className="m-2">
+              <ScrollArea className="h-44 w-72 rounded-md border">
+                <div className="p-4">
+                  {users &&
+                    users.map((user) => (
+                      <div
+                        className="items-top my-2 flex space-x-2"
+                        key={user.id}
+                      >
+                        <Checkbox
+                          id={`terms${user.id}`}
+                          checked={
+                            assignedUsers
+                              ? assignedUsers.includes(user.id)
+                              : false
+                          }
+                          onCheckedChange={(checked) =>
+                            onUserCheckedChange(user.id, checked)
+                          }
+                        />
+                        <div className="grid gap-1.5 leading-none">
+                          <label
+                            htmlFor={`terms${user.id}`}
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            {user.emailAddresses[0]?.emailAddress}
+                          </label>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-              </div>
-            </ScrollArea>
-          </AccordionContent>
-        </AccordionItem>
-        <AccordionItem value={'item-3'}>
-          <AccordionTrigger>{`Comments (${comments?.length})`}</AccordionTrigger>
-          <AccordionContent className="m-2">
-            <form
-              className="p-1"
-              onSubmit={handleSubmitComment(onSubmitComment)}
-            >
-              <div className="mb-2 flex w-full space-x-2">
-                <Input {...registerComment('comment')} placeholder="Comment" />
-                <Button type="submit" variant="secondary">
-                  <Send color="black" size={22} />
-                </Button>
-              </div>
-            </form>
-            <ScrollArea className="h-96 w-full rounded-md border">
-              <div className="p-4">
-                {comments &&
-                  comments.map((comment) => (
-                    <div key={comment.id}>
-                      <p key={comment.authorId} className="font-bold">
-                        {comment.text}
-                      </p>
-                      <div className="mt-1 flex items-center">
-                        <User2 color="gray" size={18} />
-                        <p className="ml-2">{`${comment.email}`}</p>
+                    ))}
+                </div>
+              </ScrollArea>
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value={'item-3'}>
+            <AccordionTrigger>{`Comments (${comments?.length})`}</AccordionTrigger>
+            <AccordionContent className="m-2">
+              <form
+                className="p-1"
+                onSubmit={handleSubmitComment(onSubmitComment)}
+              >
+                <div className="mb-2 flex w-full space-x-2">
+                  <Input
+                    {...registerComment('comment')}
+                    placeholder="Comment"
+                  />
+                  <Button type="submit" variant="secondary">
+                    <Send color="black" size={22} />
+                  </Button>
+                </div>
+              </form>
+              <ScrollArea className="h-96 w-full rounded-md border">
+                <div className="p-4">
+                  {comments &&
+                    comments.map((comment) => (
+                      <div key={comment.id}>
+                        <p key={comment.authorId} className="font-bold">
+                          {comment.text}
+                        </p>
+                        <div className="mt-1 flex items-center">
+                          <User2 color="gray" size={18} />
+                          <p className="ml-2">{`${comment.email}`}</p>
+                        </div>
+                        <Separator className="my-4" />
                       </div>
-                      <Separator className="my-4" />
-                    </div>
-                  ))}
-              </div>
-            </ScrollArea>
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
+                    ))}
+                </div>
+              </ScrollArea>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </ScrollArea>
     </DialogContent>
   );
 };
