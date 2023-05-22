@@ -21,6 +21,7 @@
     "migrate": "npm run with-env npx prisma migrate dev",
     "seed:db": "npm run with-env npx prisma db seed",
     "reset:db": "npm run with-env npx prisma migrate reset --skip-seed",
+    "test:ci" : "vitest run",
     "with-env": "dotenv -e .env.local --",
     "with-test-env": "dotenv -e .env.test --"
   },
