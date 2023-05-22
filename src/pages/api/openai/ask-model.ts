@@ -1,14 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { OpenAI } from 'langchain';
-import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
-import { VectorDBQAChain } from 'langchain/chains';
 import { z } from 'zod';
-import { PineconeClient } from '@pinecone-database/pinecone';
-import { env } from '@env';
-import { PineconeStore } from 'langchain/vectorstores/pinecone';
+import { getAuth } from '@clerk/nextjs/server';
+import { initializeVectorDBQAChain } from '@server/libs/langchain';
 
 const RequestBodySchema = z.object({
-  prompt: z.string().min(1),
+  prompt: z.string().min(3),
 });
 type RequestBody = z.infer<typeof RequestBodySchema>;
 
@@ -28,27 +24,20 @@ export default async function handler(
     return;
   }
 
-  try {
-    const client = new PineconeClient();
-    await client.init({
-      apiKey: env.PINECONE_API_KEY,
-      environment: env.PINECONE_ENVIRONMENT,
-    });
-    const pineconeIndex = client.Index(env.PINECONE_INDEX);
-    const vectorStore = await PineconeStore.fromExistingIndex(
-      new OpenAIEmbeddings(),
-      { pineconeIndex },
-    );
+  const user = await getAuth(req);
 
-    const model = new OpenAI({ temperature: 0.9 });
-    const chain = VectorDBQAChain.fromLLM(model, vectorStore, {
-      k: 1,
-      returnSourceDocuments: true,
+  if (!user) {
+    res.status(401).send({ error: 'Unauthorized' });
+    return;
+  }
+
+  try {
+    const chain = await initializeVectorDBQAChain({
+      companyId: user.user?.privateMetadata.compant as string,
     });
     const chatResponse = await chain.call({
       query: body.prompt,
     });
-
     res.status(200).send({ response: chatResponse.text });
   } catch (e) {
     const err = e as Error;

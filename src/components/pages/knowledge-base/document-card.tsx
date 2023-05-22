@@ -10,6 +10,7 @@ import { RouterOutput } from '@utils/trpc';
 import { File } from 'lucide-react';
 import Link from 'next/link';
 import { AppRoute } from '@constants/app-routes';
+import { Skeleton } from '@components/ui/skeleton';
 
 type Document = RouterOutput['knowledgeBase']['findDocuments'][number];
 
@@ -32,5 +33,35 @@ export const DocumentCard: FC<Props> = ({ document }) => {
         </CardHeader>
       </Card>
     </Link>
+  );
+};
+
+export const DocumentCardSkeleton: FC = () => {
+  return (
+    <Card>
+      <CardHeader>
+        <div className={'flex flex-row gap-2'}>
+          <File />
+          <div className={'flex flex-col gap-2'}>
+            <CardTitle>
+              <Skeleton className="h-[20px] w-[150px] rounded-full" />
+            </CardTitle>
+            <Skeleton className="h-[20px] w-[100px] rounded-full" />
+          </div>
+        </div>
+      </CardHeader>
+    </Card>
+  );
+};
+
+export const DocumentCardSkeletonList: FC<{ count?: number }> = ({
+  count = 3,
+}) => {
+  return (
+    <>
+      {Array.from({ length: count }).map((_, i) => (
+        <DocumentCardSkeleton key={i} />
+      ))}
+    </>
   );
 };

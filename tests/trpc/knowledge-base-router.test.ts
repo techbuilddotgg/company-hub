@@ -5,6 +5,7 @@ import { appRouter } from '@server/api/router';
 import { type RouterInput } from '@utils/trpc';
 import { clerkClient } from '@clerk/nextjs/server';
 import type { User } from '@clerk/nextjs/dist/api';
+import * as Pinecone from '@server/libs/pinecone';
 
 describe('knowledge-base-router test', () => {
   const userId = faker.string.uuid();
@@ -24,6 +25,18 @@ describe('knowledge-base-router test', () => {
       privateMetadata: { companyId },
     },
   ] as unknown as User[]);
+
+  vi.spyOn(Pinecone, 'uploadDocumentsToPinecone').mockImplementation(
+    async () => {
+      return;
+    },
+  );
+
+  vi.spyOn(Pinecone, 'deleteDocumentFromPinecone').mockImplementation(
+    async () => {
+      return;
+    },
+  );
 
   beforeAll(async () => {
     ctx.prisma.company.create({
@@ -96,8 +109,7 @@ describe('knowledge-base-router test', () => {
       id: faker.string.uuid(),
     };
 
-    const doc = await api.knowledgeBase.findById(input);
-    expect(doc).toBeNull();
+    await expect(api.knowledgeBase.findById(input)).rejects.toThrowError();
   });
   it('should update document', async () => {
     const document: RouterInput['knowledgeBase']['saveDocument'] = {

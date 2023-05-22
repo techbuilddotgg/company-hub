@@ -14,6 +14,10 @@ import { TaskModal } from '@components/pages/project/task-modal';
 import { Clock3, User2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { trpc } from '@utils/trpc';
+import {
+  getTaskPriorityBackgroundColor,
+  getTaskTypeBackgroundColor,
+} from '@utils/color';
 
 interface TicketProps {
   task: ProjectBoardTask;
@@ -56,7 +60,9 @@ const Task = ({ task, index, refetch }: TicketProps) => {
                 <CardTitle className="p-3 text-left">{task.name}</CardTitle>
                 {taskType && (
                   <span
-                    className={`ml-auto mt-0 w-1/4 self-start justify-self-start rounded-sm bg-gray-500 p-2 py-2 text-center text-sm font-semibold text-white`}
+                    className={`ml-auto mt-0 w-1/4 self-start justify-self-start rounded-sm ${getTaskTypeBackgroundColor(
+                      taskType.name,
+                    )} p-2 py-2 text-center text-sm font-semibold text-white`}
                   >
                     {taskType?.name}
                   </span>
@@ -64,7 +70,11 @@ const Task = ({ task, index, refetch }: TicketProps) => {
               </CardHeader>
               <CardContent className="px-3 pb-2">
                 {taskPriority && (
-                  <Badge variant="secondary" className="mb-2">
+                  <Badge
+                    className={`mb-2 ${getTaskPriorityBackgroundColor(
+                      taskPriority.name,
+                    )}`}
+                  >
                     {taskPriority?.name}
                   </Badge>
                 )}

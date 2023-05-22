@@ -1,29 +1,110 @@
 import React from 'react';
-import { Button, Input } from '@components';
+import {
+  Input,
+  LoaderButton,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@components';
 import { useForm } from 'react-hook-form';
-import { useUploadDocument } from '@hooks';
+import { useToast, useUploadDocument } from '@hooks';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Info } from 'lucide-react';
+
+export interface UploadFormData {
+  fileList: FileList;
+  title: string;
+  description: string;
+}
+
+const UploadFormSchema = z.object({
+  fileList: z.any().refine((val) => val.length > 0, "File can't be empty"),
+  title: z.string().min(3, 'Title must be at least 3 characters'),
+  description: z.string().min(3, 'Description must be at least 3 characters'),
+});
+
+const UploadTooltip = () => {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger type={'button'}>
+          <Info className={'h-4 w-4 text-blue-600'} />
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>
+            For best user experience we recommend using files with{' '}
+            <span className={'font-semibold'}>markdown</span> content.
+          </p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+};
 
 export const UploadKnowledgeForm = () => {
-  const { register, handleSubmit } = useForm<{ fileList: FileList }>({});
+  const { register, handleSubmit, reset, formState } = useForm<UploadFormData>({
+    resolver: zodResolver(UploadFormSchema),
+  });
+  const { toast } = useToast();
 
-  const { mutateAsync } = useUploadDocument();
-  const onSubmit = async (data: { fileList: FileList }) => {
-    const file = data.fileList[0];
-    if (!file) return;
-    await mutateAsync(file);
+  const { errors } = formState;
+
+  const { mutateAsync, isLoading } = useUploadDocument({
+    onSuccess: () => {
+      toast({
+        title: 'Document uploaded',
+        description: 'Document has been uploaded successfully.',
+      });
+      reset();
+    },
+    onError: () => {
+      toast({
+        variant: 'destructive',
+        title: 'Document upload failed',
+        description: `Could not upload document.`,
+      });
+    },
+  });
+
+  const onSubmit = async (data: UploadFormData) => {
+    await mutateAsync(data);
   };
 
   return (
     <form className={'flex flex-col gap-4'} onSubmit={handleSubmit(onSubmit)}>
       <Input
+        label={'Title'}
+        error={errors.title}
+        info={
+          'Knowledge Base works best with a single question that can be answered'
+        }
+        placeholder="e.g. What is the naming convention for git branches?"
+        {...register('title')}
+      />
+
+      <Input
+        label={'Description'}
+        error={errors.description}
+        info={
+          'A short description of the knowledge. This will be shown in the search results.'
+        }
+        placeholder="e.g. Branch naming conventions"
+        {...register('description')}
+      />
+      <Input
         label={'File with knowledge'}
-        info={'Supported file extensions are .docx, .pdf, .txt, .md'}
+        error={errors.fileList}
+        tooltip={<UploadTooltip />}
+        info={'Supported file extensions are: .txt, .pdf, .docx, .md'}
         type={'file'}
+        accept={'.txt,.pdf,.docx,.md'}
         {...register('fileList')}
       />
-      <Button type={'submit'} className={'w-fit'}>
+      <LoaderButton isLoading={isLoading} type={'submit'} className={'w-fit'}>
         Save
-      </Button>
+      </LoaderButton>
     </form>
   );
 };

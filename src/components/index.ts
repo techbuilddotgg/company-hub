@@ -38,5 +38,9 @@ export * from './pages/knowledge-base/upload-knowledge-form';
 export * from './pages/knowledge-base/knowledge-base-search';
 export * from './pages/knowledge-base/document-card';
 export * from './pages/knowledge-base/document-feed';
+export * from './pages/knowledge-base/ai-response';
 export * from './ui/badge';
-
+export * from './ui/skeleton';
+export * from './ui/tooltip';
+export * from './ui/page-unavailable';
+export * from './ui/sheet';
