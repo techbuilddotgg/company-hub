@@ -6,41 +6,31 @@ generator client {
 }
 
 datasource db {
-  provider     = "mysql"
-  url          = env("DATABASE_URL")
-  relationMode = "prisma"
+  provider          = "mysql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  relationMode      = "prisma"
 }
 
-model Question {
-  id              String   @id @default(cuid())
-  title           String
-  description     String
-  answers         Answer[]
-  authorId        String
-  correctAnswerId String?
-  company         Company  @relation(fields: [companyId], references: [id])
-  companyId       String
-  createdAt       DateTime @default(now())
+model Document {
+  id          String   @id @default(cuid())
+  content     String   @db.LongText
+  title       String
+  description String
+  authorId    String
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  @@map("questions")
-}
-
-model Answer {
-  id         String   @id @default(cuid())
-  text       String
-  question   Question @relation(fields: [questionId], references: [id])
-  questionId String
-  authorId   String
-  createdAt  DateTime @default(now())
-
-  @@map("answers")
+  @@map("documents")
 }
 
 model Company {
   id        String     @id @default(cuid())
   name      String
-  questions Question[]
   Projects  Project[]
+  Documents Document[]
 
   @@map("companies")
 }
@@ -108,6 +98,7 @@ model ProjectBoardTask {
   projectBoardColumn       ProjectBoardColumn        @relation(fields: [projectBoardColumnId], references: [id], onDelete: Cascade)
   projectBoardColumnId     String
   createdAt                DateTime                  @default(now())
+  deadLine                 DateTime?
   projectBoardTaskComments ProjectBoardTaskComment[]
   TaskPriority             TaskPriority?             @relation(fields: [taskPriorityId], references: [id])
   taskPriorityId           String?
@@ -150,7 +141,7 @@ model TaskType {
 model ProjectBoardTaskUser {
   id                 String           @id @default(cuid())
   userId             String
-  projectBoardTask   ProjectBoardTask @relation(fields: [projectBoardTaskId], references: [id])
+  projectBoardTask   ProjectBoardTask @relation(fields: [projectBoardTaskId], references: [id], onDelete: Cascade)
   projectBoardTaskId String
 
   @@map("project_board_task_user")

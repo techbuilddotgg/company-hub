@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic';
 import TaskList from '@components/pages/project/task-list';
 import AddTask from '@components/pages/project/add-task';
 import { ProjectColumnFull } from '../../../shared/types/board.types';
-import { Button, Card } from '@components';
+import { AlertDialogButton, Card } from '@components';
 import { trpc } from '@utils/trpc';
 import { Trash2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
@@ -72,9 +72,13 @@ const Column = ({ data, index, refetch }: ColumnProps) => {
             >
               {form.getValues('name')}
             </h2>
-            <Button onClick={deleteColumn} variant="ghost" type="submit">
-              <Trash2 color="black" size={22} />
-            </Button>
+            <AlertDialogButton
+              handleAction={deleteColumn}
+              buttonVariant={'ghost'}
+              buttonText={<Trash2 color="black" size={22} />}
+              title={'Delete column'}
+              description={'Are you sure you want to delete this column?'}
+            />
           </div>
 
           <div>

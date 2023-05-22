@@ -24,7 +24,7 @@ const TaskList = ({ data, id, refetch }: TicketListProps) => {
         >
           <div>
             {tasks.map((task, index) => (
-              <Task key={index} data={task} index={index} refetch={refetch} />
+              <Task key={index} task={task} index={index} refetch={refetch} />
             ))}
             {provided.placeholder}
           </div>

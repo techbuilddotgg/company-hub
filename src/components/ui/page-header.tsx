@@ -1,9 +1,9 @@
-import React, { FC } from 'react';
+import React, { FC, ReactNode } from 'react';
 import { cn } from '@utils/classNames';
 
 interface PageHeaderProps {
   title: string;
-  description?: string;
+  description?: ReactNode;
   className?: string;
 }
 
@@ -17,7 +17,7 @@ export const PageHeader: FC<PageHeaderProps> = ({
       <h1 className={'text-2xl font-semibold text-gray-800 dark:text-gray-100'}>
         {title}
       </h1>
-      <p className={'text-sm text-gray-500'}>{description}</p>
+      <div className={'text-sm text-gray-500'}>{description}</div>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
 import Column from '@components/pages/project/column';
 import { DraggableElementType } from '@components/pages/project/types';
@@ -7,6 +7,7 @@ import { ProjectBoard } from '@prisma/client';
 import { trpc } from '@utils/trpc';
 import AddColumn from '@components/pages/project/add-column';
 import { ProjectColumnFull } from '../../../shared/types/board.types';
+import Pusher from 'pusher-js';
 
 interface BoardProps {
   data: ProjectBoard;
@@ -26,6 +27,17 @@ export const Board = ({ data }: BoardProps) => {
       },
     },
   );
+
+  useEffect(() => {
+    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY || '', {
+      cluster: process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER || '',
+    });
+
+    const channel = pusher.subscribe('my-channel');
+    channel.bind('my-event', function () {
+      refetch();
+    });
+  }, []);
 
   const { mutate: moveTaskMutation } = trpc.board.moveTask.useMutation({
     onSuccess: () => {

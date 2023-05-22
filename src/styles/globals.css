@@ -84,6 +84,7 @@
         margin: 0;
         padding: 0;
     }
+
     div[class*='-internal-b'] {
         @apply hidden;
     }
@@ -108,7 +109,31 @@
     *[contenteditable="true"] {
         outline: none;
     }
+
     *[contenteditable="true"]:hover {
         cursor: auto;
     }
+
+    .space-y-1\.5 > :not([hidden]) ~ :not([hidden]) {
+        margin-top: 0 !important;
+    }
+}
+
+
+/* Overriding Editor styles  */
+
+.rdw-editor-toolbar {
+    border-radius: calc(var(--radius) - 2px) !important;
+}
+
+.rdw-embedded-modal {
+    height: 220px !important;
+}
+
+.rdw-link-modal {
+    height: 220px !important;
+}
+
+.rdw-editor-main {
+    padding-left: 1rem !important;
 }

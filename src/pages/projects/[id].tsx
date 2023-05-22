@@ -3,7 +3,12 @@ import { GetServerSideProps } from 'next';
 import { resetServerContext } from 'react-beautiful-dnd';
 import { trpc } from '@utils/trpc';
 import { useRouter } from 'next/router';
-import { Project, ProjectBoard } from '@prisma/client';
+
+import type { inferRouterOutputs } from '@trpc/server';
+import type { AppRouter } from '@server/api/router';
+
+type RouterOutput = inferRouterOutputs<AppRouter>;
+type ProjectWithBoard = RouterOutput['project']['getById'];
 
 const Project = () => {
   const router = useRouter();
@@ -12,8 +17,8 @@ const Project = () => {
   });
 
   return (
-    <DataView<Project & { projectBoards: ProjectBoard[] }>
-      loading={isLoading}
+    <DataView<ProjectWithBoard>
+      isLoading={isLoading}
       data={project}
       fallback={<div>Project not found</div>}
     >

@@ -2,27 +2,27 @@ import React from 'react';
 import { LoadingPage } from '@components';
 
 interface DataViewProps<T> {
-  loading: boolean;
-  children: (data: T) => React.ReactNode;
+  isLoading: boolean;
+  data: T | undefined | null;
+  children: (data: NonNullable<T>) => React.ReactNode;
   fallback?: React.ReactNode;
-  data: T | null | undefined;
+  loadingComponent?: React.ReactNode;
 }
 
 export const DataView = <T,>({
-  loading,
+  isLoading,
+  loadingComponent,
   data,
   children,
   fallback,
 }: DataViewProps<T>) => {
   return (
     <>
-      {loading ? (
-        <LoadingPage />
-      ) : !data ? (
-        fallback ?? <div>no data</div>
-      ) : (
-        children(data)
-      )}
+      {isLoading
+        ? loadingComponent ?? <LoadingPage />
+        : !data
+        ? fallback ?? <div>no data</div>
+        : children(data)}
     </>
   );
 };

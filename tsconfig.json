@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2020",
     "lib": [
       "dom",
       "dom.iterable",
@@ -40,6 +40,9 @@
       ],
       "@env": [
         "./src/env.mjs"
+      ],
+      "@shared/*": [
+        "./src/shared/*"
       ]
     }
   },
