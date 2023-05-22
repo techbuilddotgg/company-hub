@@ -22,11 +22,11 @@ import { trpc } from '@utils/trpc';
 import {
   AddEventType,
   TimePickerTimeFormat,
-} from '../../../shared/types/calendar.types';
-import { EventSchema } from '../../../shared/validators/calendar.schemas';
+} from '@shared/types/calendar.types';
+import { EventSchema } from '@shared/validators/calendar.schemas';
 import { useToast } from '@hooks';
 import { CheckedState } from '@radix-ui/react-checkbox';
-import { authUser } from '../../../shared/types/user.types';
+import { authUser } from '@shared/types/user.types';
 
 interface EventModalFormProps {
   setOpen: (open: boolean) => void;
@@ -68,7 +68,9 @@ const EventModalForm: FC<EventModalFormProps> = ({
 
   useEffect(() => {
     if (assignedUsers)
-      setSelected(assignedUsers.users.map((user) => user.userId));
+      setSelected(
+        assignedUsers.users.map((user: { userId: string }) => user.userId),
+      );
   }, [assignedUsers]);
 
   const { register, watch, handleSubmit, setValue } = useForm({

@@ -1,4 +1,4 @@
-import { TimePickerTimeFormat } from '../../../shared/types/calendar.types';
+import { TimePickerTimeFormat } from '@shared/types/calendar.types';
 import { DateRange } from 'react-day-picker';
 
 export const formatTime = (
@@ -9,7 +9,6 @@ export const formatTime = (
 ) => {
   const from = date.from as Date;
   let to = date.to as Date;
-
   if (allDay) {
     from.setHours(0);
     from.setMinutes(0);
@@ -50,8 +49,8 @@ export const checkTime = (
       startTime.hours = 0;
     }
     if (
-      startTime.hours <= endTime.hours &&
-      startTime.minutes <= endTime.minutes
+      startTime.hours === 0 ||
+      (startTime.hours <= endTime.hours && startTime.minutes < endTime.minutes)
     ) {
       return true;
     }

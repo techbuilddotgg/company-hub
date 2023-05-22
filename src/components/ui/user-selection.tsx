@@ -26,7 +26,7 @@ const UserSelection: FC<UserSelectionProps> = ({
 }) => {
   const { data: users } = trpc.users.findAll.useQuery();
   const [list, setList] = React.useState<User[] | undefined>([]);
-  const filtered = users?.filter((user) => user.id !== author);
+  const filtered = users?.filter((user: { id: string }) => user.id !== author);
 
   const { register, handleSubmit } = useForm({
     defaultValues: {
@@ -37,7 +37,7 @@ const UserSelection: FC<UserSelectionProps> = ({
   const search = (searchQuery: string) => {
     console.log(filtered);
     if (searchQuery === '') return setList(filtered);
-    const result = filtered?.filter((user) =>
+    const result = filtered?.filter((user: User) =>
       user?.emailAddresses[0]?.emailAddress
         .toLowerCase()
         .includes(searchQuery.toLowerCase()),

@@ -11,7 +11,7 @@ import {
   EventChangeArg,
   EventClickArg,
 } from '@fullcalendar/core';
-import { AddEventType } from '../../../shared/types/calendar.types';
+import { AddEventType } from '@shared/types/calendar.types';
 import { useUser } from '@clerk/nextjs';
 
 const CalendarScheduler = () => {
