@@ -40,6 +40,9 @@
       ],
       "@env": [
         "./src/env.mjs"
+      ],
+      "@shared/*": [
+        "./src/shared/*"
       ]
     }
   },

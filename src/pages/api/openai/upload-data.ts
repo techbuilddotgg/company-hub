@@ -1,15 +1,14 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
 import formidable, { Fields, Files } from 'formidable';
-import { TextLoader } from 'langchain/document_loaders/fs/text';
-import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
-import { Document } from 'langchain/document';
-import { PineconeClient } from '@pinecone-database/pinecone';
-import { env } from '@env';
-import { PineconeStore } from 'langchain/vectorstores/pinecone';
-import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
+import { clerkClient, getAuth } from '@clerk/nextjs/server';
+import { prisma } from '@server/db/client';
+import { uploadDocumentsToPinecone } from '@server/libs/pinecone';
+import { loadDocument, prepareDocument } from '@server/libs/langchain';
 
 const RequestBodySchema = z.object({
+  title: z.string().min(3),
+  description: z.string().min(3),
   file: z.object({
     mimetype: z.string().min(1),
     filepath: z.string().min(1),
@@ -34,40 +33,44 @@ export default async function handler(
     res.status(405).send({ error: 'Allowed method is POST' });
   }
 
+  const { userId } = await getAuth(req);
+
+  if (!userId) {
+    res.status(401).send({ error: 'Unauthorized' });
+    return;
+  }
+
+  const user = await clerkClient.users.getUser(userId);
+
   const formData: RequestBody = (await getFormData(
     req,
   )) as unknown as RequestBody;
+
   const isValid = RequestBodySchema.safeParse(formData);
   if (!isValid.success) {
     res.status(400).send({ error: isValid.error });
   }
-  const loader = new TextLoader(formData.file.filepath);
-  const doc = await loader.load();
 
-  const splitter = new RecursiveCharacterTextSplitter({
-    chunkSize: 2000,
-    chunkOverlap: 200,
+  const doc = await loadDocument(formData.file.filepath);
+
+  const { id: docId } = await prisma.document.create({
+    data: {
+      authorId: user?.id as string,
+      companyId: user?.privateMetadata.companyId as string,
+      title: formData.title,
+      description: formData.description,
+      content: doc?.[0]?.pageContent as string,
+    },
   });
 
-  const docOutput = await splitter.splitDocuments([
-    new Document({
-      pageContent: doc?.[0]?.pageContent || '',
-      metadata: {
-        companyId: 'fake-company-id',
-      },
-    }),
-  ]);
+  const docOutput = await prepareDocument(doc, {
+    companyId: user?.privateMetadata.companyId as string,
+    documentId: docId as string,
+    authorId: user?.id as string,
+  });
 
   try {
-    const client = new PineconeClient();
-    await client.init({
-      apiKey: env.PINECONE_API_KEY,
-      environment: env.PINECONE_ENVIRONMENT,
-    });
-    const pineconeIndex = client.Index(env.PINECONE_INDEX);
-    await PineconeStore.fromDocuments(docOutput, new OpenAIEmbeddings(), {
-      pineconeIndex,
-    });
+    await uploadDocumentsToPinecone(docOutput);
     res.status(200).send({ message: 'Success' });
   } catch (e) {
     const err = e as Error;
@@ -80,6 +83,14 @@ async function getFormData(req: NextApiRequest) {
   const form = formidable({
     multiples: true,
     keepExtensions: true,
+    maxFiles: 1,
+    // 10 MB
+    maxFileSize: 10 * 1024 * 1024,
+    filter: (part) => {
+      const allowedFileExtensions = ['txt', 'docx', 'pdf', '.md'];
+      const fileType = part.originalFilename?.split('.').pop() || '';
+      return allowedFileExtensions.includes(fileType);
+    },
   });
 
   const formData = new Promise((resolve, reject) => {

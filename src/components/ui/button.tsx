@@ -3,7 +3,7 @@ import { Slot } from '@radix-ui/react-slot';
 import { VariantProps, cva } from 'class-variance-authority';
 import { cn } from '@utils/classNames';
 import { useRouter } from 'next/router';
-import { LoadingSpinner } from '@components/ui/loading-spinner';
+import { Loader2 } from 'lucide-react';
 
 const buttonVariants = cva(
   'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background',
@@ -66,13 +66,21 @@ LinkButton.displayName = 'LinkButton';
 
 const LoaderButton = React.forwardRef<
   HTMLButtonElement,
-  ButtonProps & { loading: boolean }
->(({ loading, ...props }, ref) => {
+  ButtonProps & { isLoading: boolean; hideLoadingText?: boolean }
+>(({ isLoading, hideLoadingText = false, ...props }, ref) => {
   return (
-    <Button disabled={loading} ref={ref} {...props}>
+    <Button disabled={isLoading} ref={ref} {...props}>
       <span className={'flex flex-row items-center gap-2'}>
-        {loading && <LoadingSpinner />}
-        {props.children}
+        {isLoading ? (
+          <>
+            <Loader2
+              className={cn('h-4 w-4 animate-spin', !hideLoadingText && 'mr-2')}
+            />
+            {!hideLoadingText && 'Please wait'}
+          </>
+        ) : (
+          props.children
+        )}
       </span>
     </Button>
   );
