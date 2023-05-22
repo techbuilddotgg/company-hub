@@ -17,7 +17,7 @@ import { useUser } from '@clerk/nextjs';
 const CalendarScheduler = () => {
   const { user } = useUser();
   const { mutate: updateEvent } = trpc.event.update.useMutation({});
-  const { data: events } = trpc.event.get.useQuery();
+  const { data: events, refetch: refetchEvents } = trpc.event.get.useQuery();
 
   const [openModal, setOpenModal] = React.useState<boolean>(false);
   const [date, setDate] = React.useState<string>('');
@@ -75,6 +75,7 @@ const CalendarScheduler = () => {
             date={date}
             event={event}
             user={user}
+            refetch={refetchEvents}
           />
         )}
       </div>

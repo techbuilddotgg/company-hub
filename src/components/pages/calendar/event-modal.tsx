@@ -29,15 +29,19 @@ import { CheckedState } from '@radix-ui/react-checkbox';
 import { authUser } from '../../../shared/types/user.types';
 
 interface EventModalFormProps {
+  setOpen: (open: boolean) => void;
   currentDate: string;
   event?: AddEventType;
   user: authUser;
+  refetch: () => void;
 }
 
 const EventModalForm: FC<EventModalFormProps> = ({
+  setOpen,
   currentDate,
   event,
   user,
+  refetch,
 }) => {
   const { toast } = useToast();
   const [date, setDate] = useState<DateRange | undefined>({
@@ -140,15 +144,33 @@ const EventModalForm: FC<EventModalFormProps> = ({
   }, []);
 
   const { mutate: addEvent } = trpc.event.add.useMutation({
-    // onSuccess: () => {},
+    onSuccess: () => {
+      setOpen(false);
+      toast({
+        title: 'Event added successfully',
+      });
+      refetch();
+    },
   });
 
   const { mutate: updateEvent } = trpc.event.update.useMutation({
-    // onSuccess: () => {},
+    onSuccess: () => {
+      setOpen(false);
+      toast({
+        title: 'Event updated successfully',
+      });
+      refetch();
+    },
   });
 
   const { mutate: deleteEvent } = trpc.event.delete.useMutation({
-    // onSuccess: () => {},
+    onSuccess: () => {
+      setOpen(false);
+      toast({
+        title: 'Event deleted successfully',
+      });
+      refetch();
+    },
   });
 
   const onSubmit = (data: AddEventType) => {
@@ -251,6 +273,7 @@ interface EventModalProps {
   date: string;
   event?: AddEventType;
   user: authUser;
+  refetch: () => void;
 }
 const EventModal: FC<EventModalProps> = ({
   open,
@@ -258,6 +281,7 @@ const EventModal: FC<EventModalProps> = ({
   date,
   event,
   user,
+  refetch,
 }) => {
   return (
     <Dialog open={open}>
@@ -267,7 +291,13 @@ const EventModal: FC<EventModalProps> = ({
           <DialogDescription>Add new calendar entry</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <EventModalForm currentDate={date} event={event} user={user} />
+          <EventModalForm
+            currentDate={date}
+            event={event}
+            user={user}
+            setOpen={setOpen}
+            refetch={refetch}
+          />
         </div>
       </DialogContent>
     </Dialog>
