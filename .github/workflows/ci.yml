@@ -13,6 +13,8 @@ env:
   PINECONE_INDEX: "fake"
   UPSTASH_REDIS_REST_URL: "https://fake.com"
   UPSTASH_REDIS_REST_TOKEN: "fake"
+  GITHUB_WEBHOOK_SECRET: "fake"
+  GITHUB_WEBHOOK_LISTENER_URL: "https://fake.com"
 
 
 jobs:

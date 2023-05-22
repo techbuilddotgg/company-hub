@@ -25,7 +25,9 @@ export const env = createEnv({
     PINECONE_ENVIRONMENT: z.string().min(1),
     PINECONE_INDEX: z.string().min(1),
     UPSTASH_REDIS_REST_URL: z.string().url(),
-    UPSTASH_REDIS_REST_TOKEN: z.string().min(1)
+    UPSTASH_REDIS_REST_TOKEN: z.string().min(1),
+    GITHUB_WEBHOOK_SECRET: z.string().min(1),
+    GITHUB_WEBHOOK_LISTENER_URL: z.string().min(1),
   },
   client: {
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(1)
@@ -41,6 +43,8 @@ export const env = createEnv({
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     DATABASE_URL: process.env.DATABASE_URL,
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
-    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+    GITHUB_WEBHOOK_SECRET: process.env.GITHUB_WEBHOOK_SECRET,
+    GITHUB_WEBHOOK_LISTENER_URL: process.env.GITHUB_WEBHOOK_LISTENER_URL,
   }
 });

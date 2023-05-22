@@ -3,6 +3,7 @@ import { clerkClient } from '@clerk/nextjs/server';
 import { TRPCError } from '@trpc/server';
 import { GithubRepository } from '../../../shared/types/github.types';
 import { z } from 'zod';
+import { env } from '@env';
 
 export const githubRouter = t.router({
   getRepositories: protectedProcedure.query(
@@ -70,10 +71,10 @@ export const githubRouter = t.router({
                 active: true,
                 events: ['pull_request'],
                 config: {
-                  url: `${process.env.GITHUB_WEBHOOK_LISTENER_URL}/merge`,
+                  url: `${env.GITHUB_WEBHOOK_LISTENER_URL}/merge`,
                   content_type: 'json',
                   insecure_ssl: '0',
-                  secret: process.env.GITHUB_WEBHOOK_SECRET,
+                  secret: env.GITHUB_WEBHOOK_SECRET,
                 },
               }),
             },
@@ -90,10 +91,10 @@ export const githubRouter = t.router({
                 active: true,
                 events: ['create'],
                 config: {
-                  url: `${process.env.GITHUB_WEBHOOK_LISTENER_URL}/create`,
+                  url: `${env.GITHUB_WEBHOOK_LISTENER_URL}/create`,
                   content_type: 'json',
                   insecure_ssl: '0',
-                  secret: process.env.GITHUB_WEBHOOK_SECRET,
+                  secret: env.GITHUB_WEBHOOK_SECRET,
                 },
               }),
             },
