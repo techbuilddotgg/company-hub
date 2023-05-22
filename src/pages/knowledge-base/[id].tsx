@@ -32,8 +32,6 @@ const DocumentActions: FC<{ documentId: string }> = ({ documentId }) => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-36">
-        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <Link href={AppRoute.EDIT_KNOWLEDGE.replace(':id', documentId)}>
             <DropdownMenuItem className={'cursor-pointer'}>

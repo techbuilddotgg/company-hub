@@ -21,7 +21,9 @@ interface Props {
 export const DocumentCard: FC<Props> = ({ document }) => {
   return (
     <Link href={AppRoute.KNOWLEDGE.replace(':id', document.id)}>
-      <Card className={'cursor-pointer'}>
+      <Card
+        className={'cursor-pointer duration-300 ease-in-out hover:scale-105'}
+      >
         <CardHeader>
           <div className={'flex flex-row gap-2'}>
             <File />
@@ -41,7 +43,7 @@ export const DocumentCardSkeleton: FC = () => {
     <Card>
       <CardHeader>
         <div className={'flex flex-row gap-2'}>
-          <File />
+          <Skeleton className="h-[32px] w-[32px] rounded-md" />
           <div className={'flex flex-col gap-2'}>
             <CardTitle>
               <Skeleton className="h-[20px] w-[150px] rounded-full" />

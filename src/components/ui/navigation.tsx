@@ -150,7 +150,7 @@ const MobileNavigation = () => {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button className={'m-4'} variant={'outline'}>
+        <Button className={'m-4 w-fit'} variant={'outline'}>
           <Menu className={'h-4 w-4'} />
         </Button>
       </SheetTrigger>
@@ -174,7 +174,7 @@ const MobileNavigation = () => {
 };
 
 export const WebNavigation = () => {
-  const [showMenu, setShowMenu] = useState(false);
+  const [showMenu, setShowMenu] = useState(true);
 
   return (
     <div>
