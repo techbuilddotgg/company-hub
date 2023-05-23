@@ -175,9 +175,9 @@ export const WebNavigation = () => {
     <div>
       {isOpened && (
         <div className=" flex h-full flex-col items-center border-r px-5">
-          <div className={'my-4 flex flex-row items-center gap-2 pt-4'}>
+          <div className={'my-4 flex flex-row items-center gap-1 pr-6 pt-4'}>
             <Menu
-              className={'mr-5 cursor-pointer'}
+              className={'mr-3 cursor-pointer'}
               onClick={() => setIsOpened(false)}
             />
             <Logo />
