@@ -5,9 +5,7 @@ import { PageHeader } from '@components';
 const Calendar = () => {
   return (
     <div className={'overflow-x-hidden'}>
-      <PageHeader>
-        <h1 className="text-3xl font-bold">Calendar</h1>
-      </PageHeader>
+      <PageHeader title="Calendar" />
       <CalendarScheduler />
     </div>
   );
