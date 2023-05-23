@@ -161,3 +161,8 @@
     border: none !important;
 
 }
+
+.fc-toolbar-title {
+    padding-bottom: 10px;
+    padding-top: 10px;
+}

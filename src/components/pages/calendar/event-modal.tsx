@@ -269,18 +269,18 @@ const EventModalForm: FC<EventModalFormProps> = ({
         <Labels selected={label} handleLabelChange={handleLabelChange} />
       </div>
       <div className={'mt-4 flex items-center justify-between'}>
+        <Button type={'submit'}>Save</Button>
         {event && (
           <Button
             onClick={() => {
               event.id && deleteEvent(event.id);
             }}
-            variant="destructive"
+            variant="outline"
             type={'button'}
           >
             Delete
           </Button>
         )}
-        <Button type={'submit'}>Save</Button>
       </div>
     </form>
   );
