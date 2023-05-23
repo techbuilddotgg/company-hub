@@ -31,11 +31,12 @@ export const projectRouter = t.router({
           data: { name: input.boardName, projectId: project.id },
         });
       } catch (e) {
-        console.log(e);
-        throw new TRPCError({
-          message: 'Something went wrong. Please try again later.',
-          code: 'INTERNAL_SERVER_ERROR',
-        });
+        const message =
+          e instanceof TRPCError
+            ? e.message
+            : 'Something went wrong. Please try again later.';
+        const code = e instanceof TRPCError ? e.code : 'INTERNAL_SERVER_ERROR';
+        throw new TRPCError({ message, code });
       }
     }),
   get: protectedProcedure.query(async ({ ctx: { prisma, authedUserId } }) => {
