@@ -200,7 +200,6 @@ const EventModalForm: FC<EventModalFormProps> = ({
         users: selected,
       };
 
-      console.log(newEvent);
       if (event) updateEvent({ id: event.id, ...newEvent });
       else addEvent(newEvent);
     } else {
