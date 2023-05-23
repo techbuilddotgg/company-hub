@@ -21,12 +21,13 @@
     "migrate": "npm run with-env npx prisma migrate dev",
     "seed:db": "npm run with-env npx prisma db seed",
     "reset:db": "npm run with-env npx prisma migrate reset --skip-seed",
-    "test:ci" : "vitest run",
+    "test:ci": "vitest run",
     "with-env": "dotenv -e .env.local --",
     "with-test-env": "dotenv -e .env.test --"
   },
   "dependencies": {
     "@clerk/nextjs": "4.11.7",
+    "@esbuild/win32-x64": "^0.17.19",
     "@formkit/auto-animate": "^1.0.0-beta.6",
     "@fullcalendar/core": "^6.1.7",
     "@fullcalendar/daygrid": "^6.1.7",

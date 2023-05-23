@@ -41,12 +41,20 @@ export const boardRouter = t.router({
     .input(z.object({ name: z.string(), projectId: z.string() }))
     .mutation(async ({ input, ctx }) => {
       try {
-        await ctx.prisma.projectBoard.create({
+        const board = await ctx.prisma.projectBoard.create({
           data: {
             name: input.name,
             projectId: input.projectId,
           },
         });
+
+        return {
+          message: {
+            title: 'Board added',
+            description: 'Board was added successfully.',
+          },
+          data: board,
+        };
       } catch (e) {
         console.log(e);
         throw new TRPCError({
@@ -64,20 +72,20 @@ export const boardRouter = t.router({
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      try {
-        await ctx.prisma.projectBoard.update({
-          where: {
-            id: input.id,
-          },
-          data: input,
-        });
-      } catch (e) {
-        console.log(e);
-        throw new TRPCError({
-          message: 'Something went wrong. Please try again later.',
-          code: 'INTERNAL_SERVER_ERROR',
-        });
-      }
+      const board = await ctx.prisma.projectBoard.update({
+        where: {
+          id: input.id,
+        },
+        data: input,
+      });
+
+      return {
+        message: {
+          title: 'Board updated',
+          description: 'Board was updated successfully.',
+        },
+        data: board,
+      };
     }),
   getColumns: protectedProcedure
     .input(z.object({ boardId: z.string() }))
@@ -107,13 +115,20 @@ export const boardRouter = t.router({
             message: 'Board not found',
             code: 'INTERNAL_SERVER_ERROR',
           });
-        await ctx.prisma.projectBoardColumn.create({
+        const column = await ctx.prisma.projectBoardColumn.create({
           data: {
             name: input.name,
             projectBoardId: input.boardId,
             orderIndex: board.projectBoardColumns.length,
           },
         });
+        return {
+          message: {
+            title: 'Column added',
+            description: 'Column was added successfully.',
+          },
+          data: column,
+        };
       } catch (e) {
         const message =
           e instanceof TRPCError
@@ -126,18 +141,18 @@ export const boardRouter = t.router({
   updateColumn: adminBoardProcedure
     .input(z.object({ id: z.string(), name: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      try {
-        await ctx.prisma.projectBoardColumn.update({
-          where: { id: input.id },
-          data: input,
-        });
-      } catch (e) {
-        console.log(e);
-        throw new TRPCError({
-          message: 'Something went wrong. Please try again later.',
-          code: 'INTERNAL_SERVER_ERROR',
-        });
-      }
+      const column = await ctx.prisma.projectBoardColumn.update({
+        where: { id: input.id },
+        data: input,
+      });
+
+      return {
+        message: {
+          title: 'Column updated',
+          description: 'Column was updated successfully.',
+        },
+        data: column,
+      };
     }),
   deleteColumn: adminBoardProcedure
     .input(z.object({ id: z.string() }))
@@ -188,13 +203,22 @@ export const boardRouter = t.router({
             message: 'Column not found',
             code: 'INTERNAL_SERVER_ERROR',
           });
-        await ctx.prisma.projectBoardTask.create({
+
+        const task = await ctx.prisma.projectBoardTask.create({
           data: {
             name: input.name,
             projectBoardColumnId: input.columnId,
             orderIndex: column.projectBoardTasks.length,
           },
         });
+
+        return {
+          message: {
+            title: 'Task added',
+            description: 'Task was added successfully.',
+          },
+          data: task,
+        };
       } catch (e) {
         const message =
           e instanceof TRPCError
@@ -224,20 +248,19 @@ export const boardRouter = t.router({
   updateTask: boardProcedure
     .input(projectBoardTaskSchemaOptional)
     .mutation(async ({ input, ctx }) => {
-      try {
-        await ctx.prisma.projectBoardTask.update({
-          where: {
-            id: input.id,
-          },
-          data: input,
-        });
-      } catch (e) {
-        console.log(e);
-        throw new TRPCError({
-          message: 'Something went wrong. Please try again later.',
-          code: 'INTERNAL_SERVER_ERROR',
-        });
-      }
+      const task = await ctx.prisma.projectBoardTask.update({
+        where: {
+          id: input.id,
+        },
+        data: input,
+      });
+      return {
+        message: {
+          title: 'Task updated',
+          description: 'Task was updated successfully.',
+        },
+        data: task,
+      };
     }),
   reorderColumns: adminBoardProcedure
     .input(
@@ -436,53 +459,43 @@ export const boardRouter = t.router({
   addUserToTask: protectedProcedure
     .input(z.object({ userId: z.string(), taskId: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      try {
-        await ctx.prisma.projectBoardTaskUser.create({
-          data: {
-            userId: input.userId,
-            projectBoardTaskId: input.taskId,
-          },
-        });
-      } catch (e) {
-        console.log(e);
-        throw new TRPCError({
-          message: 'Something went wrong. Please try again later.',
-          code: 'INTERNAL_SERVER_ERROR',
-        });
-      }
+      const taskUser = await ctx.prisma.projectBoardTaskUser.create({
+        data: {
+          userId: input.userId,
+          projectBoardTaskId: input.taskId,
+        },
+      });
+      return {
+        message: {
+          title: 'User assigned to task',
+          description: 'User assigned to task successfully.',
+        },
+        data: taskUser,
+      };
     }),
   getUsersAssignedToTask: protectedProcedure
     .input(z.object({ taskId: z.string() }))
     .query(async ({ input, ctx }) => {
-      try {
-        const users = await ctx.prisma.projectBoardTaskUser.findMany({
-          where: {
-            projectBoardTaskId: input.taskId,
-          },
-        });
-        return users.map((user) => user.userId);
-      } catch (e) {
-        console.log(e);
-        throw new TRPCError({
-          message: 'Something went wrong. Please try again later.',
-          code: 'INTERNAL_SERVER_ERROR',
-        });
-      }
+      const users = await ctx.prisma.projectBoardTaskUser.findMany({
+        where: {
+          projectBoardTaskId: input.taskId,
+        },
+      });
+      return users.map((user) => user.userId);
     }),
   removeUserFromTask: protectedProcedure
     .input(z.object({ userId: z.string(), taskId: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      try {
-        await ctx.prisma.projectBoardTaskUser.deleteMany({
-          where: { userId: input.userId, projectBoardTaskId: input.taskId },
-        });
-      } catch (e) {
-        console.log(e);
-        throw new TRPCError({
-          message: 'Something went wrong. Please try again later.',
-          code: 'INTERNAL_SERVER_ERROR',
-        });
-      }
+      const userTask = await ctx.prisma.projectBoardTaskUser.deleteMany({
+        where: { userId: input.userId, projectBoardTaskId: input.taskId },
+      });
+      return {
+        message: {
+          title: 'User removed from task',
+          description: 'User removed from task successfully.',
+        },
+        data: userTask,
+      };
     }),
   commentTicket: protectedProcedure
     .input(
@@ -494,22 +507,21 @@ export const boardRouter = t.router({
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      try {
-        await ctx.prisma.projectBoardTaskComment.create({
-          data: {
-            text: input.comment,
-            projectBoardTaskId: input.taskId,
-            authorId: input.userId,
-            email: input.email,
-          },
-        });
-      } catch (e) {
-        console.log(e);
-        throw new TRPCError({
-          message: 'Something went wrong. Please try again later.',
-          code: 'INTERNAL_SERVER_ERROR',
-        });
-      }
+      const taskComment = await ctx.prisma.projectBoardTaskComment.create({
+        data: {
+          text: input.comment,
+          projectBoardTaskId: input.taskId,
+          authorId: input.userId,
+          email: input.email,
+        },
+      });
+      return {
+        message: {
+          title: 'Comment successfull',
+          description: 'Comment was successfull.',
+        },
+        data: taskComment,
+      };
     }),
   getTaskComments: protectedProcedure
     .input(z.object({ taskId: z.string() }))
