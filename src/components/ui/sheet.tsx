@@ -2,9 +2,10 @@
 
 import * as React from 'react';
 import * as SheetPrimitive from '@radix-ui/react-dialog';
-import { VariantProps, cva } from 'class-variance-authority';
+import { cva, VariantProps } from 'class-variance-authority';
 import { X } from 'lucide-react';
 import { cn } from '@utils/classNames';
+import { useNavigationStore } from '../../store/navigation-store';
 
 const Sheet = SheetPrimitive.Root;
 
@@ -41,16 +42,20 @@ SheetPortal.displayName = SheetPrimitive.Portal.displayName;
 const SheetOverlay = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Overlay>,
   React.ComponentPropsWithoutRef<typeof SheetPrimitive.Overlay>
->(({ className, children, ...props }, ref) => (
-  <SheetPrimitive.Overlay
-    className={cn(
-      'fixed inset-0 z-50 bg-background/80 backdrop-blur-sm transition-all duration-100 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=open]:fade-in',
-      className,
-    )}
-    {...props}
-    ref={ref}
-  />
-));
+>(({ className, children, ...props }, ref) => {
+  const setIsOpened = useNavigationStore((state) => state.setIsOpened);
+  return (
+    <SheetPrimitive.Overlay
+      onClick={() => setIsOpened(false)}
+      className={cn(
+        'fixed inset-0 z-50 bg-background/80 backdrop-blur-sm transition-all duration-100 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=open]:fade-in',
+        className,
+      )}
+      {...props}
+      ref={ref}
+    />
+  );
+});
 SheetOverlay.displayName = SheetPrimitive.Overlay.displayName;
 
 const sheetVariants = cva(
@@ -148,22 +153,28 @@ export interface DialogContentProps
 const SheetContent = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Content>,
   DialogContentProps
->(({ position, size, className, children, ...props }, ref) => (
-  <SheetPortal position={position}>
-    <SheetOverlay />
-    <SheetPrimitive.Content
-      ref={ref}
-      className={cn(sheetVariants({ position, size }), className)}
-      {...props}
-    >
-      {children}
-      <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
-        <X className="h-4 w-4" />
-        <span className="sr-only">Close</span>
-      </SheetPrimitive.Close>
-    </SheetPrimitive.Content>
-  </SheetPortal>
-));
+>(({ position, size, className, children, ...props }, ref) => {
+  const setIsOpened = useNavigationStore((state) => state.setIsOpened);
+  return (
+    <SheetPortal position={position}>
+      <SheetOverlay />
+      <SheetPrimitive.Content
+        ref={ref}
+        className={cn(sheetVariants({ position, size }), className)}
+        {...props}
+      >
+        {children}
+        <SheetPrimitive.Close
+          onClick={() => setIsOpened(false)}
+          className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary"
+        >
+          <X className="h-4 w-4" />
+          <span className="sr-only">Close</span>
+        </SheetPrimitive.Close>
+      </SheetPrimitive.Content>
+    </SheetPortal>
+  );
+});
 SheetContent.displayName = SheetPrimitive.Content.displayName;
 
 const SheetHeader = ({

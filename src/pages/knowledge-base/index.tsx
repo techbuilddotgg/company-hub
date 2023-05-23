@@ -55,10 +55,12 @@ const KnowledgeBase = () => {
           description={
             'Centralized repository of organized information and data.'
           }
+          rightHelper={
+            <LinkButton href={AppRoute.ADD_KNOWLEDGE} className={'ml-auto'}>
+              Add knowledge
+            </LinkButton>
+          }
         />
-        <LinkButton href={AppRoute.ADD_KNOWLEDGE} className={'ml-auto'}>
-          Add knowledge
-        </LinkButton>
       </div>
 
       <div className={'flex w-full grow flex-col gap-4'} ref={parent}>

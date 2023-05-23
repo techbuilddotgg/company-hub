@@ -3,11 +3,13 @@ import { z } from 'zod';
 export const AddProjectSchema = z.object({
   name: z
     .string()
-    .min(3, { message: 'Enter at least 3 chars' })
-    .max(20, { message: 'Max is 20' }),
+    .min(3, { message: 'Please enter at least 3 characters' })
+    .max(20, { message: 'Please enter less that 20 characters' }),
   boardName: z
     .string()
-    .min(3, { message: 'Enter at least 3 chars' })
-    .max(20, { message: 'Max is 20' }),
-  description: z.string().max(1000, { message: 'Max is 100' }),
+    .min(3, { message: 'Please enter at least 3 characters' })
+    .max(20, { message: 'Please enter less that 20 characters' }),
+  description: z
+    .string()
+    .max(1000, { message: 'Please enter less that 1000 characters' }),
 });

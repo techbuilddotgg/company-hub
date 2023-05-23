@@ -21,7 +21,7 @@
     "migrate": "npm run with-env npx prisma migrate dev",
     "seed:db": "npm run with-env npx prisma db seed",
     "reset:db": "npm run with-env npx prisma migrate reset --skip-seed",
-    "test:ci" : "vitest run",
+    "test:ci": "vitest run",
     "with-env": "dotenv -e .env.local --",
     "with-test-env": "dotenv -e .env.test --"
   },
@@ -86,7 +86,8 @@
     "superjson": "1.9.1",
     "tailwind-merge": "^1.12.0",
     "tailwindcss-animate": "^1.0.5",
-    "zod": "^3.18.0"
+    "zod": "^3.18.0",
+    "zustand": "^4.3.8"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.0.1",

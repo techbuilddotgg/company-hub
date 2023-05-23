@@ -1,17 +1,18 @@
 import React, { FC } from 'react';
+import { LabelColorsType } from '@components/pages/calendar/types';
 
 const labels: { color: string }[] = [
   {
-    color: 'red',
+    color: LabelColorsType.RED,
   },
   {
-    color: 'green',
+    color: LabelColorsType.GREEN,
   },
   {
-    color: 'yellow',
+    color: LabelColorsType.YELLOW,
   },
   {
-    color: 'blue',
+    color: LabelColorsType.BLUE,
   },
 ];
 
@@ -26,12 +27,11 @@ const Labels: FC<LabelsProps> = ({ selected, handleLabelChange }) => {
       {labels.map((label, index) => (
         <div
           key={index}
-          className={`h-4 w-4 rounded-full bg-${
-            label.color
-          }-500 cursor-pointer ${
-            selected === label.color ? 'ring-2 ring-gray-200 ring-offset-1' : ''
+          className={`h-4 w-4 cursor-pointer rounded-full ${
+            selected === label.color ? 'ring-2 ring-gray-400 ring-offset-2' : ''
           }`}
           onClick={() => handleLabelChange(label.color)}
+          style={{ backgroundColor: label.color }}
         ></div>
       ))}
     </label>

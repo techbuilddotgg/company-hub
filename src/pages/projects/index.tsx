@@ -10,6 +10,7 @@ import {
   Dialog,
   DialogContent,
   DialogTrigger,
+  PageHeader,
 } from '@components';
 import { Project } from '@prisma/client';
 import SaveProjectForm from '@components/pages/project/save-project-form';
@@ -53,21 +54,25 @@ const Projects = () => {
 
   return (
     <Dialog open={dialogOpened}>
-      <div className="flex flex-row justify-between">
-        <>
-          <h1 className="mb-10 text-3xl font-bold">Projects</h1>
-          {user?.publicMetadata.isAdmin && (
-            <DialogTrigger
-              asChild
-              onClick={() => {
-                setSelectedProjectForEditing(undefined);
-                setDialogOpened(true);
-              }}
-            >
-              <Button className="mt-4">Add new project</Button>
-            </DialogTrigger>
-          )}
-        </>
+      <div className="mb-10 flex flex-row justify-between">
+        <PageHeader
+          title="Projects"
+          rightHelper={
+            <>
+              {user?.publicMetadata.isAdmin && (
+                <DialogTrigger
+                  asChild
+                  onClick={() => {
+                    setSelectedProjectForEditing(undefined);
+                    setDialogOpened(true);
+                  }}
+                >
+                  <Button className="mt-1">Add new project</Button>
+                </DialogTrigger>
+              )}
+            </>
+          }
+        />
       </div>
       {projects?.map((project) => (
         <Accordion key={project.id} type="single" collapsible>

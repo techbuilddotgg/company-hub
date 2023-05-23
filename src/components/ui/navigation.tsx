@@ -1,22 +1,28 @@
-import React, { useState } from 'react';
+import React, { useMemo } from 'react';
 import { AppRoute } from '@constants/app-routes';
 import Link from 'next/link';
 import { SignedIn, UserButton, useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/router';
 import { cn } from '@utils/classNames';
 import { Logo } from '@components/ui/logo';
-import { Menu, Settings } from 'lucide-react';
+import {
+  CalendarDays,
+  Database,
+  FolderInput,
+  Folders,
+  Menu,
+  Users2,
+} from 'lucide-react';
 import { trpc } from '@utils/trpc';
 import { useWindow } from '../../hooks/useWindow';
-import { Button } from '@components/ui/button';
 import {
-  SheetContent,
   Sheet,
+  SheetContent,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
-  SheetFooter,
 } from '@components/ui/sheet';
+import { useNavigationStore } from '../../store/navigation-store';
 
 const UserSection = () => {
   const user = useUser();
@@ -30,16 +36,23 @@ const UserSection = () => {
               {user.user?.username}
             </span>
           </div>
-          <Link href={AppRoute.SETTINGS}>
-            <a className={'text-gray-500 hover:text-black'}>
-              <Settings size={20} />
-            </a>
-          </Link>
         </div>
       </SignedIn>
     </div>
   );
 };
+
+interface NavigationSubItem {
+  title: string;
+  href: string;
+  icon: React.ReactNode;
+}
+interface NavigationItem {
+  title: string;
+  href: string;
+  icon: React.ReactNode;
+  subItems?: NavigationSubItem[];
+}
 
 const MainNavigation = () => {
   const router = useRouter();
@@ -49,111 +62,93 @@ const MainNavigation = () => {
   };
   const { data: projects } = trpc.project.get.useQuery();
 
+  const navigationItems = useMemo(() => {
+    return [
+      {
+        title: 'Projects',
+        href: AppRoute.PROJECTS,
+        icon: <Folders size={26} />,
+        subItems: projects?.map((project) => ({
+          title: project.name,
+          href: `${AppRoute.PROJECTS}/${project.id}`,
+          icon: <FolderInput />,
+        })),
+      },
+      {
+        title: 'Knowledge base',
+        href: AppRoute.KNOWLEDGE_BASE,
+        icon: <Database />,
+      },
+      {
+        title: 'Calendar',
+        href: AppRoute.CALENDAR,
+        icon: <CalendarDays />,
+      },
+      {
+        title: 'Users',
+        href: AppRoute.USERS,
+        icon: <Users2 />,
+      },
+    ] as NavigationItem[];
+  }, [projects]);
+
   return (
     <nav className=" mt-4 flex w-full grow  flex-col gap-4">
       <ul className={'flex grow flex-col gap-4'}>
-        <li
-          key={'Overview'}
-          className={cn(
-            'rounded p-2 text-gray-500',
-            isActive(AppRoute.HOME) && 'bg-blue-100 text-blue-600',
-            !isActive(AppRoute.HOME) &&
-              'text-gray-500 hover:bg-gray-100 hover:text-black',
-          )}
-        >
-          <Link href={AppRoute.HOME}>
-            <a
-              className={'rounded-md p-2 text-sm font-medium transition-colors'}
+        {navigationItems.map((item) => (
+          <div key={item.title} className="cursor-pointer">
+            <li
+              className={cn(
+                'rounded p-2 text-gray-500',
+                isActive(item.href) && 'bg-blue-100 text-blue-600',
+                !isActive(item.href) &&
+                  'text-gray-500 hover:bg-gray-100 hover:text-black',
+              )}
             >
-              {'Overview'}
-            </a>
-          </Link>
-        </li>
-        <li
-          key={'Projects'}
-          className={cn(
-            'rounded p-2 text-gray-500',
-            isActive(AppRoute.PROJECTS) && 'bg-blue-100 text-blue-600',
-            !isActive(AppRoute.PROJECTS) &&
-              'text-gray-500 hover:bg-gray-100 hover:text-black',
-          )}
-        >
-          <Link href={AppRoute.PROJECTS}>
-            <a
-              className={'rounded-md p-2 text-sm font-medium transition-colors'}
-            >
-              {'Projects'}
-            </a>
-          </Link>
-        </li>
-        {projects?.map((project) => (
-          <li
-            key={project.id}
-            className={cn(
-              'ml-5 rounded p-2 text-gray-500',
-              isActive(`${AppRoute.PROJECTS}/${project.id}`) &&
-                'bg-blue-100 text-blue-600',
-              !isActive(`${AppRoute.PROJECTS}/${project.id}`) &&
-                'text-gray-500 hover:bg-gray-100 hover:text-black',
-            )}
-          >
-            <Link
-              href={`${AppRoute.PROJECTS}/${project.id}`}
-              key={project.name}
-            >
-              <a className="rounded-md p-2 text-sm font-medium transition-colors">
-                {project.name}
-              </a>
-            </Link>
-          </li>
+              <Link href={item.href}>
+                <div className="flex items-center">
+                  {item.icon}
+                  <a
+                    className={
+                      'ml-2 rounded-md p-2 text-sm font-medium transition-colors'
+                    }
+                  >
+                    {item.title}
+                  </a>
+                </div>
+              </Link>
+            </li>
+            {item.subItems?.map((subItems) => (
+              <li
+                key={subItems.title}
+                className={cn(
+                  'ml-5 rounded p-2 text-gray-500',
+                  isActive(`${subItems.href}`) && 'bg-blue-100 text-blue-600',
+                  !isActive(`${subItems.href}`) &&
+                    'text-gray-500 hover:bg-gray-100 hover:text-black',
+                )}
+              >
+                <Link href={subItems.href} key={subItems.title}>
+                  <div className="flex items-center">
+                    {subItems.icon}
+                    <a className="rounded-md p-2 pl-3 text-sm font-medium transition-colors">
+                      {subItems.title}
+                    </a>
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </div>
         ))}
-        <li
-          key={'Knowledge base'}
-          className={cn(
-            'rounded p-2 text-gray-500',
-            isActive(AppRoute.KNOWLEDGE_BASE) && 'bg-blue-100 text-blue-600',
-            !isActive(AppRoute.KNOWLEDGE_BASE) &&
-              'text-gray-500 hover:bg-gray-100 hover:text-black',
-          )}
-        >
-          <Link href={AppRoute.KNOWLEDGE_BASE}>
-            <a
-              className={'rounded-md p-2 text-sm font-medium transition-colors'}
-            >
-              {'Knowledge base'}
-            </a>
-          </Link>
-        </li>
-        <li
-          key={'Calendar'}
-          className={cn(
-            'rounded p-2 text-gray-500',
-            isActive(AppRoute.CALENDAR) && 'bg-blue-100 text-blue-600',
-            !isActive(AppRoute.CALENDAR) &&
-              'text-gray-500 hover:bg-gray-100 hover:text-black',
-          )}
-        >
-          <Link href={AppRoute.CALENDAR}>
-            <a
-              className={'rounded-md p-2 text-sm font-medium transition-colors'}
-            >
-              {'Calendar'}
-            </a>
-          </Link>
-        </li>
       </ul>
     </nav>
   );
 };
 
 const MobileNavigation = () => {
+  const isOpened = useNavigationStore((state) => state.isOpened);
   return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <Button className={'m-4 w-fit'} variant={'outline'}>
-          <Menu className={'h-4 w-4'} />
-        </Button>
-      </SheetTrigger>
+    <Sheet open={isOpened}>
       <SheetContent position={'left'} size="content" className={'p-8'}>
         <SheetHeader>
           <SheetTitle>
@@ -174,27 +169,21 @@ const MobileNavigation = () => {
 };
 
 export const WebNavigation = () => {
-  const [showMenu, setShowMenu] = useState(true);
+  const { isOpened, setIsOpened } = useNavigationStore();
 
   return (
     <div>
-      {showMenu ? (
-        <div className=" flex h-full flex-col items-center border-r px-6">
-          <div className={'my-4 flex flex-row items-center gap-2'}>
+      {isOpened && (
+        <div className=" flex h-full flex-col items-center border-r px-5">
+          <div className={'my-4 flex flex-row items-center gap-2 pt-4'}>
             <Menu
-              className={'cursor-pointer'}
-              onClick={() => setShowMenu(false)}
+              className={'mr-5 cursor-pointer'}
+              onClick={() => setIsOpened(false)}
             />
             <Logo />
           </div>
           <MainNavigation />
           <UserSection />
-        </div>
-      ) : (
-        <div className={'m-4'}>
-          <Button variant={'outline'} onClick={() => setShowMenu(true)}>
-            <Menu className={'h-4 w-4'} />
-          </Button>
         </div>
       )}
     </div>

@@ -1,14 +1,11 @@
 import React from 'react';
 import CalendarScheduler from '@components/pages/calendar/calendar-scheduler';
-import { EventModal } from '@components';
+import { PageHeader } from '@components';
 
 const Calendar = () => {
   return (
-    <div>
-      <div>Calendar</div>
-      <div className={'mb-3'}>
-        <EventModal />
-      </div>
+    <div className={'overflow-x-hidden'}>
+      <PageHeader title="Calendar" />
       <CalendarScheduler />
     </div>
   );
