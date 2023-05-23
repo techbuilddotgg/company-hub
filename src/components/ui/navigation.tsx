@@ -10,12 +10,12 @@ import { trpc } from '@utils/trpc';
 import { useWindow } from '../../hooks/useWindow';
 import { Button } from '@components/ui/button';
 import {
-  SheetContent,
   Sheet,
+  SheetContent,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-  SheetFooter,
 } from '@components/ui/sheet';
 
 const UserSection = () => {
@@ -150,7 +150,10 @@ const MobileNavigation = () => {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button className={'m-4'} variant={'outline'}>
+        <Button
+          className="fixed left-6 top-6 md:left-9 md:top-9"
+          variant={'outline'}
+        >
           <Menu className={'h-4 w-4'} />
         </Button>
       </SheetTrigger>
@@ -174,15 +177,15 @@ const MobileNavigation = () => {
 };
 
 export const WebNavigation = () => {
-  const [showMenu, setShowMenu] = useState(false);
+  const [showMenu, setShowMenu] = useState(true);
 
   return (
     <div>
       {showMenu ? (
         <div className=" flex h-full flex-col items-center border-r px-6">
-          <div className={'my-4 flex flex-row items-center gap-2'}>
+          <div className={'my-4 flex flex-row items-center gap-2 pt-4'}>
             <Menu
-              className={'cursor-pointer'}
+              className={'mr-5 cursor-pointer'}
               onClick={() => setShowMenu(false)}
             />
             <Logo />
@@ -191,11 +194,13 @@ export const WebNavigation = () => {
           <UserSection />
         </div>
       ) : (
-        <div className={'m-4'}>
-          <Button variant={'outline'} onClick={() => setShowMenu(true)}>
-            <Menu className={'h-4 w-4'} />
-          </Button>
-        </div>
+        <Button
+          className="fixed left-9 top-9"
+          variant={'outline'}
+          onClick={() => setShowMenu(true)}
+        >
+          <Menu className={'h-4 w-4'} />
+        </Button>
       )}
     </div>
   );

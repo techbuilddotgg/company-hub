@@ -56,7 +56,7 @@ export default async function handler(
   const { id: docId } = await prisma.document.create({
     data: {
       authorId: user?.id as string,
-      companyId: user?.privateMetadata.companyId as string,
+      companyId: user?.publicMetadata.companyId as string,
       title: formData.title,
       description: formData.description,
       content: doc?.[0]?.pageContent as string,
@@ -64,7 +64,7 @@ export default async function handler(
   });
 
   const docOutput = await prepareDocument(doc, {
-    companyId: user?.privateMetadata.companyId as string,
+    companyId: user?.publicMetadata.companyId as string,
     documentId: docId as string,
     authorId: user?.id as string,
   });

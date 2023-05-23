@@ -23,7 +23,7 @@ export const knowledgeBaseRouter = t.router({
         data: {
           ...input,
           authorId: userId,
-          companyId: user.privateMetadata.companyId as string,
+          companyId: user.publicMetadata.companyId as string,
         },
       });
 
@@ -31,7 +31,7 @@ export const knowledgeBaseRouter = t.router({
 
       const metadata = {
         authorId: userId,
-        companyId: user.privateMetadata.companyId as string,
+        companyId: user.publicMetadata.companyId as string,
         documentId: result.id,
       };
 
@@ -60,7 +60,7 @@ export const knowledgeBaseRouter = t.router({
           title: {
             contains: input?.title,
           },
-          companyId: user.privateMetadata.companyId as string,
+          companyId: user.publicMetadata.companyId as string,
         },
         orderBy: {
           createdAt: order,

@@ -10,17 +10,20 @@ import {
   Dialog,
   DialogContent,
   DialogTrigger,
+  PageHeader,
 } from '@components';
 import { Project } from '@prisma/client';
 import SaveProjectForm from '@components/pages/project/save-project-form';
-import { ProjectWithBoards } from '../../shared/types/project.types';
+import { ProjectWithBoards } from '@shared/types/project.types';
 import { Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
+import { useUser } from '@clerk/nextjs';
 
 const Projects = () => {
   const [dialogOpened, setDialogOpened] = React.useState(false);
   const [selectedProjectForEditing, setSelectedProjectForEditing] =
     React.useState<ProjectWithBoards>();
+  const { user } = useUser();
 
   const { data: projects, refetch: refetchProjects } =
     trpc.project.get.useQuery();
@@ -52,16 +55,24 @@ const Projects = () => {
   return (
     <Dialog open={dialogOpened}>
       <div className="flex flex-row justify-between">
-        <h1 className="mb-10 text-3xl font-bold">Projects</h1>
-        <DialogTrigger
-          asChild
-          onClick={() => {
-            setSelectedProjectForEditing(undefined);
-            setDialogOpened(true);
-          }}
-        >
-          <Button className="mt-4">Add new project</Button>
-        </DialogTrigger>
+        <>
+          <PageHeader>
+            <h1 className="text-3xl font-bold">Projects</h1>
+            <>
+              {user?.publicMetadata.isAdmin && (
+                <DialogTrigger
+                  asChild
+                  onClick={() => {
+                    setSelectedProjectForEditing(undefined);
+                    setDialogOpened(true);
+                  }}
+                >
+                  <Button className="mt-2">Add new project</Button>
+                </DialogTrigger>
+              )}
+            </>
+          </PageHeader>
+        </>
       </div>
       {projects?.map((project) => (
         <Accordion key={project.id} type="single" collapsible>
@@ -84,31 +95,35 @@ const Projects = () => {
                     </p>
                   </div>
                 </div>
-                <div className="flex flex-row">
-                  <Button
-                    onClick={() => setProjectStatus(project)}
-                    variant="outline"
-                  >
-                    {project.endDate ? 'Reopen project' : 'Close project'}
-                  </Button>
-                  <Button
-                    className="ml-2"
-                    onClick={() => setSelectedProjectForEditing(project)}
-                    variant="secondary"
-                  >
-                    Edit
-                  </Button>
-                  <AlertDialogButton
-                    handleAction={() => deleteProject(project.id)}
-                    buttonVariant={'ghost'}
-                    buttonClassName={'ml-2'}
-                    buttonText={<Trash2 color="black" size={22} />}
-                    title={'Delete project'}
-                    description={
-                      'Are you sure you want to delete this project?'
-                    }
-                  />
-                </div>
+                <>
+                  {user?.publicMetadata.isAdmin && (
+                    <div className="flex flex-row">
+                      <Button
+                        onClick={() => setProjectStatus(project)}
+                        variant="outline"
+                      >
+                        {project.endDate ? 'Reopen project' : 'Close project'}
+                      </Button>
+                      <Button
+                        className="ml-2"
+                        onClick={() => setSelectedProjectForEditing(project)}
+                        variant="secondary"
+                      >
+                        Edit
+                      </Button>
+                      <AlertDialogButton
+                        handleAction={() => deleteProject(project.id)}
+                        buttonVariant={'ghost'}
+                        buttonClassName={'ml-2'}
+                        buttonText={<Trash2 color="black" size={22} />}
+                        title={'Delete project'}
+                        description={
+                          'Are you sure you want to delete this project?'
+                        }
+                      />
+                    </div>
+                  )}
+                </>
               </div>
             </AccordionContent>
           </AccordionItem>

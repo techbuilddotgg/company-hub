@@ -6,8 +6,10 @@ import { reorderElements } from '@components/pages/project/utils';
 import { ProjectBoard } from '@prisma/client';
 import { trpc } from '@utils/trpc';
 import AddColumn from '@components/pages/project/add-column';
-import { ProjectColumnFull } from '../../../shared/types/board.types';
+import { ProjectColumnFull } from '@shared/types/board.types';
+import GithubIntegrationDialog from '@components/pages/project/github-integration-dialog';
 import Pusher from 'pusher-js';
+import { useUser } from '@clerk/nextjs';
 
 interface BoardProps {
   data: ProjectBoard;
@@ -19,6 +21,7 @@ export const Board = ({ data }: BoardProps) => {
     () => columns.sort((a, b) => a.orderIndex - b.orderIndex),
     [columns],
   );
+  const { user } = useUser();
   const { data: board, refetch } = trpc.board.getById.useQuery(
     { id: data.id },
     {
@@ -155,6 +158,11 @@ export const Board = ({ data }: BoardProps) => {
 
   return (
     <div className="h-full max-h-full">
+      <>
+        {user?.publicMetadata.isAdmin && (
+          <GithubIntegrationDialog boardId={data.id} />
+        )}
+      </>
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable
           droppableId="board"
@@ -176,7 +184,11 @@ export const Board = ({ data }: BoardProps) => {
                 />
               ))}
               {provided.placeholder}
-              <AddColumn refetch={refetch} boardId={board?.id || ''} />
+              <>
+                {user?.publicMetadata.isAdmin && (
+                  <AddColumn refetch={refetch} boardId={board?.id || ''} />
+                )}
+              </>
             </div>
           )}
         </Droppable>
