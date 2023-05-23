@@ -1,33 +1,89 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import momentPlugin from '@fullcalendar/moment';
 import { trpc } from '@utils/trpc';
+import { EventModal } from '@components/pages/calendar/event-modal';
+import {
+  DateSelectArg,
+  EventChangeArg,
+  EventClickArg,
+} from '@fullcalendar/core';
+import { AddEventType } from '@shared/types/calendar.types';
+import { useUser } from '@clerk/nextjs';
 
 const CalendarScheduler = () => {
-  const { mutate: addEvent } = trpc.event.add.useMutation();
-  const { data: events } = trpc.event.getById.useQuery({ id: '1' });
+  const [update, setUpdate] = React.useState<number>(1);
+  const { user } = useUser();
+  const { mutate: updateEvent } = trpc.event.update.useMutation({});
+  const { data: events, refetch: refetchEvents } = trpc.event.get.useQuery();
 
-  const onSubmit = () => {
-    addEvent({
-      title: 'event 1',
-      start: '2023-05-16',
-      end: '2023-05-18',
-      authorId: '1',
-    });
-  };
-
-  console.log(events);
+  const [openModal, setOpenModal] = React.useState<boolean>(false);
+  const [date, setDate] = React.useState<string>('');
+  const [event, setEvent] = React.useState<AddEventType | undefined>();
 
   const weekends = {
     weekendsVisible: true,
     currentEvents: [],
   };
 
+  const handleAddEventSelectAndOpenModal = (selectInfo: DateSelectArg) => {
+    setEvent(undefined);
+    setDate(selectInfo.startStr);
+    setOpenModal(true);
+  };
+
+  const handleUpdateEventSelect = (clickInfo: EventChangeArg) => {
+    if (clickInfo.event.extendedProps.authorId !== user?.id) return;
+    const event = {
+      id: clickInfo.event.id,
+      title: clickInfo.event.title,
+      description: clickInfo.event.extendedProps.description,
+      backgroundColor: clickInfo.event.backgroundColor,
+      start: clickInfo.event.startStr,
+      end: clickInfo.event.endStr,
+      authorId: clickInfo.event.extendedProps.authorId,
+      users: [],
+    };
+    updateEvent(event);
+  };
+
+  const handleEditEventSelectAndOpenModal = (clickInfo: EventClickArg) => {
+    if (clickInfo.event.extendedProps.authorId !== user?.id) return;
+    setEvent({
+      id: clickInfo.event.id,
+      title: clickInfo.event.title,
+      description: clickInfo.event.extendedProps.description,
+      backgroundColor: clickInfo.event.backgroundColor,
+      start: clickInfo.event.startStr,
+      end: clickInfo.event.endStr,
+      authorId: clickInfo.event.extendedProps.authorId,
+      users: [],
+    });
+    setDate(clickInfo.event.startStr);
+    setOpenModal(true);
+  };
+
+  useEffect(() => {
+    // setUpdate(update + 1)
+  }, [update]);
+
   return (
-    <div>
+    <div className={'container-calendar mb-16'} key={update}>
+      <div className={'mb-3'}>
+        {user?.id && (
+          <EventModal
+            open={openModal}
+            setOpen={() => setOpenModal(!openModal)}
+            date={date}
+            event={event}
+            user={user}
+            refetch={refetchEvents}
+          />
+        )}
+      </div>
       <FullCalendar
         plugins={[
           timeGridPlugin,
@@ -41,30 +97,24 @@ const CalendarScheduler = () => {
           center: 'title',
           right: 'dayGridMonth,timeGridWeek,timeGridDay',
         }}
-        locale="en-gb"
+        locale={'en-gb'}
         weekends={weekends.weekendsVisible}
-        events={[
-          {
-            title: 'event 1',
-            start: '2023-05-16T10:30:00',
-            end: '2023-05-16T18:30:00',
-          },
-          {
-            title: 'event 2',
-            start: '2023-05-17T08:30:00',
-            end: '2023-05-17T11:30:00',
-          },
-        ]}
+        events={events ? events : []}
         longPressDelay={1000}
         eventLongPressDelay={1000}
         selectLongPressDelay={1000}
         selectable={true}
-        selectMirror={true}
         dayMaxEvents={true}
         allDaySlot={false}
         editable={true}
         nowIndicator={true}
-        height={'700px'}
+        height={'85vh'}
+        eventBorderColor={'#a9a9a9'}
+        eventChange={handleUpdateEventSelect}
+        eventClick={handleEditEventSelectAndOpenModal}
+        select={handleAddEventSelectAndOpenModal}
+        dayHeaderClassNames={'text-sm text-gray-500 font-semibold'}
+        viewHeight={'auto'}
       />
     </div>
   );

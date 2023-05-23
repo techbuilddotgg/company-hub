@@ -137,3 +137,10 @@
 .rdw-editor-main {
     padding-left: 1rem !important;
 }
+
+@media (max-width: 768px) {
+    .container-calendar .fc-toolbar.fc-header-toolbar {
+        display: flex;
+        flex-direction: column;
+    }
+}
