@@ -32,7 +32,9 @@ export const InputWrapper: FC<InputWrapperProps> = ({
         {tooltip && <div className={'ml-auto'}>{tooltip}</div>}
       </div>
       {children}
-      {error && <small className={'text-red-500'}>{error.message}</small>}
+      {error && (
+        <small className={'ml-0.5 mt-1 text-red-500'}>{error.message}</small>
+      )}
     </div>
   );
 };

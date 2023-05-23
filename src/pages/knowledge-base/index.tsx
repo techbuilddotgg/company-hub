@@ -53,13 +53,14 @@ const KnowledgeBase = () => {
         <PageHeader
           title={'Knowledge Base'}
           description={
-            'Internal knowledge base and issue tracking system. It enables users ' +
-            'to publish and search for internal problems and knowledge, fostering knowledge sharing and efficient problem resolution.'
+            'Centralized repository of organized information and data.'
+          }
+          rightHelper={
+            <LinkButton href={AppRoute.ADD_KNOWLEDGE} className={'ml-auto'}>
+              Add knowledge
+            </LinkButton>
           }
         />
-        <LinkButton href={AppRoute.ADD_KNOWLEDGE} className={'ml-auto'}>
-          Add knowledge
-        </LinkButton>
       </div>
 
       <div className={'flex w-full grow flex-col gap-4'} ref={parent}>

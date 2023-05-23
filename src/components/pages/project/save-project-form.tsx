@@ -1,12 +1,9 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { trpc } from '@utils/trpc';
-import { Button, Input, Textarea } from '@components';
-import { AddProjectSchema } from '../../../shared/validators/project.schemes';
-import {
-  AddProjectType,
-  ProjectWithBoards,
-} from '../../../shared/types/project.types';
+import { Input, LoaderButton, Textarea } from '@components';
+import { AddProjectSchema } from '@shared/validators/project.schemes';
+import { AddProjectType, ProjectWithBoards } from '@shared/types/project.types';
 import React from 'react';
 
 interface SaveProjectFormProps {
@@ -19,7 +16,11 @@ const SaveProjectForm = ({
   setDialogOpened,
   project,
 }: SaveProjectFormProps) => {
-  const { register, handleSubmit } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
     resolver: zodResolver(AddProjectSchema),
     defaultValues: {
       name: project?.name || '',
@@ -27,19 +28,21 @@ const SaveProjectForm = ({
       description: project?.description || '',
     },
   });
-  const { mutate: addProject } = trpc.project.add.useMutation({
-    onSuccess: () => {
-      refetchProjects();
-      setDialogOpened(false);
-    },
-  });
+  const { mutate: addProject, isLoading: isAddProjectMutationLoading } =
+    trpc.project.add.useMutation({
+      onSuccess: () => {
+        refetchProjects();
+        setDialogOpened(false);
+      },
+    });
 
-  const { mutate: updateProject } = trpc.project.update.useMutation({
-    onSuccess: () => {
-      refetchProjects();
-      setDialogOpened(false);
-    },
-  });
+  const { mutate: updateProject, isLoading: isUpdateProjectMutationLoading } =
+    trpc.project.update.useMutation({
+      onSuccess: () => {
+        refetchProjects();
+        setDialogOpened(false);
+      },
+    });
 
   const onSubmit = (data: AddProjectType) => {
     if (project) updateProject({ ...project, ...data });
@@ -53,12 +56,27 @@ const SaveProjectForm = ({
         className="mt-5 flex flex-col gap-4"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <Input label="Name" {...register('name')} />
-        <Textarea rows={5} label="Description" {...register('description')} />
-        <Input label="Board name" {...register('boardName')} />
-        <Button className="mt-5 self-end" type="submit">
+        <Input error={errors.name} label="Name" {...register('name')} />
+        <Textarea
+          error={errors.description}
+          rows={5}
+          label="Description"
+          {...register('description')}
+        />
+        <Input
+          error={errors.boardName}
+          label="Board name"
+          {...register('boardName')}
+        />
+        <LoaderButton
+          isLoading={
+            isAddProjectMutationLoading || isUpdateProjectMutationLoading
+          }
+          className="mt-5 self-end"
+          type="submit"
+        >
           Save
-        </Button>
+        </LoaderButton>
       </form>
     </div>
   );

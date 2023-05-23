@@ -1,5 +1,6 @@
 import {
   Button,
+  Label,
   ScrollArea,
   Select,
   SelectContent,
@@ -34,9 +35,11 @@ const EditGithubConfiguration = ({ boardId }: EditGithubConfigurationProps) => {
   return (
     <div>
       {githubData?.githubWebhooks.map((action) => (
-        <div key={action.id}>
+        <div key={action.id} className="mt-4">
           <div>
-            On {githubEventToText.get(action.actionType)} move task to{' '}
+            <Label>
+              On {githubEventToText.get(action.actionType)} move task to{' '}
+            </Label>
             <Select
               value={action.projectBoardColumnName}
               onValueChange={(value) =>
@@ -46,7 +49,7 @@ const EditGithubConfiguration = ({ boardId }: EditGithubConfigurationProps) => {
                 })
               }
             >
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="mt-0.5 w-full">
                 <SelectValue placeholder="Repo" />
               </SelectTrigger>
               <SelectContent>
@@ -63,7 +66,7 @@ const EditGithubConfiguration = ({ boardId }: EditGithubConfigurationProps) => {
         </div>
       ))}
       <Button
-        variant="destructive"
+        className="mt-7"
         onClick={() => deleteGithubIntegration({ boardId })}
       >
         Delete integration

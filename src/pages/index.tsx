@@ -1,7 +1,13 @@
 import type { NextPage } from 'next';
+import { PageHeader } from '@components';
+import React from 'react';
 
 const Home: NextPage = () => {
-  return <div>Home</div>;
+  return (
+    <>
+      <PageHeader title="Home" />
+    </>
+  );
 };
 
 export default Home;

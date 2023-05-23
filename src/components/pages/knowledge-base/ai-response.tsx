@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
-import { Markdown, PageHeader } from '@components';
+import { Markdown } from '@components';
 import Image from 'next/image';
+import PageSubheader from '@components/ui/page-subheader';
 
 interface Props {
   isLoading: boolean;
@@ -10,7 +11,7 @@ interface Props {
 export const AiResponse: FC<Props> = ({ isLoading, data }) => {
   return (
     <>
-      <PageHeader
+      <PageSubheader
         title={'AI response'}
         description={
           'This is a response from OpenAI based on your uploaded documents.'

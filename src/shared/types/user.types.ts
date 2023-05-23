@@ -6,3 +6,6 @@ export enum UserRole {
   ADMIN = 'ADMIN',
   BASIC = 'BASIC',
 }
+import { UserResource } from '@clerk/types';
+
+export type authUser = UserResource | null | undefined;
