@@ -3,6 +3,7 @@ import { trpc } from '@utils/trpc';
 import {
   Button,
   Input,
+  PageHeader,
   Select,
   SelectContent,
   SelectItem,
@@ -44,7 +45,7 @@ const Users = () => {
 
   return (
     <div>
-      <h1 className="mb-8 text-4xl">Users</h1>
+      <PageHeader className="mb-8" title="Users" />
       <>
         {user?.publicMetadata.isAdmin && (
           <form

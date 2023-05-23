@@ -5,7 +5,7 @@ import { SignedIn, UserButton, useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/router';
 import { cn } from '@utils/classNames';
 import { Logo } from '@components/ui/logo';
-import { Menu, Settings } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { trpc } from '@utils/trpc';
 import { useWindow } from '../../hooks/useWindow';
 import {
@@ -29,11 +29,6 @@ const UserSection = () => {
               {user.user?.username}
             </span>
           </div>
-          <Link href={AppRoute.SETTINGS}>
-            <a className={'text-gray-500 hover:text-black'}>
-              <Settings size={20} />
-            </a>
-          </Link>
         </div>
       </SignedIn>
     </div>
@@ -51,23 +46,6 @@ const MainNavigation = () => {
   return (
     <nav className=" mt-4 flex w-full grow  flex-col gap-4">
       <ul className={'flex grow flex-col gap-4'}>
-        <li
-          key={'Overview'}
-          className={cn(
-            'rounded p-2 text-gray-500',
-            isActive(AppRoute.HOME) && 'bg-blue-100 text-blue-600',
-            !isActive(AppRoute.HOME) &&
-              'text-gray-500 hover:bg-gray-100 hover:text-black',
-          )}
-        >
-          <Link href={AppRoute.HOME}>
-            <a
-              className={'rounded-md p-2 text-sm font-medium transition-colors'}
-            >
-              {'Overview'}
-            </a>
-          </Link>
-        </li>
         <li
           key={'Projects'}
           className={cn(
@@ -137,6 +115,23 @@ const MainNavigation = () => {
               className={'rounded-md p-2 text-sm font-medium transition-colors'}
             >
               {'Calendar'}
+            </a>
+          </Link>
+        </li>
+        <li
+          key={'Users'}
+          className={cn(
+            'rounded p-2 text-gray-500',
+            isActive(AppRoute.USERS) && 'bg-blue-100 text-blue-600',
+            !isActive(AppRoute.USERS) &&
+              'text-gray-500 hover:bg-gray-100 hover:text-black',
+          )}
+        >
+          <Link href={AppRoute.USERS}>
+            <a
+              className={'rounded-md p-2 text-sm font-medium transition-colors'}
+            >
+              {'Users'}
             </a>
           </Link>
         </li>

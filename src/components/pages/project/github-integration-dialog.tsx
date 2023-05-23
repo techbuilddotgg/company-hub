@@ -15,7 +15,7 @@ const GithubIntegrationDialog = ({ boardId }: GithubIntegrationDialogProps) => {
 
   return (
     <Dialog open={dialogOpened}>
-      <div className="flex flex-row justify-between">
+      <div className="mb-4 flex flex-row justify-between">
         <DialogTrigger
           asChild
           onClick={() => {
