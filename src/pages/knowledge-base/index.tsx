@@ -53,8 +53,7 @@ const KnowledgeBase = () => {
         <PageHeader
           title={'Knowledge Base'}
           description={
-            'Internal knowledge base and issue tracking system. It enables users ' +
-            'to publish and search for internal problems and knowledge, fostering knowledge sharing and efficient problem resolution.'
+            'Centralized repository of organized information and data.'
           }
         />
         <LinkButton href={AppRoute.ADD_KNOWLEDGE} className={'ml-auto'}>

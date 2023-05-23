@@ -24,7 +24,10 @@ const AddKnowledge = () => {
         }
       />
       <div className={'flex w-full flex-col items-center'}>
-        <Tabs defaultValue="add" className="w-2/3">
+        <Tabs
+          defaultValue="add"
+          className="w-full sm:w-full md:w-full lg:w-2/3"
+        >
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="add">Add</TabsTrigger>
             <TabsTrigger value="upload">Upload</TabsTrigger>
