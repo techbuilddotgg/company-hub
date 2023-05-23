@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { AppRoute } from '@constants/app-routes';
 import Link from 'next/link';
 import { SignedIn, UserButton, useUser } from '@clerk/nextjs';
@@ -8,15 +8,14 @@ import { Logo } from '@components/ui/logo';
 import { Menu, Settings } from 'lucide-react';
 import { trpc } from '@utils/trpc';
 import { useWindow } from '../../hooks/useWindow';
-import { Button } from '@components/ui/button';
 import {
   Sheet,
   SheetContent,
   SheetFooter,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from '@components/ui/sheet';
+import { useNavigationStore } from '../../store/navigation-store';
 
 const UserSection = () => {
   const user = useUser();
@@ -147,16 +146,9 @@ const MainNavigation = () => {
 };
 
 const MobileNavigation = () => {
+  const isOpened = useNavigationStore((state) => state.isOpened);
   return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <Button
-          className="fixed left-6 top-6 md:left-9 md:top-9"
-          variant={'outline'}
-        >
-          <Menu className={'h-4 w-4'} />
-        </Button>
-      </SheetTrigger>
+    <Sheet open={isOpened}>
       <SheetContent position={'left'} size="content" className={'p-8'}>
         <SheetHeader>
           <SheetTitle>
@@ -177,30 +169,22 @@ const MobileNavigation = () => {
 };
 
 export const WebNavigation = () => {
-  const [showMenu, setShowMenu] = useState(true);
+  const { isOpened, setIsOpened } = useNavigationStore();
 
   return (
     <div>
-      {showMenu ? (
+      {isOpened && (
         <div className=" flex h-full flex-col items-center border-r px-6">
           <div className={'my-4 flex flex-row items-center gap-2 pt-4'}>
             <Menu
               className={'mr-5 cursor-pointer'}
-              onClick={() => setShowMenu(false)}
+              onClick={() => setIsOpened(false)}
             />
             <Logo />
           </div>
           <MainNavigation />
           <UserSection />
         </div>
-      ) : (
-        <Button
-          className="fixed left-9 top-9"
-          variant={'outline'}
-          onClick={() => setShowMenu(true)}
-        >
-          <Menu className={'h-4 w-4'} />
-        </Button>
       )}
     </div>
   );

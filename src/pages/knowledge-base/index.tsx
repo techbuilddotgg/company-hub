@@ -50,12 +50,17 @@ const KnowledgeBase = () => {
   return (
     <div className={'flex h-full flex-col gap-2'}>
       <div className={'flex flex-row items-center'}>
-        <PageHeader>
-          <h1 className="text-3xl font-bold">Knowledge Base</h1>
-          <LinkButton href={AppRoute.ADD_KNOWLEDGE} className={'ml-auto'}>
-            Add knowledge
-          </LinkButton>
-        </PageHeader>
+        <PageHeader
+          title={'Knowledge Base'}
+          description={
+            'Centralized repository of organized information and data.'
+          }
+          rightHelper={
+            <LinkButton href={AppRoute.ADD_KNOWLEDGE} className={'ml-auto'}>
+              Add knowledge
+            </LinkButton>
+          }
+        />
       </div>
 
       <div className={'flex w-full grow flex-col gap-4'} ref={parent}>

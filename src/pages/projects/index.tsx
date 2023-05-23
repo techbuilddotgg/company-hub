@@ -54,10 +54,10 @@ const Projects = () => {
 
   return (
     <Dialog open={dialogOpened}>
-      <div className="flex flex-row justify-between">
-        <>
-          <PageHeader>
-            <h1 className="text-3xl font-bold">Projects</h1>
+      <div className="mb-10 flex flex-row justify-between">
+        <PageHeader
+          title="Projects"
+          rightHelper={
             <>
               {user?.publicMetadata.isAdmin && (
                 <DialogTrigger
@@ -67,12 +67,12 @@ const Projects = () => {
                     setDialogOpened(true);
                   }}
                 >
-                  <Button className="mt-2">Add new project</Button>
+                  <Button className="mt-1">Add new project</Button>
                 </DialogTrigger>
               )}
             </>
-          </PageHeader>
-        </>
+          }
+        />
       </div>
       {projects?.map((project) => (
         <Accordion key={project.id} type="single" collapsible>

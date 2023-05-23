@@ -1,6 +1,5 @@
 import React, { Dispatch, FC, SetStateAction } from 'react';
 import { RouterOutput } from '@utils/trpc';
-import { PageHeader } from '@components/ui/page-header';
 import { DataView } from '@components/ui/data-view';
 import { DocumentCard } from '@components/pages/knowledge-base/document-card';
 import {
@@ -9,6 +8,7 @@ import {
 } from '@components/pages/knowledge-base/knowledge-base-filter-options';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
 import dynamic from 'next/dynamic';
+import PageSubheader from '@components/ui/page-subheader';
 
 const DocumentCardSkeletonList = dynamic(
   () =>
@@ -32,8 +32,8 @@ export const DocumentFeed: FC<{
 
   return (
     <div className={'flex flex-col gap-4'}>
-      <div className={'flex flex-row items-center'}>
-        <PageHeader
+      <div className={'mt-6 flex flex-row items-center'}>
+        <PageSubheader
           title={'Documents'}
           description={'Documents that your company uploaded'}
         />
