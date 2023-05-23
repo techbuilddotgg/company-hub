@@ -213,7 +213,10 @@ const EventModalForm: FC<EventModalFormProps> = ({
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className={'flex flex-col gap-2'}>
         <Input label={'Title'} {...register('title')} />
-        <DatePicker defaultState={date} onStateChange={onDateChange} />
+        <div>
+          <label className={'font-semibold'}>Date</label>
+          <DatePicker defaultState={date} onStateChange={onDateChange} />
+        </div>
       </div>
       <div className="my-2 ml-0.5 flex items-center space-x-2">
         <Checkbox
@@ -251,8 +254,7 @@ const EventModalForm: FC<EventModalFormProps> = ({
       <div className={'my-2'}>
         <Labels selected={label} handleLabelChange={handleLabelChange} />
       </div>
-      <div className={'flex items-center justify-between'}>
-        <Button type={'submit'}>Save</Button>
+      <div className={'mt-7 flex items-center justify-between'}>
         {event && (
           <Button
             onClick={() => {
@@ -264,6 +266,7 @@ const EventModalForm: FC<EventModalFormProps> = ({
             Delete
           </Button>
         )}
+        <Button type={'submit'}>Save</Button>
       </div>
     </form>
   );

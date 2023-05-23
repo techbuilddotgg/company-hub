@@ -28,7 +28,7 @@ const Labels: FC<LabelsProps> = ({ selected, handleLabelChange }) => {
         <div
           key={index}
           className={`h-4 w-4 cursor-pointer rounded-full ${
-            selected === label.color ? 'ring-2 ring-gray-200 ring-offset-1' : ''
+            selected === label.color ? 'ring-2 ring-gray-400 ring-offset-2' : ''
           }`}
           onClick={() => handleLabelChange(label.color)}
           style={{ backgroundColor: label.color }}

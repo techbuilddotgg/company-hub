@@ -1,5 +1,12 @@
 import React from 'react';
-import { Button, Dialog, DialogContent, DialogTrigger } from '@components';
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@components';
 import IntegrateGithub from '@components/pages/project/integrate-github';
 import { trpc } from '@utils/trpc';
 import EditGithubConfiguration from '@components/pages/project/edit-github-configuration';
@@ -32,6 +39,9 @@ const GithubIntegrationDialog = ({ boardId }: GithubIntegrationDialogProps) => {
       </div>
 
       <DialogContent setDialogOpen={setDialogOpened}>
+        <DialogHeader>
+          <DialogTitle>Edit configuration</DialogTitle>
+        </DialogHeader>
         {githubIntegrated ? (
           <EditGithubConfiguration boardId={boardId} />
         ) : (
