@@ -5,6 +5,9 @@ export type AddWebhookType = z.infer<typeof AddWebhookSchema>;
 export interface GithubUser {
   login: string;
 }
+export interface GithubBranch {
+  name: string;
+}
 export interface GithubRepository {
   id: number;
   node_id: string;
