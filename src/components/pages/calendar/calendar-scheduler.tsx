@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
@@ -15,6 +15,7 @@ import { AddEventType } from '@shared/types/calendar.types';
 import { useUser } from '@clerk/nextjs';
 
 const CalendarScheduler = () => {
+  const [update, setUpdate] = React.useState<number>(1);
   const { user } = useUser();
   const { mutate: updateEvent } = trpc.event.update.useMutation({});
   const { data: events, refetch: refetchEvents } = trpc.event.get.useQuery();
@@ -65,8 +66,12 @@ const CalendarScheduler = () => {
     setOpenModal(true);
   };
 
+  useEffect(() => {
+    // setUpdate(update + 1)
+  }, [update]);
+
   return (
-    <div className={'container-calendar'}>
+    <div className={'container-calendar mb-16'} key={update}>
       <div className={'mb-3'}>
         {user?.id && (
           <EventModal
