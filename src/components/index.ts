@@ -32,6 +32,7 @@ export * from './ui/calendar';
 export * from './pages/calendar/calendar-scheduler';
 export * from './pages/calendar/event-modal';
 export * from './ui/time-picker';
+export * from './ui/user-selection';
 export * from './ui/dropdown-menu';
 export * from './ui/tabs';
 export * from './pages/knowledge-base/upload-knowledge-form';
