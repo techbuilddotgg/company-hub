@@ -1,7 +1,7 @@
 import { protectedProcedure, t } from '../trpc';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
-import { EventSchema } from '../../../shared/validators/calendar.schemas';
+import { EventSchema } from '@shared/validators/calendar.schemas';
 
 export const eventRouter = t.router({
   get: protectedProcedure.query(async ({ ctx: { prisma, authedUserId } }) => {
@@ -102,7 +102,6 @@ export const eventRouter = t.router({
         });
       }
     }),
-
   delete: protectedProcedure
     .input(z.string())
     .mutation(async ({ input, ctx: { prisma } }) => {
