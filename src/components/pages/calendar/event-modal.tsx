@@ -27,6 +27,7 @@ import { EventSchema } from '@shared/validators/calendar.schemas';
 import { useToast } from '@hooks';
 import { CheckedState } from '@radix-ui/react-checkbox';
 import { authUser } from '@shared/types/user.types';
+import { LabelColorsType } from '@components/pages/calendar/types';
 
 interface EventModalFormProps {
   setOpen: (open: boolean) => void;
@@ -58,7 +59,7 @@ const EventModalForm: FC<EventModalFormProps> = ({
     minutes: 0,
   });
 
-  const [label, setLabel] = useState('blue');
+  const [label, setLabel] = useState<string>(LabelColorsType.BLUE);
 
   const [selected, setSelected] = React.useState<string[]>([]);
 
@@ -122,6 +123,7 @@ const EventModalForm: FC<EventModalFormProps> = ({
     if (event) {
       const start = new Date(event.start);
       const end = new Date(event.end);
+      setLabel(event.backgroundColor);
 
       if (
         start.getHours() === end.getHours() &&
@@ -212,7 +214,11 @@ const EventModalForm: FC<EventModalFormProps> = ({
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className={'flex flex-col gap-2'}>
-        <Input label={'Title'} {...register('title')} />
+        <Input
+          label={'Title'}
+          {...register('title')}
+          placeholder="Enter event name"
+        />
         <div>
           <label className={'font-semibold'}>Date</label>
           <DatePicker defaultState={date} onStateChange={onDateChange} />
@@ -232,18 +238,26 @@ const EventModalForm: FC<EventModalFormProps> = ({
         </label>
       </div>
       {!watchAllDay && (
-        <div className={'my-2 flex gap-2'}>
-          <TimePicker
-            defaultTime={startTime}
-            onTimeChange={handleStartTimeChange}
-          />
-          <TimePicker
-            defaultTime={endTime}
-            onTimeChange={handleEndTimeChange}
-          />
-        </div>
+        <>
+          <label className={'font-semibold'}>Time</label>
+          <div className={'mb-2 flex gap-2'}>
+            <TimePicker
+              defaultTime={startTime}
+              onTimeChange={handleStartTimeChange}
+            />
+            <TimePicker
+              defaultTime={endTime}
+              onTimeChange={handleEndTimeChange}
+            />
+          </div>
+        </>
       )}
-      <Textarea label={'Description'} {...register('description')} rows={3} />
+      <Textarea
+        label={'Description'}
+        {...register('description')}
+        rows={3}
+        placeholder="Enter event description"
+      />
       {(user?.id === event?.authorId || !event) && (
         <UserSelection
           handleCheckedChange={handleSelectionChange}
@@ -254,7 +268,7 @@ const EventModalForm: FC<EventModalFormProps> = ({
       <div className={'my-2'}>
         <Labels selected={label} handleLabelChange={handleLabelChange} />
       </div>
-      <div className={'mt-7 flex items-center justify-between'}>
+      <div className={'mt-4 flex items-center justify-between'}>
         {event && (
           <Button
             onClick={() => {

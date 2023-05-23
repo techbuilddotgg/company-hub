@@ -144,3 +144,15 @@
         flex-direction: column;
     }
 }
+
+.fc-button {
+    background-color: #0F172A  !important;
+    background-image: none !important;
+    box-shadow: none !important;
+}
+
+.fc-day-today {
+    background: #dbe9fe !important;
+    border: none !important;
+
+}
