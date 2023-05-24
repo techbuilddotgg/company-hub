@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
 import { trpc } from '@utils/trpc';
 import { DataView, PageHeader } from '@components';
-import User from '@components/pages/users/user';
+import Employee from '@components/pages/users/employee';
 import { useUser } from '@clerk/nextjs';
 import InviteUser from '@components/pages/users/invite-user';
 
-const Users = () => {
+const Employees = () => {
   const { user } = useUser();
   const {
     data: users,
@@ -60,7 +60,7 @@ const Users = () => {
 
   return (
     <div>
-      <PageHeader className="mb-8" title="Users" />
+      <PageHeader className="mb-8" title="Employees" />
       <>{user?.publicMetadata.isAdmin && <InviteUser />}</>
       <DataView<{ id: string; emailAddress: string; pending: boolean }[]>
         isLoading={isUsersLoading || isInvitationsLoading}
@@ -70,7 +70,7 @@ const Users = () => {
         {(data) => (
           <div className="mt-10">
             {data.map((user) => (
-              <User key={user.id} user={user} deleteUser={deleteUser} />
+              <Employee key={user.id} user={user} deleteUser={deleteUser} />
             ))}
           </div>
         )}
@@ -79,4 +79,4 @@ const Users = () => {
   );
 };
 
-export default Users;
+export default Employees;

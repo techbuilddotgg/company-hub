@@ -17,7 +17,7 @@ interface UserProps {
   pending?: boolean;
 }
 
-const User = ({ user, deleteUser }: UserProps) => {
+const Employee = ({ user, deleteUser }: UserProps) => {
   const { user: clerkUser } = useUser();
   return (
     <div className="mt-1 flex flex-row items-center justify-between rounded-md border px-3 py-1 text-gray-600">
@@ -46,4 +46,4 @@ const User = ({ user, deleteUser }: UserProps) => {
     </div>
   );
 };
-export default User;
+export default Employee;
