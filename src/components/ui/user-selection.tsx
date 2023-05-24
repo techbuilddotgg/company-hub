@@ -61,6 +61,7 @@ const UserSelection: FC<UserSelectionProps> = ({
               info={'Search for user'}
               className={'mb-2'}
               {...register('search')}
+              placeholder="Search for user"
             />
             <ScrollArea className="h-44 rounded-md border">
               {list ? (

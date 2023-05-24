@@ -1,9 +1,9 @@
 export enum LabelColorsType {
-  RED = '#ee1111',
+  RED = '#d50a00',
 
-  GREEN = '#00cc00',
+  GREEN = '#3cb678',
 
-  YELLOW = '#ffff00',
+  YELLOW = '#f6bf26',
 
-  BLUE = '#3399ff',
+  BLUE = '#2c9be5',
 }
