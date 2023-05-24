@@ -2,7 +2,7 @@ import React, { FormEvent } from 'react';
 import dynamic from 'next/dynamic';
 import TaskList from '@components/pages/project/task-list';
 import AddTask from '@components/pages/project/add-task';
-import { ProjectColumnFull } from '@shared/types/board.types';
+import { ProjectBoardColumnType } from '@shared/types/board.types';
 import { AlertDialogButton, Card } from '@components';
 import { trpc } from '@utils/trpc';
 import { Trash2 } from 'lucide-react';
@@ -23,7 +23,7 @@ interface FormData {
 }
 
 interface ColumnProps {
-  data: ProjectColumnFull;
+  data: ProjectBoardColumnType;
   index: number;
   refetch: () => void;
 }
