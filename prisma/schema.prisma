@@ -65,7 +65,7 @@ model Project {
   projectBoards ProjectBoard[]
   startDate     DateTime       @default(now())
   endDate       DateTime?
-  description   String?
+  description   String?        @db.Text
 
   @@map("projects")
 }
@@ -96,7 +96,7 @@ model ProjectBoardColumn {
 model ProjectBoardTask {
   id                       String                    @id @default(cuid())
   name                     String
-  description              String?
+  description              String?                   @db.Text
   projectBoardColumn       ProjectBoardColumn        @relation(fields: [projectBoardColumnId], references: [id], onDelete: Cascade)
   projectBoardColumnId     String
   createdAt                DateTime                  @default(now())
@@ -114,7 +114,7 @@ model ProjectBoardTask {
 
 model ProjectBoardTaskComment {
   id                 String           @id @default(cuid())
-  text               String
+  text               String           @db.Text
   authorId           String
   email              String
   projectBoardTask   ProjectBoardTask @relation(fields: [projectBoardTaskId], references: [id], onDelete: Cascade)

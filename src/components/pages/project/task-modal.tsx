@@ -28,6 +28,25 @@ import { useUser } from '@clerk/nextjs';
 import PickDate from '@components/pages/project/pick-date';
 import { ProjectBoardTask } from '@prisma/client';
 import { useToast } from '@hooks';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+export const commentSchema = z.object({
+  comment: z
+    .string()
+    .min(3, { message: 'Enter at least 3 chars' })
+    .max(500, { message: 'Enter max 500  chars' }),
+});
+
+export const taskSchema = z.object({
+  name: z
+    .string()
+    .min(3, { message: 'Enter at least 3 chars' })
+    .max(25, { message: 'Enter max 25  chars' }),
+  description: z
+    .string()
+    .max(1000, { message: 'Please enter less that 1000 characters' }),
+});
 
 interface FormData {
   name: string;
@@ -77,7 +96,12 @@ export const TaskModal = ({
     }
   }, [taskPriorityName]);
 
-  const { register, handleSubmit } = useForm<FormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors: ticketErrors },
+  } = useForm<FormData>({
+    resolver: zodResolver(taskSchema),
     defaultValues: {
       name: task?.name,
       description: task?.description || '',
@@ -87,8 +111,10 @@ export const TaskModal = ({
   const {
     register: registerComment,
     handleSubmit: handleSubmitComment,
+    formState: { errors: commentErrors },
     reset: resetComment,
   } = useForm<FormDataComment>({
+    resolver: zodResolver(commentSchema),
     defaultValues: {
       comment: '',
     },
@@ -203,63 +229,74 @@ export const TaskModal = ({
                 onSubmit={handleSubmit(onSubmitTask)}
               >
                 <Input
+                  error={ticketErrors.name}
                   label={'Name'}
                   {...register('name')}
                   defaultValue={task?.name}
                 />
                 <Textarea
+                  error={ticketErrors.description}
                   label={'Description'}
                   {...register('description')}
                   defaultValue={task?.description || ''}
                   rows={5}
                 />
-                <p className="font-semibold">Deadline</p>
-                <PickDate date={date} setDate={setDate} />
-                <p className="font-semibold">Task type</p>
-                <Select
-                  onValueChange={(selected) => handleTaskTypeChange(selected)}
-                  defaultValue={selectedTaskType}
-                >
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Select task type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Types</SelectLabel>
-                      {taskTypes &&
-                        taskTypes.map((taskType) => (
-                          <SelectItem key={taskType.name} value={taskType.name}>
-                            {taskType.name}
-                          </SelectItem>
-                        ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                <p className="font-semibold">Task priority</p>
-                <Select
-                  onValueChange={(selected) =>
-                    handleTaskPriorityChange(selected)
-                  }
-                  defaultValue={selectedTaskPriority}
-                >
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Select task priority" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Priorities</SelectLabel>
-                      {taskPriorities &&
-                        taskPriorities.map((taskPriority) => (
-                          <SelectItem
-                            key={taskPriority.name}
-                            value={taskPriority.name}
-                          >
-                            {taskPriority.name}
-                          </SelectItem>
-                        ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+                <div>
+                  <p className="font-semibold">Deadline</p>
+                  <PickDate date={date} setDate={setDate} />
+                </div>
+                <div>
+                  <p className="font-semibold">Task type</p>
+                  <Select
+                    onValueChange={(selected) => handleTaskTypeChange(selected)}
+                    defaultValue={selectedTaskType}
+                  >
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Select task type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Types</SelectLabel>
+                        {taskTypes &&
+                          taskTypes.map((taskType) => (
+                            <SelectItem
+                              key={taskType.name}
+                              value={taskType.name}
+                            >
+                              {taskType.name}
+                            </SelectItem>
+                          ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <p className="font-semibold">Task priority</p>
+                  <Select
+                    onValueChange={(selected) =>
+                      handleTaskPriorityChange(selected)
+                    }
+                    defaultValue={selectedTaskPriority}
+                  >
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Select task priority" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Priorities</SelectLabel>
+                        {taskPriorities &&
+                          taskPriorities.map((taskPriority) => (
+                            <SelectItem
+                              key={taskPriority.name}
+                              value={taskPriority.name}
+                            >
+                              {taskPriority.name}
+                            </SelectItem>
+                          ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div className="flex justify-between">
                   <Button onClick={deleteTask} variant="ghost" type="submit">
                     <Trash2 color="black" size={22} />
@@ -317,6 +354,7 @@ export const TaskModal = ({
               >
                 <div className="mb-2 flex w-full space-x-2">
                   <Input
+                    error={commentErrors.comment}
                     {...registerComment('comment')}
                     placeholder="Comment"
                   />
