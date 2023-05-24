@@ -74,7 +74,13 @@ const EventModalForm: FC<EventModalFormProps> = ({
       );
   }, [assignedUsers]);
 
-  const { register, watch, handleSubmit, setValue } = useForm({
+  const {
+    register,
+    watch,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm({
     resolver: zodResolver(EventSchema),
     defaultValues: {
       title: event?.title || '',
@@ -214,6 +220,7 @@ const EventModalForm: FC<EventModalFormProps> = ({
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className={'flex flex-col gap-2'}>
         <Input
+          error={errors.title}
           label={'Title'}
           {...register('title')}
           placeholder="Enter event name"
@@ -252,6 +259,7 @@ const EventModalForm: FC<EventModalFormProps> = ({
         </>
       )}
       <Textarea
+        error={errors.description}
         label={'Description'}
         {...register('description')}
         rows={3}
