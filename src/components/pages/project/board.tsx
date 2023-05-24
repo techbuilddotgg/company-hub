@@ -6,7 +6,7 @@ import { reorderElements } from '@components/pages/project/utils';
 import { ProjectBoard } from '@prisma/client';
 import { trpc } from '@utils/trpc';
 import AddColumn from '@components/pages/project/add-column';
-import { ProjectColumnFull } from '@shared/types/board.types';
+import { ProjectBoardColumnType } from '@shared/types/board.types';
 import GithubIntegrationDialog from '@components/pages/project/github-integration-dialog';
 import Pusher from 'pusher-js';
 import { useUser } from '@clerk/nextjs';
@@ -16,7 +16,7 @@ interface BoardProps {
 }
 
 export const Board = ({ data }: BoardProps) => {
-  const [columns, setColumns] = useState<ProjectColumnFull[]>([]);
+  const [columns, setColumns] = useState<ProjectBoardColumnType[]>([]);
   const sortedColumns = useMemo(
     () => columns.sort((a, b) => a.orderIndex - b.orderIndex),
     [columns],
@@ -30,6 +30,8 @@ export const Board = ({ data }: BoardProps) => {
       },
     },
   );
+
+  console.log(board);
 
   useEffect(() => {
     const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY || '', {

@@ -69,7 +69,9 @@ const CalendarScheduler = () => {
 
   return (
     <div
-      className={'container-calendar mb-16 mt-10'}
+      className={
+        'container-calendar fc-right fc-prev-button, fc-right fc-next-button mb-16 mt-10'
+      }
       key={isNavigationOpened + ''}
     >
       <div className={'mb-3'}>

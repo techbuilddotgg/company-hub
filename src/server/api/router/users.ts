@@ -10,7 +10,7 @@ export const usersRouter = t.router({
     .mutation(async ({ input, ctx }) => {
       console.log(ctx.companyId);
       try {
-        await clerkClient.invitations.createInvitation({
+        const invitation = await clerkClient.invitations.createInvitation({
           emailAddress: input.email,
           redirectUrl: getBaseUrl() + '/signup',
           publicMetadata: {
@@ -25,7 +25,11 @@ export const usersRouter = t.router({
           });
 
         return {
-          message: 'Invitation sent to ' + allowListResponse.identifier,
+          message: {
+            title: 'Invitation send',
+            description: `Invitation sent to ${allowListResponse.identifier}`,
+          },
+          data: invitation,
         };
       } catch (error) {
         throw new TRPCError({
@@ -36,6 +40,9 @@ export const usersRouter = t.router({
     }),
   findAll: protectedProcedure.query(async () => {
     return await clerkClient.users.getUserList({ limit: 100 });
+  }),
+  getInvitations: protectedProcedure.query(async () => {
+    return await clerkClient.invitations.getInvitationList();
   }),
   delete: adminProcedure
     .input(z.object({ id: z.string() }))
@@ -77,5 +84,41 @@ export const usersRouter = t.router({
         const code = e instanceof TRPCError ? e.code : 'INTERNAL_SERVER_ERROR';
         throw new TRPCError({ message, code });
       }
+    }),
+
+  revokeInvitation: adminProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input }) => {
+      const revokedInvitation = await clerkClient.invitations.revokeInvitation(
+        input.id,
+      );
+      if (!revokedInvitation) {
+        throw new TRPCError({
+          message: 'Invitation not found',
+          code: 'NOT_FOUND',
+        });
+      }
+      const identifiers =
+        await clerkClient.allowlistIdentifiers.getAllowlistIdentifierList();
+      const identifier = identifiers.find(
+        (identifier) =>
+          identifier.identifier === revokedInvitation.emailAddress,
+      );
+      if (!identifier) {
+        throw new TRPCError({
+          message: 'Identifier not found',
+          code: 'NOT_FOUND',
+        });
+      }
+      await clerkClient.allowlistIdentifiers.deleteAllowlistIdentifier(
+        identifier.id,
+      );
+      return {
+        message: {
+          title: 'Revoke invitation',
+          description: 'Invitation revoked successfully',
+        },
+        data: revokedInvitation,
+      };
     }),
 });

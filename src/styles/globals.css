@@ -136,11 +136,33 @@
 
 .rdw-editor-main {
     padding-left: 1rem !important;
+    height: 300px !important;
+    border: 1px solid #F1F5F9;
+    border-radius: 8px !important;
 }
+
+.editorClassName {}
 
 @media (max-width: 768px) {
     .container-calendar .fc-toolbar.fc-header-toolbar {
         display: flex;
         flex-direction: column;
     }
+}
+
+.fc-button {
+    background-color: #0F172A  !important;
+    background-image: none !important;
+    box-shadow: none !important;
+}
+
+.fc-day-today {
+    background: #dbe9fe !important;
+    border: none !important;
+
+}
+
+.fc-toolbar-title {
+    padding-bottom: 10px;
+    padding-top: 10px;
 }

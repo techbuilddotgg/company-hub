@@ -2,11 +2,11 @@ import Task from '@components/pages/project/task';
 import { Droppable } from 'react-beautiful-dnd';
 import React, { useMemo } from 'react';
 import { DraggableElementType } from '@components/pages/project/types';
-import { ProjectBoardTask } from '@prisma/client';
+import { ProjectBoardTaskType } from '@shared/types/board.types';
 
 interface TicketListProps {
   id: string;
-  data: ProjectBoardTask[];
+  data: ProjectBoardTaskType[];
   refetch: () => void;
 }
 const TaskList = ({ data, id, refetch }: TicketListProps) => {
