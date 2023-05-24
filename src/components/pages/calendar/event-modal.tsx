@@ -1,6 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
 import {
-  Button,
   Checkbox,
   DatePicker,
   Dialog,
@@ -9,6 +8,8 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
+  LoaderButton,
+  ScrollArea,
   Textarea,
   TimePicker,
   UserSelection,
@@ -153,35 +154,38 @@ const EventModalForm: FC<EventModalFormProps> = ({
     }
   }, []);
 
-  const { mutate: addEvent } = trpc.event.add.useMutation({
-    onSuccess: () => {
-      setOpen(false);
-      toast({
-        title: 'Event added successfully',
-      });
-      refetch();
-    },
-  });
+  const { mutate: addEvent, isLoading: isAddEventMutationLoading } =
+    trpc.event.add.useMutation({
+      onSuccess: () => {
+        setOpen(false);
+        toast({
+          title: 'Event added successfully',
+        });
+        refetch();
+      },
+    });
 
-  const { mutate: updateEvent } = trpc.event.update.useMutation({
-    onSuccess: () => {
-      setOpen(false);
-      toast({
-        title: 'Event updated successfully',
-      });
-      refetch();
-    },
-  });
+  const { mutate: updateEvent, isLoading: isUpdateEventMutationLoading } =
+    trpc.event.update.useMutation({
+      onSuccess: () => {
+        setOpen(false);
+        toast({
+          title: 'Event updated successfully',
+        });
+        refetch();
+      },
+    });
 
-  const { mutate: deleteEvent } = trpc.event.delete.useMutation({
-    onSuccess: () => {
-      setOpen(false);
-      toast({
-        title: 'Event deleted successfully',
-      });
-      refetch();
-    },
-  });
+  const { mutate: deleteEvent, isLoading: isDeleteEventMutationLoading } =
+    trpc.event.delete.useMutation({
+      onSuccess: () => {
+        setOpen(false);
+        toast({
+          title: 'Event deleted successfully',
+        });
+        refetch();
+      },
+    });
 
   const onSubmit = (data: AddEventType) => {
     if (date?.from === undefined) {
@@ -273,12 +277,19 @@ const EventModalForm: FC<EventModalFormProps> = ({
         />
       )}
       <div className={'my-2'}>
+        <label className={'font-semibold'}>Color</label>
         <Labels selected={label} handleLabelChange={handleLabelChange} />
       </div>
       <div className={'mt-4 flex items-center justify-between'}>
-        <Button type={'submit'}>Save</Button>
+        <LoaderButton
+          isLoading={isAddEventMutationLoading || isUpdateEventMutationLoading}
+          type={'submit'}
+        >
+          Save
+        </LoaderButton>
         {event && (
-          <Button
+          <LoaderButton
+            isLoading={isDeleteEventMutationLoading}
             onClick={() => {
               event.id && deleteEvent(event.id);
             }}
@@ -286,7 +297,7 @@ const EventModalForm: FC<EventModalFormProps> = ({
             type={'button'}
           >
             Delete
-          </Button>
+          </LoaderButton>
         )}
       </div>
     </form>
@@ -316,15 +327,17 @@ const EventModal: FC<EventModalProps> = ({
           <DialogTitle>Add event</DialogTitle>
           <DialogDescription>Add new calendar entry</DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <EventModalForm
-            currentDate={date}
-            event={event}
-            user={user}
-            setOpen={setOpen}
-            refetch={refetch}
-          />
-        </div>
+        <ScrollArea className="max-h-[80vh] px-3">
+          <div className="mx-1 grid gap-4">
+            <EventModalForm
+              currentDate={date}
+              event={event}
+              user={user}
+              setOpen={setOpen}
+              refetch={refetch}
+            />
+          </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );

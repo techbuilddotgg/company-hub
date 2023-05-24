@@ -23,7 +23,7 @@ interface LabelsProps {
 
 const Labels: FC<LabelsProps> = ({ selected, handleLabelChange }) => {
   return (
-    <label className="mt-2 flex items-center gap-2">
+    <label className="mx-0.5 mt-2 flex items-center gap-2">
       {labels.map((label, index) => (
         <div
           key={index}
