@@ -12,6 +12,15 @@ describe('board-router test', () => {
   const api = appRouter.createCaller(ctx);
   const companyId = faker.string.uuid();
 
+  vi.mock('pusher', () => {
+    const Pusher = vi.fn();
+    Pusher.prototype.trigger = () => {
+      return true;
+    };
+
+    return { default: Pusher };
+  });
+
   vi.spyOn(clerkClient.users, 'getUser').mockResolvedValue({
     publicMetadata: { companyId, isAdmin: true },
   } as unknown as User);
