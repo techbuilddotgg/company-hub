@@ -26,7 +26,11 @@ export const boardRouter = t.router({
         include: {
           projectBoardColumns: {
             include: {
-              projectBoardTasks: true,
+              projectBoardTasks: {
+                include: {
+                  users: true,
+                },
+              },
             },
           },
         },

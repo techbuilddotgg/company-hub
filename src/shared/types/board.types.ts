@@ -11,6 +11,13 @@ export type ProjectBoardColumnType = ProjectBoardColumn & {
   projectBoardTasks: ProjectBoardTaskType[];
 };
 
+export type ProjectBoardAssignedUserType = {
+  id: string;
+  userId: string;
+  projectBoardTaskId: string;
+};
+
 export type ProjectBoardTaskType = ProjectBoardTask & {
   connectedBranch: string | null;
+  users: ProjectBoardAssignedUserType[];
 };
