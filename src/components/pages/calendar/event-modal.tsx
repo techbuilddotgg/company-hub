@@ -126,6 +126,10 @@ const EventModalForm: FC<EventModalFormProps> = ({
     }
   };
 
+  const handleSelectionAllChange = (checked: boolean, users: string[]) => {
+    setSelected(checked ? users : []);
+  };
+
   useEffect(() => {
     if (event) {
       const start = new Date(event.start);
@@ -160,6 +164,7 @@ const EventModalForm: FC<EventModalFormProps> = ({
         setOpen(false);
         toast({
           title: 'Event added successfully',
+          description: 'Event has been added to your calendar',
         });
         refetch();
       },
@@ -171,6 +176,7 @@ const EventModalForm: FC<EventModalFormProps> = ({
         setOpen(false);
         toast({
           title: 'Event updated successfully',
+          description: 'Event has been updated in your calendar',
         });
         refetch();
       },
@@ -182,6 +188,7 @@ const EventModalForm: FC<EventModalFormProps> = ({
         setOpen(false);
         toast({
           title: 'Event deleted successfully',
+          description: 'Event has been deleted from your calendar',
         });
         refetch();
       },
@@ -227,22 +234,24 @@ const EventModalForm: FC<EventModalFormProps> = ({
           error={errors.title}
           label={'Title'}
           {...register('title')}
-          placeholder="Enter event name"
+          placeholder={'Enter event name'}
         />
         <div>
           <label className={'font-semibold'}>Date</label>
           <DatePicker defaultState={date} onStateChange={onDateChange} />
         </div>
       </div>
-      <div className="my-2 ml-0.5 flex items-center space-x-2">
+      <div className={'my-2 ml-0.5 flex items-center space-x-2'}>
         <Checkbox
-          id="allDay"
+          id={'allDay'}
           checked={watchAllDay}
           onCheckedChange={handleOnCheckedChange}
         />
         <label
-          htmlFor="allDay"
-          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          htmlFor={'allDay'}
+          className={
+            'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+          }
         >
           All day
         </label>
@@ -267,13 +276,14 @@ const EventModalForm: FC<EventModalFormProps> = ({
         label={'Description'}
         {...register('description')}
         rows={3}
-        placeholder="Enter event description"
+        placeholder={'Enter event description'}
       />
       {(user?.id === event?.authorId || !event) && (
         <UserSelection
           handleCheckedChange={handleSelectionChange}
           selected={selected}
           author={user?.id as string}
+          handleSelectionAllChange={handleSelectionAllChange}
         />
       )}
       <div className={'my-2'}>
@@ -322,13 +332,13 @@ const EventModal: FC<EventModalProps> = ({
 }) => {
   return (
     <Dialog open={open}>
-      <DialogContent className="sm:max-w-[425px]" setDialogOpen={setOpen}>
-        <DialogHeader>
+      <DialogContent className={'sm:max-w-[425px]'} setDialogOpen={setOpen}>
+        <DialogHeader className={'mx-1'}>
           <DialogTitle>Add event</DialogTitle>
           <DialogDescription>Add new calendar entry</DialogDescription>
         </DialogHeader>
-        <ScrollArea className="max-h-[80vh] px-3">
-          <div className="mx-1 grid gap-4">
+        <ScrollArea className="max-h-[80vh]">
+          <div className={'mx-1 grid gap-4'}>
             <EventModalForm
               currentDate={date}
               event={event}

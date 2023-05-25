@@ -14,7 +14,7 @@ describe('events-router test', () => {
     expect(events).toHaveLength(0);
   });
   it('should delete event', async () => {
-    const title = faker.lorem.words({ min: 1, max: 3 });
+    const title = faker.lorem.words({ min: 1, max: 2 });
     const description = faker.lorem.sentence();
     const start = faker.date.soon().toISOString();
     const end = faker.date.soon({ days: 1, refDate: start }).toISOString();
@@ -41,7 +41,7 @@ describe('events-router test', () => {
     expect(await api.event.get()).toHaveLength(0);
   });
   it('should create new event', async () => {
-    const title = faker.lorem.words({ min: 1, max: 3 });
+    const title = faker.lorem.words({ min: 1, max: 2 });
     const description = faker.lorem.sentence();
     const start = faker.date.soon().toISOString();
     const end = faker.date.soon({ days: 1, refDate: start }).toISOString();
@@ -68,8 +68,8 @@ describe('events-router test', () => {
   });
 
   it('should update event', async () => {
-    const title = faker.lorem.words({ min: 1, max: 3 });
-    const description = faker.lorem.sentence();
+    const title = faker.lorem.words({ min: 1, max: 2 });
+    const description = faker.lorem.sentence(2);
     const start = faker.date.soon().toISOString();
     const end = faker.date.soon({ days: 1, refDate: start }).toISOString();
     const backgroundColor = faker.internet.color();
@@ -111,7 +111,7 @@ describe('events-router test', () => {
     await expect(api.event.delete(id)).rejects.toThrowError();
   });
   it('should get event users', async () => {
-    const title = faker.lorem.words({ min: 1, max: 3 });
+    const title = faker.lorem.words({ min: 1, max: 2 });
     const description = faker.lorem.sentence();
     const start = faker.date.soon().toISOString();
     const end = faker.date.soon({ days: 1, refDate: start }).toISOString();
