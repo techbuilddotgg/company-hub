@@ -26,7 +26,7 @@ describe('project-router test', () => {
   ] as unknown as User[]);
 
   beforeAll(async () => {
-    ctx.prisma.company.create({
+    await ctx.prisma.company.create({
       data: {
         id: companyId,
         name: faker.company.name(),
@@ -36,21 +36,69 @@ describe('project-router test', () => {
 
   afterAll(async () => {
     await ctx.prisma.company.deleteMany();
-    await ctx.prisma.document.deleteMany();
+    await ctx.prisma.project.deleteMany();
   });
 
-  it("shouldn't create a project because no company", async () => {
+  it('should create a project', async () => {
     const input: RouterInput['project']['add'] = {
-      name: faker.lorem.sentence(1),
+      name: faker.lorem.word(5),
       description: faker.lorem.paragraph(1),
       boardName: faker.lorem.sentence(1),
     };
 
-    await expect(api.project.add(input)).rejects.toThrowError();
+    const project = await api.project.add(input);
+    expect(project).toBeDefined();
   });
 
   it('should get a project', async () => {
-    const project = await api.project.get();
-    expect(project).toBeDefined();
+    const input: RouterInput['project']['add'] = {
+      name: faker.lorem.word(5),
+      description: faker.lorem.paragraph(1),
+      boardName: faker.lorem.sentence(1),
+    };
+
+    await api.project.add(input);
+    const projects = await api.project.get();
+    expect(projects).toBeDefined();
+  });
+
+  it('should update project', async () => {
+    const input: RouterInput['project']['add'] = {
+      name: faker.lorem.word(5),
+      description: faker.lorem.paragraph(1),
+      boardName: faker.lorem.sentence(1),
+    };
+
+    const { data: project } = await api.project.add(input);
+
+    const updateInput: RouterInput['project']['update'] = {
+      id: project.id,
+      name: faker.lorem.word(5),
+      companyId: companyId,
+      startDate: faker.date.recent(),
+      endDate: null,
+      description: null,
+    };
+
+    const { data: updatedProject } = await api.project.update(updateInput);
+    expect(updatedProject).toBeDefined();
+    expect(updatedProject?.name).not.toBe(input.name);
+  });
+
+  it('should delete project', async () => {
+    const input: RouterInput['project']['add'] = {
+      name: faker.lorem.word(5),
+      description: faker.lorem.paragraph(1),
+      boardName: faker.lorem.sentence(1),
+    };
+
+    const { data: project } = await api.project.add(input);
+
+    await api.project.delete(project.id);
+    const projectThatShouldBeDeleted = await ctx.prisma.project.findUnique({
+      where: { id: project.id },
+    });
+
+    expect(projectThatShouldBeDeleted).toBeNull();
   });
 });

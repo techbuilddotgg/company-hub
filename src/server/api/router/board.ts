@@ -60,7 +60,6 @@ export const boardRouter = t.router({
         ctx.authedUserId,
         'oauth_github',
       );
-      console.log('response', tokenResponse);
       if (!tokenResponse || tokenResponse.length === 0)
         return {
           ...projectBoard,
@@ -229,7 +228,7 @@ export const boardRouter = t.router({
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
       try {
-        await ctx.prisma.$transaction(async (tx) => {
+        const deleted = await ctx.prisma.$transaction(async (tx) => {
           const deleted = await tx.projectBoardColumn.delete({
             where: { id: input.id },
           });
@@ -252,7 +251,16 @@ export const boardRouter = t.router({
               },
             },
           });
+          return deleted;
         });
+
+        return {
+          message: {
+            title: 'Column deleted',
+            description: 'Column was deleted successfully.',
+          },
+          data: deleted,
+        };
       } catch (e) {
         console.log(e);
         throw new TRPCError({
@@ -493,7 +501,7 @@ export const boardRouter = t.router({
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       try {
-        await ctx.prisma.$transaction(async (tx) => {
+        const deleted = await ctx.prisma.$transaction(async (tx) => {
           const deletedTask = await tx.projectBoardTask.delete({
             where: {
               id: input,
@@ -518,7 +526,15 @@ export const boardRouter = t.router({
               },
             },
           });
+          return deletedTask;
         });
+        return {
+          message: {
+            title: 'Task deleted',
+            description: 'task was deleted successfully.',
+          },
+          data: deleted,
+        };
       } catch (e) {
         console.log(e);
         throw new TRPCError({
@@ -586,13 +602,7 @@ export const boardRouter = t.router({
           email: input.email,
         },
       });
-      return {
-        message: {
-          title: 'Comment successfull',
-          description: 'Comment was successfull.',
-        },
-        data: taskComment,
-      };
+      return taskComment;
     }),
   getTaskComments: protectedProcedure
     .input(z.object({ taskId: z.string() }))

@@ -26,7 +26,7 @@ describe('board-router test', () => {
   ] as unknown as User[]);
 
   beforeAll(async () => {
-    ctx.prisma.company.create({
+    await ctx.prisma.company.create({
       data: {
         id: companyId,
         name: faker.company.name(),
@@ -36,8 +36,11 @@ describe('board-router test', () => {
 
   afterAll(async () => {
     await ctx.prisma.company.deleteMany();
-    await ctx.prisma.document.deleteMany();
     await ctx.prisma.projectBoardTaskComment.deleteMany();
+    await ctx.prisma.projectBoardColumn.deleteMany();
+    await ctx.prisma.projectBoard.deleteMany();
+    await ctx.prisma.projectBoardTask.deleteMany();
+    await ctx.prisma.projectBoardTaskUser.deleteMany();
   });
 
   it('should create a board', async () => {
@@ -360,9 +363,7 @@ describe('board-router test', () => {
       email: faker.internet.email(),
     };
 
-    const { data: taskComment } = await api.board.commentTicket(
-      commentTicketInput,
-    );
+    const taskComment = await api.board.commentTicket(commentTicketInput);
     expect(taskComment).toBeDefined();
   });
 
