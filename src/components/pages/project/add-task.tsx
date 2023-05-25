@@ -3,7 +3,7 @@ import { trpc } from '@utils/trpc';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Input } from "@components";
+import { Input, LoaderButton } from '@components';
 
 export const AddTaskSchema = z.object({
   name: z
@@ -25,17 +25,27 @@ const AddTask = ({ columnId, refetch }: AddTaskProps) => {
       name: '',
     },
   });
-  const { mutate: addTask } = trpc.board.addTask.useMutation({
+  const { mutate: addTask, isLoading } = trpc.board.addTask.useMutation({
     onSuccess: () => refetch(),
   });
   const onSubmit = (data: AddTaskType) => {
     addTask({ ...data, columnId });
-    reset()
+    reset();
   };
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-row items-center">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex flex-row items-center"
+    >
       <Input type="text" id="name" {...register('name')} />
-      <Button variant="ghost" type="submit" className='w-44'>+ Add a card</Button>
+      <LoaderButton
+        isLoading={isLoading}
+        variant="ghost"
+        type="submit"
+        className="ml-2 w-44"
+      >
+        + Add a card
+      </LoaderButton>
     </form>
   );
 };

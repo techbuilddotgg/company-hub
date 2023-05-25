@@ -21,9 +21,11 @@ import {
   SelectGroup,
   SelectLabel,
   SelectItem,
+  LoaderButton,
+  AlertDialogButton,
 } from '@components';
 import { trpc } from '@utils/trpc';
-import { Trash2, Send, User2 } from 'lucide-react';
+import { Send, User2 } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import PickDate from '@components/pages/project/pick-date';
 import { ProjectBoardTask } from '@prisma/client';
@@ -163,16 +165,17 @@ export const TaskModal = ({
     if (!checked) removeUserFromTask({ userId: userId, taskId: task.id });
   };
 
-  const { mutate: updateTask } = trpc.board.updateTask.useMutation({
-    onSuccess: () => {
-      toast({
-        title: 'Task update',
-        description: 'Task was updated successfully.',
-      });
-      refetch();
-      setOpenTaskDialog(false);
-    },
-  });
+  const { mutate: updateTask, isLoading: isUpdateTaskLoadingMutation } =
+    trpc.board.updateTask.useMutation({
+      onSuccess: () => {
+        toast({
+          title: 'Task update',
+          description: 'Task was updated successfully.',
+        });
+        refetch();
+        setOpenTaskDialog(false);
+      },
+    });
 
   const onSubmitTask = (data: FormData) => {
     const taskTypeId = taskTypes?.find(
@@ -230,7 +233,7 @@ export const TaskModal = ({
               >
                 <Input
                   error={ticketErrors.name}
-                  label={'Name'}
+                  label={'Name*'}
                   {...register('name')}
                   defaultValue={task?.name}
                 />
@@ -298,10 +301,19 @@ export const TaskModal = ({
                   </Select>
                 </div>
                 <div className="flex justify-between">
-                  <Button onClick={deleteTask} variant="ghost" type="submit">
-                    <Trash2 color="black" size={22} />
-                  </Button>
-                  <Button type={'submit'}>Update</Button>
+                  <AlertDialogButton
+                    handleAction={deleteTask}
+                    buttonVariant={'outline'}
+                    buttonText={'Delete'}
+                    title={'Delete task'}
+                    description={'Are you sure you want to delete this task?'}
+                  />
+                  <LoaderButton
+                    isLoading={isUpdateTaskLoadingMutation}
+                    type={'submit'}
+                  >
+                    Update
+                  </LoaderButton>
                 </div>
               </form>
             </AccordionContent>
