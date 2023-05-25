@@ -1,11 +1,12 @@
 import React, { useMemo } from 'react';
 import { trpc } from '@utils/trpc';
-import { DataView, PageHeader } from '@components';
-import User from '@components/pages/users/user';
+import { DataView, PageHeader, ScrollArea } from '@components';
+import Employee from '@components/pages/users/employee';
 import { useUser } from '@clerk/nextjs';
 import InviteUser from '@components/pages/users/invite-user';
+import { User, UserRole } from '@shared/types/user.types';
 
-const Users = () => {
+const Employees = () => {
   const { user } = useUser();
   const {
     data: users,
@@ -19,11 +20,12 @@ const Users = () => {
   } = trpc.users.getInvitations.useQuery();
 
   const usersToDisplay = useMemo(() => {
-    const usersToDisplay =
+    const usersToDisplay: User[] =
       users?.map((user) => ({
         id: user.id,
         emailAddress: user.emailAddresses[0]?.emailAddress || 'Not defined',
         pending: false,
+        role: user.publicMetadata.isAdmin ? UserRole.ADMIN : UserRole.BASIC,
       })) || [];
     if (invitations)
       usersToDisplay.push(
@@ -31,6 +33,7 @@ const Users = () => {
           id: invitation.id,
           emailAddress: invitation.emailAddress || 'Not defined',
           pending: true,
+          role: null,
         })),
       );
     return usersToDisplay;
@@ -60,23 +63,23 @@ const Users = () => {
 
   return (
     <div>
-      <PageHeader className="mb-8" title="Users" />
+      <PageHeader className="mb-8" title="Employees" />
       <>{user?.publicMetadata.isAdmin && <InviteUser />}</>
-      <DataView<{ id: string; emailAddress: string; pending: boolean }[]>
+      <DataView<User[]>
         isLoading={isUsersLoading || isInvitationsLoading}
         data={usersToDisplay}
         fallback={<div>No users</div>}
       >
         {(data) => (
-          <div className="mt-10">
+          <ScrollArea className="mt-5 h-[80vh]">
             {data.map((user) => (
-              <User key={user.id} user={user} deleteUser={deleteUser} />
+              <Employee key={user.id} user={user} deleteUser={deleteUser} />
             ))}
-          </div>
+          </ScrollArea>
         )}
       </DataView>
     </div>
   );
 };
 
-export default Users;
+export default Employees;

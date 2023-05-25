@@ -1,6 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
 import {
-  Button,
   Checkbox,
   DatePicker,
   Dialog,
@@ -9,6 +8,8 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
+  LoaderButton,
+  ScrollArea,
   Textarea,
   TimePicker,
   UserSelection,
@@ -27,6 +28,7 @@ import { EventSchema } from '@shared/validators/calendar.schemas';
 import { useToast } from '@hooks';
 import { CheckedState } from '@radix-ui/react-checkbox';
 import { authUser } from '@shared/types/user.types';
+import { LabelColorsType } from '@components/pages/calendar/types';
 
 interface EventModalFormProps {
   setOpen: (open: boolean) => void;
@@ -58,7 +60,7 @@ const EventModalForm: FC<EventModalFormProps> = ({
     minutes: 0,
   });
 
-  const [label, setLabel] = useState('blue');
+  const [label, setLabel] = useState<string>(LabelColorsType.BLUE);
 
   const [selected, setSelected] = React.useState<string[]>([]);
 
@@ -73,7 +75,13 @@ const EventModalForm: FC<EventModalFormProps> = ({
       );
   }, [assignedUsers]);
 
-  const { register, watch, handleSubmit, setValue } = useForm({
+  const {
+    register,
+    watch,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm({
     resolver: zodResolver(EventSchema),
     defaultValues: {
       title: event?.title || '',
@@ -118,10 +126,15 @@ const EventModalForm: FC<EventModalFormProps> = ({
     }
   };
 
+  const handleSelectionAllChange = (checked: boolean, users: string[]) => {
+    setSelected(checked ? users : []);
+  };
+
   useEffect(() => {
     if (event) {
       const start = new Date(event.start);
       const end = new Date(event.end);
+      setLabel(event.backgroundColor);
 
       if (
         start.getHours() === end.getHours() &&
@@ -145,35 +158,41 @@ const EventModalForm: FC<EventModalFormProps> = ({
     }
   }, []);
 
-  const { mutate: addEvent } = trpc.event.add.useMutation({
-    onSuccess: () => {
-      setOpen(false);
-      toast({
-        title: 'Event added successfully',
-      });
-      refetch();
-    },
-  });
+  const { mutate: addEvent, isLoading: isAddEventMutationLoading } =
+    trpc.event.add.useMutation({
+      onSuccess: () => {
+        setOpen(false);
+        toast({
+          title: 'Event added successfully',
+          description: 'Event has been added to your calendar',
+        });
+        refetch();
+      },
+    });
 
-  const { mutate: updateEvent } = trpc.event.update.useMutation({
-    onSuccess: () => {
-      setOpen(false);
-      toast({
-        title: 'Event updated successfully',
-      });
-      refetch();
-    },
-  });
+  const { mutate: updateEvent, isLoading: isUpdateEventMutationLoading } =
+    trpc.event.update.useMutation({
+      onSuccess: () => {
+        setOpen(false);
+        toast({
+          title: 'Event updated successfully',
+          description: 'Event has been updated in your calendar',
+        });
+        refetch();
+      },
+    });
 
-  const { mutate: deleteEvent } = trpc.event.delete.useMutation({
-    onSuccess: () => {
-      setOpen(false);
-      toast({
-        title: 'Event deleted successfully',
-      });
-      refetch();
-    },
-  });
+  const { mutate: deleteEvent, isLoading: isDeleteEventMutationLoading } =
+    trpc.event.delete.useMutation({
+      onSuccess: () => {
+        setOpen(false);
+        toast({
+          title: 'Event deleted successfully',
+          description: 'Event has been deleted from your calendar',
+        });
+        refetch();
+      },
+    });
 
   const onSubmit = (data: AddEventType) => {
     if (date?.from === undefined) {
@@ -198,7 +217,6 @@ const EventModalForm: FC<EventModalFormProps> = ({
         users: selected,
       };
 
-      console.log(newEvent);
       if (event) updateEvent({ id: event.id, ...newEvent });
       else addEvent(newEvent);
     } else {
@@ -212,61 +230,85 @@ const EventModalForm: FC<EventModalFormProps> = ({
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className={'flex flex-col gap-2'}>
-        <Input label={'Title'} {...register('title')} />
+        <Input
+          error={errors.title}
+          label={'Title'}
+          {...register('title')}
+          placeholder={'Enter event name'}
+        />
         <div>
           <label className={'font-semibold'}>Date</label>
           <DatePicker defaultState={date} onStateChange={onDateChange} />
         </div>
       </div>
-      <div className="my-2 ml-0.5 flex items-center space-x-2">
+      <div className={'my-2 ml-0.5 flex items-center space-x-2'}>
         <Checkbox
-          id="allDay"
+          id={'allDay'}
           checked={watchAllDay}
           onCheckedChange={handleOnCheckedChange}
         />
         <label
-          htmlFor="allDay"
-          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          htmlFor={'allDay'}
+          className={
+            'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+          }
         >
           All day
         </label>
       </div>
       {!watchAllDay && (
-        <div className={'my-2 flex gap-2'}>
-          <TimePicker
-            defaultTime={startTime}
-            onTimeChange={handleStartTimeChange}
-          />
-          <TimePicker
-            defaultTime={endTime}
-            onTimeChange={handleEndTimeChange}
-          />
-        </div>
+        <>
+          <label className={'font-semibold'}>Time</label>
+          <div className={'mb-2 flex gap-2'}>
+            <TimePicker
+              defaultTime={startTime}
+              onTimeChange={handleStartTimeChange}
+            />
+            <TimePicker
+              defaultTime={endTime}
+              onTimeChange={handleEndTimeChange}
+            />
+          </div>
+        </>
       )}
-      <Textarea label={'Description'} {...register('description')} rows={3} />
+      <Textarea
+        error={errors.description}
+        label={'Description'}
+        {...register('description')}
+        rows={3}
+        placeholder={'Enter event description'}
+      />
       {(user?.id === event?.authorId || !event) && (
         <UserSelection
           handleCheckedChange={handleSelectionChange}
           selected={selected}
           author={user?.id as string}
+          handleSelectionAllChange={handleSelectionAllChange}
         />
       )}
       <div className={'my-2'}>
+        <label className={'font-semibold'}>Color</label>
         <Labels selected={label} handleLabelChange={handleLabelChange} />
       </div>
-      <div className={'mt-7 flex items-center justify-between'}>
+      <div className={'mt-4 flex items-center justify-between'}>
+        <LoaderButton
+          isLoading={isAddEventMutationLoading || isUpdateEventMutationLoading}
+          type={'submit'}
+        >
+          Save
+        </LoaderButton>
         {event && (
-          <Button
+          <LoaderButton
+            isLoading={isDeleteEventMutationLoading}
             onClick={() => {
               event.id && deleteEvent(event.id);
             }}
-            variant="destructive"
+            variant="outline"
             type={'button'}
           >
             Delete
-          </Button>
+          </LoaderButton>
         )}
-        <Button type={'submit'}>Save</Button>
       </div>
     </form>
   );
@@ -290,20 +332,22 @@ const EventModal: FC<EventModalProps> = ({
 }) => {
   return (
     <Dialog open={open}>
-      <DialogContent className="sm:max-w-[425px]" setDialogOpen={setOpen}>
-        <DialogHeader>
+      <DialogContent className={'sm:max-w-[425px]'} setDialogOpen={setOpen}>
+        <DialogHeader className={'mx-1'}>
           <DialogTitle>Add event</DialogTitle>
           <DialogDescription>Add new calendar entry</DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <EventModalForm
-            currentDate={date}
-            event={event}
-            user={user}
-            setOpen={setOpen}
-            refetch={refetch}
-          />
-        </div>
+        <ScrollArea className="max-h-[80vh]">
+          <div className={'mx-1 grid gap-4'}>
+            <EventModalForm
+              currentDate={date}
+              event={event}
+              user={user}
+              setOpen={setOpen}
+              refetch={refetch}
+            />
+          </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );

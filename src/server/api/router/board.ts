@@ -11,31 +11,102 @@ import {
   projectBoardTaskSchema,
   projectBoardTaskSchemaOptional,
 } from '@shared/validators/board.schemes';
+import { clerkClient } from '@clerk/nextjs/server';
+import { GithubBranch } from '@shared/types/github.types';
+import { getTaskNameFromBranch } from '@utils/github';
 
 export const boardRouter = t.router({
   getById: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
-      try {
-        return await ctx.prisma.projectBoard.findUnique({
-          where: {
-            id: input.id,
-          },
-          include: {
-            projectBoardColumns: {
-              include: {
-                projectBoardTasks: true,
+      const projectBoard = await ctx.prisma.projectBoard.findUnique({
+        where: {
+          id: input.id,
+        },
+        include: {
+          projectBoardColumns: {
+            include: {
+              projectBoardTasks: {
+                include: {
+                  users: true,
+                },
               },
             },
           },
-        });
-      } catch (e) {
-        console.log(e);
-        throw new TRPCError({
-          message: 'Something went wrong. Please try again later.',
-          code: 'INTERNAL_SERVER_ERROR',
-        });
-      }
+        },
+      });
+      const githubData = await ctx.prisma.githubData.findFirst({
+        where: { projectBoardId: input.id },
+      });
+
+      if (!githubData)
+        return {
+          ...projectBoard,
+          projectBoardColumns:
+            projectBoard?.projectBoardColumns.map((column) => {
+              return {
+                ...column,
+                projectBoardTasks: column.projectBoardTasks.map((task) => {
+                  return {
+                    ...task,
+                    connectedBranch: null,
+                  };
+                }),
+              };
+            }) || [],
+        };
+
+      const tokenResponse = await clerkClient.users.getUserOauthAccessToken(
+        ctx.authedUserId,
+        'oauth_github',
+      );
+      console.log('response', tokenResponse);
+      if (!tokenResponse || tokenResponse.length === 0)
+        return {
+          ...projectBoard,
+          projectBoardColumns:
+            projectBoard?.projectBoardColumns.map((column) => {
+              return {
+                ...column,
+                projectBoardTasks: column.projectBoardTasks.map((task) => {
+                  return {
+                    ...task,
+                    connectedBranch: null,
+                  };
+                }),
+              };
+            }) || [],
+        };
+
+      const branchesResponse = await fetch(
+        `https://api.github.com/repos/${githubData.owner}/${githubData.repository}/branches`,
+        {
+          headers: {
+            Authorization: `Bearer ${tokenResponse[0]?.token}`,
+          },
+        },
+      );
+      const branches: GithubBranch[] = await branchesResponse.json();
+
+      return {
+        ...projectBoard,
+        projectBoardColumns:
+          projectBoard?.projectBoardColumns.map((column) => {
+            return {
+              ...column,
+              projectBoardTasks: column.projectBoardTasks.map((task) => {
+                return {
+                  ...task,
+                  connectedBranch:
+                    branches.find(
+                      (branch) =>
+                        task.name === getTaskNameFromBranch(branch.name),
+                    )?.name || null,
+                };
+              }),
+            };
+          }) || [],
+      };
     }),
   addBoard: protectedProcedure
     .input(z.object({ name: z.string(), projectId: z.string() }))

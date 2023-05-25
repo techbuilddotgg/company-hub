@@ -6,17 +6,20 @@ import { reorderElements } from '@components/pages/project/utils';
 import { ProjectBoard } from '@prisma/client';
 import { trpc } from '@utils/trpc';
 import AddColumn from '@components/pages/project/add-column';
-import { ProjectColumnFull } from '@shared/types/board.types';
+import { ProjectBoardColumnType } from '@shared/types/board.types';
 import GithubIntegrationDialog from '@components/pages/project/github-integration-dialog';
 import Pusher from 'pusher-js';
 import { useUser } from '@clerk/nextjs';
+import { Checkbox } from '@components/ui/checkbox';
 
 interface BoardProps {
   data: ProjectBoard;
 }
 
 export const Board = ({ data }: BoardProps) => {
-  const [columns, setColumns] = useState<ProjectColumnFull[]>([]);
+  const [columns, setColumns] = useState<ProjectBoardColumnType[]>([]);
+  const [myTasksChecked, setMyTasksChecked] = useState(false);
+
   const sortedColumns = useMemo(
     () => columns.sort((a, b) => a.orderIndex - b.orderIndex),
     [columns],
@@ -156,12 +159,31 @@ export const Board = ({ data }: BoardProps) => {
     }
   };
 
+  const onMyTasksChange = () => {
+    setMyTasksChecked(!myTasksChecked);
+  };
+
   return (
     <div className="h-full max-h-full">
       <>
         {user?.publicMetadata.isAdmin && (
           <GithubIntegrationDialog boardId={data.id} />
         )}
+        <div className="mb-4 flex space-x-2">
+          <Checkbox
+            id={`myTasks`}
+            checked={myTasksChecked}
+            onCheckedChange={onMyTasksChange}
+          />
+          <div className="grid gap-1.5 leading-none">
+            <label
+              htmlFor={`myTasks`}
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              {'Show only my tasks'}
+            </label>
+          </div>
+        </div>
       </>
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable
@@ -175,14 +197,33 @@ export const Board = ({ data }: BoardProps) => {
               ref={provided.innerRef}
               {...provided.droppableProps}
             >
-              {sortedColumns.map((column, index) => (
-                <Column
-                  data={column}
-                  key={column.id}
-                  index={index}
-                  refetch={refetch}
-                />
-              ))}
+              {!myTasksChecked
+                ? sortedColumns.map((column, index) => (
+                    <Column
+                      data={column}
+                      key={column.id}
+                      index={index}
+                      refetch={refetch}
+                    />
+                  ))
+                : sortedColumns
+                    .map((column) => ({
+                      ...column,
+                      projectBoardTasks: column.projectBoardTasks.filter(
+                        (task) =>
+                          task.users.some(
+                            (assignedUser) => assignedUser.userId === user?.id,
+                          ),
+                      ),
+                    }))
+                    .map((column, index) => (
+                      <Column
+                        data={column}
+                        key={column.id}
+                        index={index}
+                        refetch={refetch}
+                      />
+                    ))}
               {provided.placeholder}
               <>
                 {user?.publicMetadata.isAdmin && (

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Draggable } from 'react-beautiful-dnd';
-import { ProjectBoardTask } from '@prisma/client';
 import {
   Badge,
   Card,
@@ -9,23 +8,28 @@ import {
   CardHeader,
   CardTitle,
   Dialog,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
 } from '@components';
 import { TaskModal } from '@components/pages/project/task-modal';
-import { Clock3, User2 } from 'lucide-react';
+import { Clock3, GitBranch, User2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { trpc } from '@utils/trpc';
 import {
   getTaskPriorityBackgroundColor,
   getTaskTypeBackgroundColor,
 } from '@utils/color';
+import { ProjectBoardTaskType } from '@shared/types/board.types';
 
-interface TicketProps {
-  task: ProjectBoardTask;
+interface TaskProps {
+  task: ProjectBoardTaskType;
   index: number;
   refetch: () => void;
 }
 
-const Task = ({ task, index, refetch }: TicketProps) => {
+const Task = ({ task, index, refetch }: TaskProps) => {
   const [openTaskDialog, setOpenTaskDialog] = React.useState(false);
   const { data: taskType } = trpc.board.getTaskType.useQuery(
     { taskTypeId: task?.taskTypeId || '' },
@@ -101,15 +105,39 @@ const Task = ({ task, index, refetch }: TicketProps) => {
                 )}
               </CardContent>
               <CardFooter className="px-3 pb-2">
-                <div className="flex items-center">
+                <div
+                  className={`flex w-full items-center ${
+                    task.deadLine ? 'justify-between' : 'justify-end'
+                  }`}
+                >
                   {task.deadLine && (
-                    <>
+                    <div className="flex flex-row items-center">
                       <Clock3 color="gray" size={18} />
                       <span className="ml-2 text-sm text-gray-600">
                         {format(task?.deadLine, 'PPP')}
                       </span>
-                    </>
+                    </div>
                   )}
+                  <>
+                    {task.connectedBranch && (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <GitBranch />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>
+                              Connected to{' '}
+                              <span className="font-semibold">
+                                {task.connectedBranch}
+                              </span>{' '}
+                              branch
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
+                  </>
                 </div>
               </CardFooter>
             </Card>

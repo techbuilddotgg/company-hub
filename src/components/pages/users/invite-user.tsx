@@ -39,7 +39,7 @@ const InviteUser = () => {
 
   return (
     <form
-      className="flex flex-col md:flex-row"
+      className="mb-5 flex flex-col md:flex-row"
       onSubmit={handleSubmit(sendInvitation)}
     >
       <Input {...register('email')} type="text" placeholder="Add new user" />

@@ -3,7 +3,7 @@ import { LabelColorsType } from '@components/pages/calendar/types';
 
 const labels: { color: string }[] = [
   {
-    color: LabelColorsType.RED,
+    color: LabelColorsType.BLUE,
   },
   {
     color: LabelColorsType.GREEN,
@@ -12,7 +12,7 @@ const labels: { color: string }[] = [
     color: LabelColorsType.YELLOW,
   },
   {
-    color: LabelColorsType.BLUE,
+    color: LabelColorsType.RED,
   },
 ];
 
@@ -23,7 +23,7 @@ interface LabelsProps {
 
 const Labels: FC<LabelsProps> = ({ selected, handleLabelChange }) => {
   return (
-    <label className="flex items-center gap-2">
+    <label className={'mx-0.5 mt-2 flex items-center gap-2'}>
       {labels.map((label, index) => (
         <div
           key={index}

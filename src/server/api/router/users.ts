@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { clerkClient } from '@clerk/nextjs/server';
 import { TRPCError } from '@trpc/server';
 import { getBaseUrl } from '@utils/trpc';
+import { UserRole } from '@shared/types/user.types';
 
 export const usersRouter = t.router({
   invite: adminProcedure
@@ -44,6 +45,40 @@ export const usersRouter = t.router({
   getInvitations: protectedProcedure.query(async () => {
     return await clerkClient.invitations.getInvitationList();
   }),
+  updateRole: adminProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        role: z.enum([UserRole.ADMIN, UserRole.BASIC]),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const currentUser = await clerkClient.users.getUser(input.id);
+      const user = await clerkClient.users.updateUser(input.id, {
+        publicMetadata: {
+          ...currentUser.publicMetadata,
+          isAdmin: input.role === UserRole.ADMIN,
+        },
+      });
+
+      if (!user || !user.primaryEmailAddressId) {
+        throw new TRPCError({
+          message: 'User not found',
+          code: 'NOT_FOUND',
+        });
+      }
+      const emailResponse = await clerkClient.emailAddresses.getEmailAddress(
+        user.primaryEmailAddressId,
+      );
+
+      return {
+        message: {
+          title: 'User updated',
+          description: `Update role for user ${emailResponse.emailAddress} to ${input.role}`,
+        },
+        data: user,
+      };
+    }),
   delete: adminProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input }) => {

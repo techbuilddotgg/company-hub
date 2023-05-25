@@ -16,7 +16,7 @@ import {
 
 const AddKnowledge = () => {
   return (
-    <div className={'flex w-full flex-col gap-8'}>
+    <div className={'flex w-full flex-col gap-8 mb-8'}>
       <PageHeader
         title={'Add knowledge'}
         description={
