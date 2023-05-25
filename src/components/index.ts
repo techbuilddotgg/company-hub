@@ -44,4 +44,3 @@ export * from './ui/badge';
 export * from './ui/skeleton';
 export * from './ui/tooltip';
 export * from './ui/page-unavailable';
-export * from './ui/sheet';
