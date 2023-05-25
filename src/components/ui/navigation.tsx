@@ -85,8 +85,8 @@ const MainNavigation = () => {
         icon: <CalendarDays />,
       },
       {
-        title: 'Users',
-        href: AppRoute.USERS,
+        title: 'Employees',
+        href: AppRoute.EMPLOYEES,
         icon: <Users2 />,
       },
     ] as NavigationItem[];

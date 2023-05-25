@@ -8,5 +8,5 @@ export enum AppRoute {
   CALENDAR = '/calendar',
   SIGN_IN = '/signin',
   SIGN_UP = '/signup',
-  USERS = '/users',
+  EMPLOYEES = '/employees',
 }

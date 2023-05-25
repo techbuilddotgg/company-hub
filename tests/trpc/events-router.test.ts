@@ -14,7 +14,7 @@ describe('events-router test', () => {
     expect(events).toHaveLength(0);
   });
   it('should delete event', async () => {
-    const title = faker.lorem.words({ min: 1, max: 3 });
+    const title = faker.lorem.words({ min: 1, max: 2 });
     const description = faker.lorem.sentence();
     const start = faker.date.soon().toISOString();
     const end = faker.date.soon({ days: 1, refDate: start }).toISOString();
@@ -34,14 +34,14 @@ describe('events-router test', () => {
 
     await api.event.add(event);
     const events = await api.event.get();
-    const id: string = events[0]?.id as string;
+    const id: RouterInput['event']['delete'] = events[0]?.id as string;
 
     await api.event.delete(id);
 
     expect(await api.event.get()).toHaveLength(0);
   });
   it('should create new event', async () => {
-    const title = faker.lorem.words({ min: 1, max: 3 });
+    const title = faker.lorem.words({ min: 1, max: 2 });
     const description = faker.lorem.sentence();
     const start = faker.date.soon().toISOString();
     const end = faker.date.soon({ days: 1, refDate: start }).toISOString();
@@ -63,11 +63,13 @@ describe('events-router test', () => {
 
     const events = await api.event.get();
     expect(events).toHaveLength(1);
+
+    await api.event.delete(events[0]?.id as string);
   });
 
   it('should update event', async () => {
-    const title = faker.lorem.words({ min: 1, max: 3 });
-    const description = faker.lorem.sentence();
+    const title = faker.lorem.words({ min: 1, max: 2 });
+    const description = faker.lorem.sentence(2);
     const start = faker.date.soon().toISOString();
     const end = faker.date.soon({ days: 1, refDate: start }).toISOString();
     const backgroundColor = faker.internet.color();
@@ -85,11 +87,11 @@ describe('events-router test', () => {
     };
 
     await api.event.add(inputAdd);
-
     const events = await api.event.get();
+    const id: RouterInput['event']['delete'] = events[0]?.id as string;
 
     const input: RouterInput['event']['update'] = {
-      id: events[0]?.id,
+      id,
       title,
       description,
       start,
@@ -100,6 +102,8 @@ describe('events-router test', () => {
 
     const event = await api.event.update(input);
     expect(event).toBe(true);
+
+    await api.event.delete(id);
   });
   it("shouldn't delete event", async () => {
     const id: string = faker.string.uuid();
@@ -107,13 +111,14 @@ describe('events-router test', () => {
     await expect(api.event.delete(id)).rejects.toThrowError();
   });
   it('should get event users', async () => {
-    const title = faker.lorem.words({ min: 1, max: 3 });
+    const title = faker.lorem.words({ min: 1, max: 2 });
     const description = faker.lorem.sentence();
     const start = faker.date.soon().toISOString();
     const end = faker.date.soon({ days: 1, refDate: start }).toISOString();
     const backgroundColor = faker.internet.color();
     const authorId = userId;
-    const users = [userId];
+    const invitedUserId = faker.string.uuid();
+    const users = [userId, invitedUserId];
 
     const event: RouterInput['event']['add'] = {
       title,
@@ -130,7 +135,12 @@ describe('events-router test', () => {
     const id: RouterInput['event']['getEventUsers'] = events[0]?.id as string;
 
     const res = await api.event.getEventUsers(id);
+
     expect(res?.users[0]?.userId).toBe(userId);
+    expect(res?.users[1]?.userId).toBe(invitedUserId);
+    expect(res?.users).toHaveLength(2);
+
+    await api.event.delete(id);
   });
   it("shouldn't get event users", async () => {
     const id: RouterInput['event']['getEventUsers'] = faker.string.uuid();
