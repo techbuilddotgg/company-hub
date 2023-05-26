@@ -190,7 +190,7 @@ export const TaskModal = ({
       id: task.id,
       name: data.name,
       description: data.description,
-      deadLine: date,
+      deadLine: date !== undefined ? date : null,
       taskTypeId: taskTypeId,
       taskPriorityId: taskPriorityId,
     });
