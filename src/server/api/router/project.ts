@@ -25,6 +25,8 @@ export const projectRouter = t.router({
           data: {
             name: input.name,
             companyId: company.id,
+            abbreviation: input.abbreviation,
+            description: input.description,
           },
         });
         await prisma.projectBoard.create({

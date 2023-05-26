@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const projectSchema = z.object({
   id: z.string(),
   name: z.string(),
+  abbreviation: z.string(),
   companyId: z.string(),
   startDate: z.date(),
   endDate: z.date().nullable(),
