@@ -69,7 +69,7 @@ const EditGithubConfiguration = ({ boardId }: EditGithubConfigurationProps) => {
         className="mt-7"
         onClick={() => deleteGithubIntegration({ boardId })}
       >
-        Delete integration
+        Remove integration
       </Button>
     </div>
   );
