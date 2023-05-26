@@ -14,15 +14,8 @@ import {
   Users2,
 } from 'lucide-react';
 import { trpc } from '@utils/trpc';
-import { useWindow } from '../../hooks/useWindow';
-import {
-  Sheet,
-  SheetContent,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from '@components/ui/sheet';
 import { useNavigationStore } from '../../store/navigation-store';
+import { useWindow } from '../../hooks/useWindow';
 
 const UserSection = () => {
   const user = useUser();
@@ -145,55 +138,34 @@ const MainNavigation = () => {
   );
 };
 
-const MobileNavigation = () => {
-  const isOpened = useNavigationStore((state) => state.isOpened);
-  return (
-    <Sheet open={isOpened}>
-      <SheetContent position={'left'} size="content" className={'p-8'}>
-        <SheetHeader>
-          <SheetTitle>
-            <Logo />
-          </SheetTitle>
-        </SheetHeader>
-
-        <div className="flex h-[85vh] grow flex-col py-4">
-          <MainNavigation />
-        </div>
-
-        <SheetFooter className={'mt-auto'}>
-          <UserSection />
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
-  );
-};
-
-export const WebNavigation = () => {
-  const { isOpened, setIsOpened } = useNavigationStore();
-
-  return (
-    <div>
-      {isOpened && (
-        <div className=" flex h-full flex-col items-center border-r px-5">
-          <div className={'my-4 flex flex-row items-center gap-1 pr-6 pt-4'}>
-            <Menu
-              className={'mr-3 cursor-pointer'}
-              onClick={() => setIsOpened(false)}
-            />
-            <Logo />
-          </div>
-          <MainNavigation />
-          <UserSection />
-        </div>
-      )}
-    </div>
-  );
-};
-
 export const Navigation = () => {
-  const { width } = useWindow();
+  const { isOpened, setIsOpened } = useNavigationStore();
+  const size = useWindow();
 
-  const isMobile = width < 1000; // tablet and mobile
+  if (!size) return null;
 
-  return isMobile ? <MobileNavigation /> : <WebNavigation />;
+  return (
+    <>
+      <div
+        className={`absolute ${
+          isOpened ? 'left-0' : '-left-[300px]'
+        } z-20 flex h-full w-[300px] flex-col items-center  border-r bg-white px-5 transition-[left]`}
+      >
+        <div className={'my-4 flex flex-row items-center gap-1 pr-6  pt-4'}>
+          <Menu
+            className={'mr-3 cursor-pointer'}
+            onClick={() => setIsOpened(false)}
+          />
+          <Logo />
+        </div>
+        <MainNavigation />
+        <UserSection />
+      </div>
+      <div
+        className={`${
+          isOpened ? 'block' : 'hidden'
+        } absolute  z-10 h-full w-full bg-background/80 backdrop-blur-sm transition-all duration-100 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=open]:fade-in lg:hidden`}
+      />
+    </>
+  );
 };

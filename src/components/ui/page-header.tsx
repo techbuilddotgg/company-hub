@@ -21,12 +21,17 @@ export const PageHeader: FC<PageHeaderProps> = ({
     useNavigationStore();
   return (
     <div className="flex w-full flex-row items-start pt-6 md:pt-8">
-      {!isNavigationOpened && (
-        <Button variant={'outline'} onClick={() => setNavigationOpened(true)}>
-          <Menu className={'h-4 w-4'} />
-        </Button>
-      )}
-      <div className={`${isNavigationOpened ? 'ml-0' : 'ml-4 md:ml-9'} w-full`}>
+      <Button
+        className={`${
+          isNavigationOpened ? 'md:-ml-[90px]' : 0
+        } transition-[margin]`}
+        variant={'outline'}
+        onClick={() => setNavigationOpened(true)}
+      >
+        <Menu className={'h-4 w-4'} />
+      </Button>
+
+      <div className={`ml-4 w-full md:ml-10`}>
         <div className={cn('flex flex-row justify-between gap-1', className)}>
           <h1 className="text-3xl font-bold">{title}</h1>
           {rightHelper && rightHelper}

@@ -5,6 +5,6 @@ interface NavigationStoreState {
   setIsOpened: (isOpened: boolean) => void;
 }
 export const useNavigationStore = create<NavigationStoreState>((set) => ({
-  isOpened: false,
+  isOpened: true,
   setIsOpened: (isOpened) => set({ isOpened }),
 }));

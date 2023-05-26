@@ -135,6 +135,7 @@ export const TaskModal = ({
     onSuccess: () => {
       refetchAssignedUsers();
       setOpenTaskDialog(true);
+      refetch();
     },
   });
 
@@ -155,6 +156,7 @@ export const TaskModal = ({
       onSuccess: () => {
         refetchAssignedUsers();
         setOpenTaskDialog(true);
+        refetch();
       },
     });
 
