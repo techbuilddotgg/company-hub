@@ -145,6 +145,21 @@ export const TaskModal = ({
     },
   });
 
+  // update if assigned users changed
+  useEffect(() => {
+    if (date && assignedUsers) {
+      updateEvent({
+        title: task.name,
+        description: `Task deadline set to ${format(date, 'PPP')}.`,
+        start: date.toISOString(),
+        end: add(date, { hours: 24 }).toISOString(),
+        backgroundColor: '#6be1d1',
+        taskId: task.id,
+        users: assignedUsers,
+      });
+    }
+  }, [assignedUsers]);
+
   const { mutate: commentTicket } = trpc.board.commentTicket.useMutation({
     onSuccess: () => {
       refetchComments();
@@ -188,7 +203,7 @@ export const TaskModal = ({
   const { mutate: addEvent } = trpc.event.add.useMutation();
   const { mutate: updateEvent } = trpc.event.updateByTaskId.useMutation();
   const { mutate: deleteEvent } = trpc.event.deleteByTaskId.useMutation();
-  const onSubmitTask = async (data: FormData) => {
+  const onSubmitTask = (data: FormData) => {
     const taskTypeId = taskTypes?.find(
       (taskType) => taskType.name === selectedTaskType,
     )?.id;
