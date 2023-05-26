@@ -223,15 +223,12 @@ export const TaskModal = ({
     const nameChanged = data.name !== task.name;
 
     if (date === undefined && previousDateRef.current !== undefined) {
-      console.log('delete event');
       deleteEvent(task.id);
     } else if (
       date !== undefined &&
       previousDateRef.current === undefined &&
       assignedUsers
     ) {
-      console.log('add event');
-
       addEvent({
         title: data.name,
         description: `Task deadline set to ${format(date, 'PPP')}.`,
@@ -247,8 +244,6 @@ export const TaskModal = ({
       (!isSameDay(date, previousDateRef.current) || nameChanged) &&
       assignedUsers
     ) {
-      console.log('update event');
-
       updateEvent({
         title: data.name,
         description: `Task deadline set to ${format(date, 'PPP')}.`,
