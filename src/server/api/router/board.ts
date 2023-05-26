@@ -13,7 +13,7 @@ import {
 } from '@shared/validators/board.schemes';
 import { clerkClient } from '@clerk/nextjs/server';
 import { GithubBranch } from '@shared/types/github.types';
-import { getTaskNameFromBranch } from '@utils/github';
+import { getTaskTagFromFullBranchName } from '@utils/github';
 
 export const boardRouter = t.router({
   getById: protectedProcedure
@@ -99,7 +99,7 @@ export const boardRouter = t.router({
                   connectedBranch:
                     branches.find(
                       (branch) =>
-                        task.name === getTaskNameFromBranch(branch.name),
+                        task.tag === getTaskTagFromFullBranchName(branch.name),
                     )?.name || null,
                 };
               }),
@@ -272,40 +272,60 @@ export const boardRouter = t.router({
   addTask: boardProcedure
     .input(z.object({ name: z.string(), columnId: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      try {
-        const column = await ctx.prisma.projectBoardColumn.findUnique({
-          where: { id: input.columnId },
-          include: { projectBoardTasks: true },
-        });
-        if (!column)
-          throw new TRPCError({
-            message: 'Column not found',
-            code: 'INTERNAL_SERVER_ERROR',
-          });
-
-        const task = await ctx.prisma.projectBoardTask.create({
-          data: {
-            name: input.name,
-            projectBoardColumnId: input.columnId,
-            orderIndex: column.projectBoardTasks.length,
+      const projectBoard = await ctx.prisma.projectBoard.findFirst({
+        where: {
+          projectBoardColumns: {
+            some: {
+              id: input.columnId,
+            },
           },
+        },
+        include: {
+          project: true,
+          projectBoardColumns: { include: { projectBoardTasks: true } },
+        },
+      });
+      if (!projectBoard)
+        throw new TRPCError({
+          message: 'Board not found',
+          code: 'INTERNAL_SERVER_ERROR',
+        });
+      const tasks = projectBoard.projectBoardColumns.flatMap((column) => [
+        ...column.projectBoardTasks,
+      ]);
+      const maxTaskTagCode = tasks.reduce((maxTagCode, current) => {
+        const tagCode = current.tag.split('-')[1];
+        if (!tagCode) return maxTagCode;
+        if (parseInt(tagCode) > maxTagCode) return parseInt(tagCode);
+        return maxTagCode;
+      }, 0);
+
+      const column = await ctx.prisma.projectBoardColumn.findUnique({
+        where: { id: input.columnId },
+        include: { projectBoardTasks: true },
+      });
+      if (!column)
+        throw new TRPCError({
+          message: 'Column not found',
+          code: 'INTERNAL_SERVER_ERROR',
         });
 
-        return {
-          message: {
-            title: 'Task added',
-            description: 'Task was added successfully.',
-          },
-          data: task,
-        };
-      } catch (e) {
-        const message =
-          e instanceof TRPCError
-            ? e.message
-            : 'Something went wrong. Please try again later.';
-        const code = e instanceof TRPCError ? e.code : 'INTERNAL_SERVER_ERROR';
-        throw new TRPCError({ message, code });
-      }
+      const task = await ctx.prisma.projectBoardTask.create({
+        data: {
+          name: input.name,
+          projectBoardColumnId: input.columnId,
+          orderIndex: column.projectBoardTasks.length,
+          tag: `${projectBoard.project.abbreviation}-${maxTaskTagCode + 1}`,
+        },
+      });
+
+      return {
+        message: {
+          title: 'Task added',
+          description: 'Task was added successfully.',
+        },
+        data: task,
+      };
     }),
   getTask: protectedProcedure
     .input(z.object({ taskId: z.string() }))

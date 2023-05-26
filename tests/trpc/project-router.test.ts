@@ -44,6 +44,7 @@ describe('project-router test', () => {
       name: faker.lorem.word(5),
       description: faker.lorem.paragraph(1),
       boardName: faker.lorem.sentence(1),
+      abbreviation: faker.lorem.word(3),
     };
 
     const project = await api.project.add(input);
@@ -55,6 +56,7 @@ describe('project-router test', () => {
       name: faker.lorem.word(5),
       description: faker.lorem.paragraph(1),
       boardName: faker.lorem.sentence(1),
+      abbreviation: faker.lorem.word(3),
     };
 
     await api.project.add(input);
@@ -67,6 +69,7 @@ describe('project-router test', () => {
       name: faker.lorem.word(5),
       description: faker.lorem.paragraph(1),
       boardName: faker.lorem.sentence(1),
+      abbreviation: faker.lorem.word(3),
     };
 
     const { data: project } = await api.project.add(input);
@@ -78,6 +81,7 @@ describe('project-router test', () => {
       startDate: faker.date.recent(),
       endDate: null,
       description: null,
+      abbreviation: faker.lorem.word(3),
     };
 
     const { data: updatedProject } = await api.project.update(updateInput);
@@ -90,6 +94,7 @@ describe('project-router test', () => {
       name: faker.lorem.word(5),
       description: faker.lorem.paragraph(1),
       boardName: faker.lorem.sentence(1),
+      abbreviation: faker.lorem.word(3),
     };
 
     const { data: project } = await api.project.add(input);

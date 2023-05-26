@@ -7,40 +7,35 @@ import { env } from '@env';
 
 export const githubRouter = t.router({
   getRepositories: adminProcedure.query(async ({ ctx: { authedUserId } }) => {
-    try {
-      const tokenResponse = await clerkClient.users.getUserOauthAccessToken(
-        authedUserId,
-        'oauth_github',
-      );
-      console.log(tokenResponse[0]?.token);
-      const repositoriesResponse = await fetch(
-        'https://api.github.com/user/repos',
-        {
-          headers: {
-            Authorization: `Bearer ${tokenResponse[0]?.token}`,
-          },
-        },
-      );
-      const repositories: GithubRepository[] =
-        await repositoriesResponse.json();
-      return repositories
-        .sort(
-          (repo1, repo2) =>
-            new Date(repo1.updated_at).getTime() -
-            new Date(repo2.updated_at).getTime(),
-        )
-        .map((repo) => {
-          return {
-            ...repo,
-          };
-        });
-    } catch (e) {
-      console.log(e);
+    const tokenResponse = await clerkClient.users.getUserOauthAccessToken(
+      authedUserId,
+      'oauth_github',
+    );
+    if (!tokenResponse[0]?.token)
       throw new TRPCError({
-        message: 'Something went wrong. Please try again later.',
-        code: 'INTERNAL_SERVER_ERROR',
+        code: 'FORBIDDEN',
+        message: `You don't have an associated github account. If you want to connect it, you need to do it under the account settings. (Click on your profile in the application at the bottom left->select "Manage account"->under the chapter "Connected accounts" click on "Connect account")`,
       });
-    }
+    const repositoriesResponse = await fetch(
+      'https://api.github.com/user/repos',
+      {
+        headers: {
+          Authorization: `Bearer ${tokenResponse[0]?.token}`,
+        },
+      },
+    );
+    const repositories: GithubRepository[] = await repositoriesResponse.json();
+    return repositories
+      .sort(
+        (repo1, repo2) =>
+          new Date(repo1.updated_at).getTime() -
+          new Date(repo2.updated_at).getTime(),
+      )
+      .map((repo) => {
+        return {
+          ...repo,
+        };
+      });
   }),
   addWebhook: adminProcedure
     .input(
