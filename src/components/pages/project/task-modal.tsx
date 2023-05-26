@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   Accordion,
@@ -33,7 +33,7 @@ import { useToast } from '@hooks';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import add from 'date-fns/add';
-import { format } from 'date-fns';
+import { format, isSameDay } from 'date-fns';
 
 export const commentSchema = z.object({
   comment: z
@@ -90,7 +90,9 @@ export const TaskModal = ({
     task?.deadLine ? task?.deadLine : undefined,
   );
 
-  const [previousDate, setPreviousDate] = useState<Date | undefined>(undefined);
+  const previousDateRef = useRef<Date | undefined>(
+    task?.deadLine ? task?.deadLine : undefined,
+  );
 
   useEffect(() => {
     if (taskTypeName) setSelectedTaskType(taskTypeName);
@@ -183,9 +185,10 @@ export const TaskModal = ({
       },
     });
 
-  const { mutate: addEvent } = trpc.event.add.useMutation({});
-
-  const onSubmitTask = (data: FormData) => {
+  const { mutate: addEvent } = trpc.event.add.useMutation();
+  const { mutate: updateEvent } = trpc.event.updateByTaskId.useMutation();
+  const { mutate: deleteEvent } = trpc.event.deleteByTaskId.useMutation();
+  const onSubmitTask = async (data: FormData) => {
     const taskTypeId = taskTypes?.find(
       (taskType) => taskType.name === selectedTaskType,
     )?.id;
@@ -201,10 +204,39 @@ export const TaskModal = ({
       taskPriorityId: taskPriorityId,
     });
 
-    if (date !== undefined && previousDate === undefined && assignedUsers) {
+    // add to calendar
+    const nameChanged = data.name !== task.name;
+
+    if (date === undefined && previousDateRef.current !== undefined) {
+      console.log('delete event');
+      deleteEvent(task.id);
+    } else if (
+      date !== undefined &&
+      previousDateRef.current === undefined &&
+      assignedUsers
+    ) {
+      console.log('add event');
+
       addEvent({
         title: data.name,
-        description: `Task deadline set to ${format(date, 'PPP')}`,
+        description: `Task deadline set to ${format(date, 'PPP')}.`,
+        start: date.toISOString(),
+        end: add(date, { hours: 24 }).toISOString(),
+        backgroundColor: '#6be1d1',
+        taskId: task.id,
+        users: assignedUsers,
+      });
+    } else if (
+      date !== undefined &&
+      previousDateRef.current !== undefined &&
+      (!isSameDay(date, previousDateRef.current) || nameChanged) &&
+      assignedUsers
+    ) {
+      console.log('update event');
+
+      updateEvent({
+        title: data.name,
+        description: `Task deadline set to ${format(date, 'PPP')}.`,
         start: date.toISOString(),
         end: add(date, { hours: 24 }).toISOString(),
         backgroundColor: '#6be1d1',
@@ -212,7 +244,7 @@ export const TaskModal = ({
         users: assignedUsers,
       });
     }
-    setPreviousDate(date);
+    previousDateRef.current = date;
   };
 
   const onSubmitComment = (data: FormDataComment) => {
@@ -228,6 +260,7 @@ export const TaskModal = ({
 
   const deleteTask = () => {
     deleteTaskMutation(task.id);
+    deleteEvent(task.id);
   };
 
   const handleTaskTypeChange = (selected: string) => {
