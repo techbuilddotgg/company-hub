@@ -43,6 +43,7 @@ export const eventRouter = t.router({
             backgroundColor: input.backgroundColor,
             authorId: authedUserId,
             users: { create: input.users.map((userId) => ({ userId })) },
+            taskId: input.taskId,
           },
         });
       } catch (e) {

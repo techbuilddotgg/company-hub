@@ -32,6 +32,8 @@ import { ProjectBoardTask } from '@prisma/client';
 import { useToast } from '@hooks';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import add from 'date-fns/add';
+import { format } from 'date-fns';
 
 export const commentSchema = z.object({
   comment: z
@@ -87,6 +89,8 @@ export const TaskModal = ({
   const [date, setDate] = useState<Date | undefined>(
     task?.deadLine ? task?.deadLine : undefined,
   );
+
+  const [previousDate, setPreviousDate] = useState<Date | undefined>(undefined);
 
   useEffect(() => {
     if (taskTypeName) setSelectedTaskType(taskTypeName);
@@ -179,6 +183,8 @@ export const TaskModal = ({
       },
     });
 
+  const { mutate: addEvent } = trpc.event.add.useMutation({});
+
   const onSubmitTask = (data: FormData) => {
     const taskTypeId = taskTypes?.find(
       (taskType) => taskType.name === selectedTaskType,
@@ -194,6 +200,19 @@ export const TaskModal = ({
       taskTypeId: taskTypeId,
       taskPriorityId: taskPriorityId,
     });
+
+    if (date !== undefined && previousDate === undefined && assignedUsers) {
+      addEvent({
+        title: data.name,
+        description: `Task deadline set to ${format(date, 'PPP')}`,
+        start: date.toISOString(),
+        end: add(date, { hours: 24 }).toISOString(),
+        backgroundColor: '#6be1d1',
+        taskId: task.id,
+        users: assignedUsers,
+      });
+    }
+    setPreviousDate(date);
   };
 
   const onSubmitComment = (data: FormDataComment) => {
