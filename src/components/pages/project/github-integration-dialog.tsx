@@ -43,7 +43,10 @@ const GithubIntegrationDialog = ({ boardId }: GithubIntegrationDialogProps) => {
           <DialogTitle>Edit configuration</DialogTitle>
         </DialogHeader>
         {githubIntegrated ? (
-          <EditGithubConfiguration boardId={boardId} />
+          <EditGithubConfiguration
+            boardId={boardId}
+            closeDialog={() => setDialogOpened(false)}
+          />
         ) : (
           <IntegrateGithub
             boardId={boardId}

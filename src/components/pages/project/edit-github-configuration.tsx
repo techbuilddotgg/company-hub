@@ -1,6 +1,7 @@
 import {
   Button,
   Label,
+  LoaderButton,
   ScrollArea,
   Select,
   SelectContent,
@@ -10,14 +11,28 @@ import {
 } from '@components';
 import { trpc } from '@utils/trpc';
 import { githubEventToText } from '@constants/github-event-to-text';
+import { useQueryClient } from '@tanstack/react-query';
+import { getQueryKey } from '@trpc/react-query';
 
 interface EditGithubConfigurationProps {
   boardId: string;
+  closeDialog: () => void;
 }
-const EditGithubConfiguration = ({ boardId }: EditGithubConfigurationProps) => {
-  const utils = trpc.useContext();
-  const { mutate: deleteGithubIntegration } =
-    trpc.github.removeWebhooks.useMutation();
+const EditGithubConfiguration = ({
+  boardId,
+  closeDialog,
+}: EditGithubConfigurationProps) => {
+  const queryClient = useQueryClient();
+
+  const { mutate: deleteGithubIntegration, isLoading: isDeleteLoading } =
+    trpc.github.removeWebhooks.useMutation({
+      onSuccess: () => {
+        queryClient.invalidateQueries(
+          getQueryKey(trpc.github.getWebhookActions),
+        );
+        closeDialog();
+      },
+    });
 
   const { data: githubData } = trpc.github.getWebhookActions.useQuery({
     boardId,
@@ -28,7 +43,9 @@ const EditGithubConfiguration = ({ boardId }: EditGithubConfigurationProps) => {
   const { mutate: updateWebhookActionMutation } =
     trpc.github.updateWebhookAction.useMutation({
       onSuccess: () => {
-        utils.github.getWebhookActions.invalidate({ boardId });
+        queryClient.invalidateQueries(
+          getQueryKey(trpc.github.getWebhookActions),
+        );
       },
     });
 
@@ -65,12 +82,16 @@ const EditGithubConfiguration = ({ boardId }: EditGithubConfigurationProps) => {
           </div>
         </div>
       ))}
-      <Button
-        className="mt-7"
-        onClick={() => deleteGithubIntegration({ boardId })}
-      >
-        Remove integration
-      </Button>
+      <div className="mt-7 flex flex-row items-center justify-between">
+        <LoaderButton
+          variant="outline"
+          isLoading={isDeleteLoading}
+          onClick={() => deleteGithubIntegration({ boardId })}
+        >
+          Remove integration
+        </LoaderButton>
+        <Button onClick={closeDialog}>Update</Button>
+      </div>
     </div>
   );
 };
