@@ -34,6 +34,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import add from 'date-fns/add';
 import { format, isSameDay } from 'date-fns';
+import { LabelColorsType } from '@components/pages/calendar/types';
 
 export const commentSchema = z.object({
   comment: z
@@ -153,7 +154,7 @@ export const TaskModal = ({
         description: `Task deadline set to ${format(date, 'PPP')}.`,
         start: date.toISOString(),
         end: add(date, { hours: 24 }).toISOString(),
-        backgroundColor: '#6be1d1',
+        backgroundColor: LabelColorsType.BLUE,
         taskId: task.id,
         users: assignedUsers,
       });
@@ -234,7 +235,7 @@ export const TaskModal = ({
         description: `Task deadline set to ${format(date, 'PPP')}.`,
         start: date.toISOString(),
         end: add(date, { hours: 24 }).toISOString(),
-        backgroundColor: '#6be1d1',
+        backgroundColor: LabelColorsType.BLUE,
         taskId: task.id,
         users: assignedUsers,
       });
@@ -249,7 +250,7 @@ export const TaskModal = ({
         description: `Task deadline set to ${format(date, 'PPP')}.`,
         start: date.toISOString(),
         end: add(date, { hours: 24 }).toISOString(),
-        backgroundColor: '#6be1d1',
+        backgroundColor: LabelColorsType.BLUE,
         taskId: task.id,
         users: assignedUsers,
       });
