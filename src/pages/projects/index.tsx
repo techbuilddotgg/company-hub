@@ -15,7 +15,6 @@ import {
 import { Project } from '@prisma/client';
 import SaveProjectForm from '@components/pages/project/save-project-form';
 import { ProjectWithBoards } from '@shared/types/project.types';
-import { Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useUser } from '@clerk/nextjs';
 
@@ -74,6 +73,7 @@ const Projects = () => {
           }
         />
       </div>
+      {projects?.length === 0 && <p>No projects found.</p>}
       {projects?.map((project) => (
         <Accordion key={project.id} type="single" collapsible>
           <AccordionItem value={project.id}>
@@ -100,22 +100,21 @@ const Projects = () => {
                     <div className="flex flex-row">
                       <Button
                         onClick={() => setProjectStatus(project)}
-                        variant="outline"
+                        variant="secondary"
                       >
                         {project.endDate ? 'Reopen project' : 'Close project'}
                       </Button>
                       <Button
                         className="ml-2"
                         onClick={() => setSelectedProjectForEditing(project)}
-                        variant="secondary"
                       >
                         Edit
                       </Button>
                       <AlertDialogButton
                         handleAction={() => deleteProject(project.id)}
-                        buttonVariant={'ghost'}
+                        buttonVariant={'outline'}
                         buttonClassName={'ml-2'}
-                        buttonText={<Trash2 color="black" size={22} />}
+                        buttonText={'Delete'}
                         title={'Delete project'}
                         description={
                           'Are you sure you want to delete this project?'

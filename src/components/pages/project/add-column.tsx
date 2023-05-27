@@ -9,7 +9,7 @@ export const AddColumnSchema = z.object({
   name: z
     .string()
     .min(3, { message: 'Enter at least 3 chars' })
-    .max(20, { message: 'Max is 20' }),
+    .max(20, { message: 'Enter max 20 chars' }),
 });
 
 type AddColumnType = z.infer<typeof AddColumnSchema>;
@@ -19,7 +19,12 @@ interface AddColumnProps {
   refetch: () => void;
 }
 const AddColumn = ({ boardId, refetch }: AddColumnProps) => {
-  const { register, handleSubmit, reset } = useForm({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
     resolver: zodResolver(AddColumnSchema),
     defaultValues: {
       name: '',
@@ -40,7 +45,12 @@ const AddColumn = ({ boardId, refetch }: AddColumnProps) => {
           onSubmit={handleSubmit(onSubmit)}
           className="flex flex-row items-center gap-4"
         >
-          <Input type="text" id="name" {...register('name')} />
+          <Input
+            error={errors.name}
+            type="text"
+            id="name"
+            {...register('name')}
+          />
           <LoaderButton
             isLoading={isLoading}
             type="submit"

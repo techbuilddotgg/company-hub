@@ -115,7 +115,7 @@ const MainNavigation = () => {
               <li
                 key={subItems.title}
                 className={cn(
-                  'ml-5 rounded p-2 text-gray-500',
+                  'ml-5 mt-4 rounded p-2 text-gray-500',
                   isActive(`${subItems.href}`) && 'bg-blue-100 text-blue-600',
                   !isActive(`${subItems.href}`) &&
                     'text-gray-500 hover:bg-gray-100 hover:text-black',

@@ -40,14 +40,14 @@ export const commentSchema = z.object({
   comment: z
     .string()
     .min(3, { message: 'Enter at least 3 chars' })
-    .max(500, { message: 'Enter max 500  chars' }),
+    .max(500, { message: 'Enter max 500 chars' }),
 });
 
 export const taskSchema = z.object({
   name: z
     .string()
     .min(3, { message: 'Enter at least 3 chars' })
-    .max(25, { message: 'Enter max 25  chars' }),
+    .max(25, { message: 'Enter max 25 chars' }),
   description: z
     .string()
     .max(1000, { message: 'Please enter less that 1000 characters' }),
