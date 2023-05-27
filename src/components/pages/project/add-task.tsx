@@ -9,7 +9,7 @@ export const AddTaskSchema = z.object({
   name: z
     .string()
     .min(3, { message: 'Enter at least 3 chars' })
-    .max(20, { message: 'Max is 20' }),
+    .max(20, { message: 'Enter max 20 chars' }),
 });
 
 type AddTaskType = z.infer<typeof AddTaskSchema>;
@@ -19,7 +19,12 @@ interface AddTaskProps {
   refetch: () => void;
 }
 const AddTask = ({ columnId, refetch }: AddTaskProps) => {
-  const { register, handleSubmit, reset } = useForm({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
     resolver: zodResolver(AddTaskSchema),
     defaultValues: {
       name: '',
@@ -37,7 +42,7 @@ const AddTask = ({ columnId, refetch }: AddTaskProps) => {
       onSubmit={handleSubmit(onSubmit)}
       className="flex flex-row items-center"
     >
-      <Input type="text" id="name" {...register('name')} />
+      <Input error={errors.name} type="text" id="name" {...register('name')} />
       <LoaderButton
         isLoading={isLoading}
         variant="ghost"
