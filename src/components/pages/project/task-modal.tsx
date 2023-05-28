@@ -5,24 +5,24 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
+  AlertDialogButton,
   Button,
   Checkbox,
   DialogContent,
   DialogHeader,
   DialogTitle,
   Input,
+  LoaderButton,
   ScrollArea,
-  Textarea,
-  Separator,
   Select,
-  SelectTrigger,
-  SelectValue,
   SelectContent,
   SelectGroup,
-  SelectLabel,
   SelectItem,
-  LoaderButton,
-  AlertDialogButton,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+  Separator,
+  Textarea,
 } from '@components';
 import { trpc } from '@utils/trpc';
 import { Send, User2 } from 'lucide-react';
@@ -143,23 +143,19 @@ export const TaskModal = ({
       refetchAssignedUsers();
       setOpenTaskDialog(true);
       refetch();
+      if (date && assignedUsers) {
+        updateEvent({
+          title: task.name,
+          description: `Task deadline set to ${format(date, 'PPP')}.`,
+          start: date.toISOString(),
+          end: add(date, { hours: 24 }).toISOString(),
+          backgroundColor: LabelColorsType.BLUE,
+          taskId: task.id,
+          users: assignedUsers,
+        });
+      }
     },
   });
-
-  // update if assigned users changed
-  useEffect(() => {
-    if (date && assignedUsers) {
-      updateEvent({
-        title: task.name,
-        description: `Task deadline set to ${format(date, 'PPP')}.`,
-        start: date.toISOString(),
-        end: add(date, { hours: 24 }).toISOString(),
-        backgroundColor: LabelColorsType.BLUE,
-        taskId: task.id,
-        users: assignedUsers,
-      });
-    }
-  }, [assignedUsers]);
 
   const { mutate: commentTicket } = trpc.board.commentTicket.useMutation({
     onSuccess: () => {
