@@ -1,10 +1,11 @@
 'use client';
 
 import * as React from 'react';
+import { FC, ReactNode, useEffect } from 'react';
 import * as AlertDialogPrimitive from '@radix-ui/react-alert-dialog';
 import { cn } from '@utils/classNames';
-import { Button, buttonVariants } from '@components/ui/button';
-import { FC, ReactNode } from 'react';
+import { Button, buttonVariants, LoaderButton } from '@components/ui/button';
+import { usePrevious } from '../../hooks/use-previous';
 
 const AlertDialog = AlertDialogPrimitive.Root;
 
@@ -146,6 +147,7 @@ interface AlertDialogProps {
   description: string;
   cancelText?: string;
   actionText?: string;
+  isActionLoading?: boolean;
 }
 
 const AlertDialogButton: FC<AlertDialogProps> = ({
@@ -157,10 +159,26 @@ const AlertDialogButton: FC<AlertDialogProps> = ({
   handleAction,
   cancelText = 'Cancel',
   actionText = 'Continue',
+  isActionLoading = false,
 }) => {
+  const [isOpened, setIsOpened] = React.useState(false);
+  const [isActionTriggered, setIsActionTriggered] = React.useState(false);
+  const previousIsActionLoading = usePrevious(isActionLoading);
+  const onClick = () => {
+    handleAction();
+    setIsActionTriggered(true);
+  };
+
+  useEffect(() => {
+    if (isActionTriggered && !isActionLoading && previousIsActionLoading) {
+      setIsOpened(false);
+      setIsActionTriggered(false);
+    }
+  }, [isActionLoading, previousIsActionLoading, isActionTriggered]);
+
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
+    <AlertDialog open={isOpened}>
+      <AlertDialogTrigger asChild onClick={() => setIsOpened(true)}>
         <Button variant={buttonVariant} className={buttonClassName}>
           {buttonText}
         </Button>
@@ -171,10 +189,12 @@ const AlertDialogButton: FC<AlertDialogProps> = ({
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>{cancelText}</AlertDialogCancel>
-          <AlertDialogAction onClick={handleAction}>
+          <AlertDialogCancel onClick={() => setIsOpened(false)}>
+            {cancelText}
+          </AlertDialogCancel>
+          <LoaderButton isLoading={isActionLoading} onClick={onClick}>
             {actionText}
-          </AlertDialogAction>
+          </LoaderButton>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

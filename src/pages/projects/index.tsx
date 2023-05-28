@@ -10,6 +10,7 @@ import {
   Dialog,
   DialogContent,
   DialogTrigger,
+  LoaderButton,
   PageHeader,
 } from '@components';
 import { Project } from '@prisma/client';
@@ -27,12 +28,14 @@ const Projects = () => {
   const { data: projects, refetch: refetchProjects } =
     trpc.project.get.useQuery();
 
-  const { mutate: updateProjectMutation } = trpc.project.update.useMutation({
-    onSuccess: () => refetchProjects(),
-  });
-  const { mutate: deleteProjectMutation } = trpc.project.delete.useMutation({
-    onSuccess: () => refetchProjects(),
-  });
+  const { mutate: updateProjectMutation, isLoading: isUpdateProjectLoading } =
+    trpc.project.update.useMutation({
+      onSuccess: () => refetchProjects(),
+    });
+  const { mutate: deleteProjectMutation, isLoading: isDeleteProjectLoading } =
+    trpc.project.delete.useMutation({
+      onSuccess: () => refetchProjects(),
+    });
 
   const setProjectStatus = (project: Project) => {
     if (project.endDate) updateProjectMutation({ ...project, endDate: null });
@@ -98,12 +101,13 @@ const Projects = () => {
                 <>
                   {user?.publicMetadata.isAdmin && (
                     <div className="flex flex-row">
-                      <Button
+                      <LoaderButton
+                        isLoading={isUpdateProjectLoading}
                         onClick={() => setProjectStatus(project)}
                         variant="secondary"
                       >
                         {project.endDate ? 'Reopen project' : 'Close project'}
-                      </Button>
+                      </LoaderButton>
                       <Button
                         className="ml-2"
                         onClick={() => setSelectedProjectForEditing(project)}
@@ -119,6 +123,7 @@ const Projects = () => {
                         description={
                           'Are you sure you want to delete this project?'
                         }
+                        isActionLoading={isDeleteProjectLoading}
                       />
                     </div>
                   )}
