@@ -16,7 +16,7 @@ import { TRPCResponse } from '@shared/types/common.types';
 const mutationCache = new MutationCache({
   onSuccess: (data) => {
     const typedData = data as TRPCResponse;
-    if (typedData.message) {
+    if (typedData?.message) {
       toast({
         title: typedData.message.title,
         description: typedData.message.description,

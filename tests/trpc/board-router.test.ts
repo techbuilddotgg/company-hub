@@ -375,14 +375,14 @@ describe('board-router test', () => {
 
     const { data: task } = await api.board.addTask(input);
 
-    const commentTicketInput: RouterInput['board']['commentTicket'] = {
+    const commentTaskInput: RouterInput['board']['commentTask'] = {
       taskId: task.id,
       userId: faker.string.uuid(),
       comment: faker.lorem.sentence(),
       email: faker.internet.email(),
     };
 
-    const taskComment = await api.board.commentTicket(commentTicketInput);
+    const taskComment = await api.board.commentTask(commentTaskInput);
     expect(taskComment).toBeDefined();
   });
 
@@ -408,14 +408,14 @@ describe('board-router test', () => {
 
     const { data: task } = await api.board.addTask(input);
 
-    const commentTicketInput: RouterInput['board']['commentTicket'] = {
+    const commentTaskInput: RouterInput['board']['commentTask'] = {
       taskId: task.id,
       userId: faker.string.uuid(),
       comment: faker.lorem.sentence(),
       email: faker.internet.email(),
     };
 
-    await api.board.commentTicket(commentTicketInput);
+    await api.board.commentTask(commentTaskInput);
 
     const getTaskCommentsInput: RouterInput['board']['getTaskComments'] = {
       taskId: task.id,
