@@ -1,28 +1,28 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
+  AlertDialogButton,
   Button,
   Checkbox,
   DialogContent,
   DialogHeader,
   DialogTitle,
   Input,
+  LoaderButton,
   ScrollArea,
-  Textarea,
-  Separator,
   Select,
-  SelectTrigger,
-  SelectValue,
   SelectContent,
   SelectGroup,
-  SelectLabel,
   SelectItem,
-  LoaderButton,
-  AlertDialogButton,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+  Separator,
+  Textarea,
 } from '@components';
 import { trpc } from '@utils/trpc';
 import { Send, User2 } from 'lucide-react';
@@ -32,19 +32,22 @@ import { ProjectBoardTask } from '@prisma/client';
 import { useToast } from '@hooks';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import add from 'date-fns/add';
+import { format, isSameDay } from 'date-fns';
+import { LabelColorsType } from '@components/pages/calendar/types';
 
 export const commentSchema = z.object({
   comment: z
     .string()
     .min(3, { message: 'Enter at least 3 chars' })
-    .max(500, { message: 'Enter max 500  chars' }),
+    .max(500, { message: 'Enter max 500 chars' }),
 });
 
 export const taskSchema = z.object({
   name: z
     .string()
     .min(3, { message: 'Enter at least 3 chars' })
-    .max(25, { message: 'Enter max 25  chars' }),
+    .max(25, { message: 'Enter max 25 chars' }),
   description: z
     .string()
     .max(1000, { message: 'Please enter less that 1000 characters' }),
@@ -85,6 +88,10 @@ export const TaskModal = ({
   >(taskPriorityName);
 
   const [date, setDate] = useState<Date | undefined>(
+    task?.deadLine ? task?.deadLine : undefined,
+  );
+
+  const previousDateRef = useRef<Date | undefined>(
     task?.deadLine ? task?.deadLine : undefined,
   );
 
@@ -135,6 +142,18 @@ export const TaskModal = ({
     onSuccess: () => {
       refetchAssignedUsers();
       setOpenTaskDialog(true);
+      refetch();
+      if (date && assignedUsers) {
+        updateEvent({
+          title: task.name,
+          description: `Task deadline set to ${format(date, 'PPP')}.`,
+          start: date.toISOString(),
+          end: add(date, { hours: 24 }).toISOString(),
+          backgroundColor: LabelColorsType.BLUE,
+          taskId: task.id,
+          users: assignedUsers,
+        });
+      }
     },
   });
 
@@ -155,6 +174,7 @@ export const TaskModal = ({
       onSuccess: () => {
         refetchAssignedUsers();
         setOpenTaskDialog(true);
+        refetch();
       },
     });
 
@@ -177,6 +197,9 @@ export const TaskModal = ({
       },
     });
 
+  const { mutate: addEvent } = trpc.event.add.useMutation();
+  const { mutate: updateEvent } = trpc.event.updateByTaskId.useMutation();
+  const { mutate: deleteEvent } = trpc.event.deleteByTaskId.useMutation();
   const onSubmitTask = (data: FormData) => {
     const taskTypeId = taskTypes?.find(
       (taskType) => taskType.name === selectedTaskType,
@@ -188,10 +211,47 @@ export const TaskModal = ({
       id: task.id,
       name: data.name,
       description: data.description,
-      deadLine: date,
+      deadLine: date !== undefined ? date : null,
       taskTypeId: taskTypeId,
       taskPriorityId: taskPriorityId,
     });
+
+    // add to calendar
+    const nameChanged = data.name !== task.name;
+
+    if (date === undefined && previousDateRef.current !== undefined) {
+      deleteEvent(task.id);
+    } else if (
+      date !== undefined &&
+      previousDateRef.current === undefined &&
+      assignedUsers
+    ) {
+      addEvent({
+        title: data.name,
+        description: `Task deadline set to ${format(date, 'PPP')}.`,
+        start: date.toISOString(),
+        end: add(date, { hours: 24 }).toISOString(),
+        backgroundColor: LabelColorsType.BLUE,
+        taskId: task.id,
+        users: assignedUsers,
+      });
+    } else if (
+      date !== undefined &&
+      previousDateRef.current !== undefined &&
+      (!isSameDay(date, previousDateRef.current) || nameChanged) &&
+      assignedUsers
+    ) {
+      updateEvent({
+        title: data.name,
+        description: `Task deadline set to ${format(date, 'PPP')}.`,
+        start: date.toISOString(),
+        end: add(date, { hours: 24 }).toISOString(),
+        backgroundColor: LabelColorsType.BLUE,
+        taskId: task.id,
+        users: assignedUsers,
+      });
+    }
+    previousDateRef.current = date;
   };
 
   const onSubmitComment = (data: FormDataComment) => {
@@ -207,6 +267,7 @@ export const TaskModal = ({
 
   const deleteTask = () => {
     deleteTaskMutation(task.id);
+    deleteEvent(task.id);
   };
 
   const handleTaskTypeChange = (selected: string) => {

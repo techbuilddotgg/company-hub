@@ -26,6 +26,7 @@ const SaveProjectForm = ({
       name: project?.name || '',
       boardName: project?.projectBoards[0]?.name || '',
       description: project?.description || '',
+      abbreviation: project?.abbreviation || '',
     },
   });
   const { mutate: addProject, isLoading: isAddProjectMutationLoading } =
@@ -57,6 +58,11 @@ const SaveProjectForm = ({
         onSubmit={handleSubmit(onSubmit)}
       >
         <Input error={errors.name} label="Name" {...register('name')} />
+        <Input
+          error={errors.abbreviation}
+          label="Abbreviation"
+          {...register('abbreviation')}
+        />
         <Textarea
           error={errors.description}
           rows={5}

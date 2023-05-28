@@ -15,6 +15,6 @@ export const isSignatureValid = (req: NextApiRequest) => {
   return signatureHeader === req.headers['x-hub-signature-256'];
 };
 
-export const getTaskNameFromBranch = (branch: string) => {
+export const getTaskTagFromFullBranchName = (branch: string) => {
   return branch.substring(branch.lastIndexOf('/') + 1, branch.length);
 };

@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const projectSchema = z.object({
   id: z.string(),
   name: z.string(),
+  abbreviation: z.string(),
   companyId: z.string(),
   startDate: z.date(),
   endDate: z.date().nullable(),
@@ -26,7 +27,7 @@ export const projectBoardTaskSchemaOptional = z.object({
   description: z.string().nullable().optional(),
   projectBoardColumnId: z.string().optional(),
   createdAt: z.date().optional(),
-  deadLine: z.date().optional(),
+  deadLine: z.union([z.date(), z.null()]).optional(),
   taskPriorityId: z.string().nullable().optional(),
   taskTypeId: z.string().nullable().optional(),
   orderIndex: z.number().optional(),

@@ -49,6 +49,11 @@ const Task = ({ task, index, refetch }: TaskProps) => {
     taskId: task.id,
   });
 
+  async function copyTaskTagToClipboard(e: React.MouseEvent<HTMLElement>) {
+    e.stopPropagation();
+    return await navigator.clipboard.writeText(task.tag);
+  }
+
   return (
     <Dialog open={openTaskDialog}>
       <div className="w-full" onClick={() => setOpenTaskDialog(true)}>
@@ -61,7 +66,25 @@ const Task = ({ task, index, refetch }: TaskProps) => {
               className="mb-4 rounded-lg bg-white p-0 shadow"
             >
               <CardHeader className="flex flex-row items-stretch justify-between p-0">
-                <CardTitle className="p-3 text-left">{task.name}</CardTitle>
+                <CardTitle className="flex flex-row p-3 text-left">
+                  <p>{task.name}</p>
+
+                  <TooltipProvider>
+                    <Tooltip delayDuration={300}>
+                      <TooltipTrigger asChild>
+                        <div
+                          onClick={copyTaskTagToClipboard}
+                          className="ml-2 mt-[1px] cursor-copy text-sm font-normal text-gray-400"
+                        >
+                          {task.tag}
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Click to copy</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </CardTitle>
                 {taskType && (
                   <span
                     className={`ml-auto mt-0 w-1/4 self-start justify-self-start rounded-sm ${getTaskTypeBackgroundColor(

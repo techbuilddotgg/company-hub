@@ -44,6 +44,7 @@ model Event {
   backgroundColor String
   authorId        String
   users           UserEvent[]
+  taskId          String?
 
   @@map("events")
 }
@@ -60,6 +61,7 @@ model UserEvent {
 model Project {
   id            String         @id @default(cuid())
   name          String
+  abbreviation  String
   company       Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId     String
   projectBoards ProjectBoard[]
@@ -95,6 +97,7 @@ model ProjectBoardColumn {
 
 model ProjectBoardTask {
   id                       String                    @id @default(cuid())
+  tag                      String
   name                     String
   description              String?                   @db.Text
   projectBoardColumn       ProjectBoardColumn        @relation(fields: [projectBoardColumnId], references: [id], onDelete: Cascade)

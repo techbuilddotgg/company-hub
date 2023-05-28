@@ -1,16 +1,19 @@
 import { useEffect, useState } from 'react';
+import { useNavigationStore } from '../store/navigation-store';
 
 interface Size {
   width: number;
   height: number;
 }
 
-export const useWindow = (): Size => {
-  const [windowSize, setWindowSize] = useState<Size>({
-    width: -1,
-    height: -1,
-  });
+export const useWindow = () => {
+  const [windowSize, setWindowSize] = useState<Size | null>(null);
+
+  const setIsOpened = useNavigationStore((state) => state.setIsOpened);
   useEffect(() => {
+    if (window.innerWidth < 768) {
+      setIsOpened(false);
+    }
     const handleResize = () => {
       setWindowSize({
         width: window.innerWidth,

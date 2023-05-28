@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getTaskNameFromBranch, isSignatureValid } from '@utils/github';
+import { getTaskTagFromFullBranchName, isSignatureValid } from '@utils/github';
 import { prisma } from '@server/db/client';
 import { ProjectBoardColumn } from '@prisma/client';
 
@@ -13,51 +13,55 @@ export default async function handler(
 
     const data = req.body;
 
-    const branch = getTaskNameFromBranch(data.ref);
+    const taskTag = getTaskTagFromFullBranchName(data.ref);
 
-    const githubData = await prisma.githubData.findFirst({
+    console.log('kdjkhgkdfhgkjdfgjdfhkgjfdhkdgh', taskTag);
+
+    const githubData = await prisma.githubData.findMany({
       where: {
         repository: data.repository.name,
         owner: data.repository.owner.login,
       },
     });
 
-    if (!githubData) return res.status(400).end();
+    if (!githubData || githubData.length === 0) return res.status(400).end();
 
-    const githubWebhookAction = await prisma.githubWebhookAction.findUnique({
-      where: {
-        githubDataId_actionType: {
-          githubDataId: githubData.id,
-          actionType: 'CREATE',
+    for (const data of githubData) {
+      const githubWebhookAction = await prisma.githubWebhookAction.findUnique({
+        where: {
+          githubDataId_actionType: {
+            githubDataId: data.id,
+            actionType: 'CREATE',
+          },
         },
-      },
-    });
+      });
 
-    const targetColumn = await prisma.$queryRaw<
-      ProjectBoardColumn[]
-    >`SELECT * FROM project_board_columns WHERE LOWER(name) = LOWER(${githubWebhookAction?.projectBoardColumnName}) AND projectBoardId = ${githubData?.projectBoardId} LIMIT 1`;
+      const targetColumn = await prisma.$queryRaw<
+        ProjectBoardColumn[]
+      >`SELECT * FROM project_board_columns WHERE LOWER(name) = LOWER(${githubWebhookAction?.projectBoardColumnName}) AND projectBoardId = ${data?.projectBoardId} LIMIT 1`;
 
-    const test = await prisma.projectBoardTask.findMany({
-      where: {
-        name: branch,
-        projectBoardColumn: {
-          projectBoard: { id: githubData?.projectBoardId },
+      const test = await prisma.projectBoardTask.findMany({
+        where: {
+          tag: taskTag,
+          projectBoardColumn: {
+            projectBoard: { id: data?.projectBoardId },
+          },
         },
-      },
-    });
-    console.log(test, targetColumn);
-    const task = await prisma.projectBoardTask.updateMany({
-      where: {
-        name: branch,
-        projectBoardColumn: {
-          projectBoard: { id: githubData?.projectBoardId },
+      });
+      console.log(taskTag, test, targetColumn, data);
+      const task = await prisma.projectBoardTask.updateMany({
+        where: {
+          tag: taskTag,
+          projectBoardColumn: {
+            projectBoard: { id: data?.projectBoardId },
+          },
         },
-      },
-      data: {
-        projectBoardColumnId: targetColumn[0]?.id,
-      },
-    });
-    console.log(task);
+        data: {
+          projectBoardColumnId: targetColumn[0]?.id,
+        },
+      });
+      console.log(task);
+    }
   } catch (e) {
     console.log(e);
   }
