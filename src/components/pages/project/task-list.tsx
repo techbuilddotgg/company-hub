@@ -20,7 +20,7 @@ const TaskList = ({ data, id, refetch }: TicketListProps) => {
         <div
           {...provided.droppableProps}
           ref={provided.innerRef}
-          className="max-h-[700px] overflow-y-auto overflow-x-hidden bg-gray-100 py-4"
+          className="max-h-[700px] min-h-[100px] overflow-y-auto overflow-x-hidden bg-gray-100 py-4"
         >
           <div>
             {tasks.map((task, index) => (

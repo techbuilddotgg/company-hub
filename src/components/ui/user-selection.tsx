@@ -9,9 +9,10 @@ import {
   LoadingSpinner,
   ScrollArea,
 } from '@components';
-import { trpc } from '@utils/trpc';
+import { RouterOutput, trpc } from '@utils/trpc';
 import { useForm } from 'react-hook-form';
-import { User } from '@clerk/backend';
+
+type User = RouterOutput['users']['findAll'][number];
 
 interface UserSelectionProps {
   selected: string[];
