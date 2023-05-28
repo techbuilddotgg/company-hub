@@ -50,7 +50,6 @@ export default async function handler(
   if (!isValid.success) {
     res.status(400).send({ error: isValid.error });
   }
-
   const doc = await loadDocument(formData.file.filepath);
 
   const { id: docId } = await prisma.document.create({
@@ -87,7 +86,7 @@ async function getFormData(req: NextApiRequest) {
     // 10 MB
     maxFileSize: 10 * 1024 * 1024,
     filter: (part) => {
-      const allowedFileExtensions = ['txt', 'docx', 'pdf', '.md'];
+      const allowedFileExtensions = ['txt', 'docx', 'md'];
       const fileType = part.originalFilename?.split('.').pop() || '';
       return allowedFileExtensions.includes(fileType);
     },

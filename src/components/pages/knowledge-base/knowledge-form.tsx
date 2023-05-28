@@ -16,6 +16,8 @@ import {
   TooltipTrigger,
 } from '@components/ui/tooltip';
 import { Info } from 'lucide-react';
+import { useRouter } from 'next/router';
+import { AppRoute } from '@constants/app-routes';
 
 const TextEditor = dynamic(
   () =>
@@ -106,6 +108,8 @@ export const KnowledgeForm: FC<KnowledgeFormProps> = ({
 
   const { errors } = formState;
 
+  const router = useRouter();
+
   const handleSuccess = (cb?: () => void) => {
     toast({
       title: toastMessage[type].title,
@@ -122,7 +126,7 @@ export const KnowledgeForm: FC<KnowledgeFormProps> = ({
 
   const { mutate: handleSaveDocument, isLoading: isSaving } = useSaveDocument({
     onSuccess: () => {
-      handleSuccess();
+      handleSuccess(() => router.push(AppRoute.KNOWLEDGE_BASE));
     },
     onError: () => {
       toast({

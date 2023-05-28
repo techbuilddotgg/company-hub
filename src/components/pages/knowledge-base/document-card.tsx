@@ -26,7 +26,9 @@ export const DocumentCard: FC<Props> = ({ document }) => {
       >
         <CardHeader>
           <div className={'flex flex-row gap-2'}>
-            <File />
+            <div>
+              <File />
+            </div>
             <div>
               <CardTitle>{document.title}</CardTitle>
               <CardDescription>{document.description}</CardDescription>
