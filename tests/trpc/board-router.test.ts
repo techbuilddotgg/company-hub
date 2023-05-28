@@ -11,6 +11,7 @@ describe('board-router test', () => {
   const ctx = createContextInner({ userId });
   const api = appRouter.createCaller(ctx);
   const companyId = faker.string.uuid();
+  const projectId = faker.string.uuid();
 
   vi.mock('pusher', () => {
     const Pusher = vi.fn();
@@ -41,9 +42,18 @@ describe('board-router test', () => {
         name: faker.company.name(),
       },
     });
+    await ctx.prisma.project.create({
+      data: {
+        id: projectId,
+        name: faker.lorem.sentence(),
+        companyId,
+        abbreviation: faker.lorem.word(3),
+      },
+    });
   });
 
   afterAll(async () => {
+    await ctx.prisma.project.deleteMany();
     await ctx.prisma.company.deleteMany();
     await ctx.prisma.projectBoardTaskComment.deleteMany();
     await ctx.prisma.projectBoardColumn.deleteMany();
@@ -55,7 +65,7 @@ describe('board-router test', () => {
   it('should create a board', async () => {
     const input: RouterInput['board']['addBoard'] = {
       name: faker.lorem.sentence(),
-      projectId: faker.string.uuid(),
+      projectId,
     };
 
     const board = await api.board.addBoard(input);
@@ -65,7 +75,7 @@ describe('board-router test', () => {
   it('should create a column', async () => {
     const boardInput: RouterInput['board']['addBoard'] = {
       name: faker.lorem.sentence(),
-      projectId: faker.string.uuid(),
+      projectId,
     };
 
     const { data: board } = await api.board.addBoard(boardInput);
@@ -82,7 +92,7 @@ describe('board-router test', () => {
   it('should create a task', async () => {
     const boardInput: RouterInput['board']['addBoard'] = {
       name: faker.lorem.sentence(),
-      projectId: faker.string.uuid(),
+      projectId,
     };
 
     const { data: board } = await api.board.addBoard(boardInput);
@@ -106,7 +116,7 @@ describe('board-router test', () => {
   it('should find a task', async () => {
     const boardInput: RouterInput['board']['addBoard'] = {
       name: faker.lorem.sentence(),
-      projectId: faker.string.uuid(),
+      projectId,
     };
 
     const { data: board } = await api.board.addBoard(boardInput);
@@ -137,7 +147,7 @@ describe('board-router test', () => {
   it('should update board', async () => {
     const boardInput: RouterInput['board']['addBoard'] = {
       name: faker.lorem.sentence(),
-      projectId: faker.string.uuid(),
+      projectId,
     };
 
     const { data: board } = await api.board.addBoard(boardInput);
@@ -157,7 +167,7 @@ describe('board-router test', () => {
     const input: RouterInput['board']['updateBoard'] = {
       id: faker.string.uuid(),
       name: faker.lorem.sentence(),
-      projectId: faker.string.uuid(),
+      projectId,
     };
     await expect(api.board.updateBoard(input)).rejects.toThrowError();
   });
@@ -165,7 +175,7 @@ describe('board-router test', () => {
   it('should update column', async () => {
     const boardInput: RouterInput['board']['addBoard'] = {
       name: faker.lorem.sentence(),
-      projectId: faker.string.uuid(),
+      projectId,
     };
 
     const { data: board } = await api.board.addBoard(boardInput);
@@ -198,7 +208,7 @@ describe('board-router test', () => {
   it('should update task', async () => {
     const boardInput: RouterInput['board']['addBoard'] = {
       name: faker.lorem.sentence(),
-      projectId: faker.string.uuid(),
+      projectId,
     };
 
     const { data: board } = await api.board.addBoard(boardInput);
@@ -239,7 +249,7 @@ describe('board-router test', () => {
   it('should assign user to task', async () => {
     const boardInput: RouterInput['board']['addBoard'] = {
       name: faker.lorem.sentence(),
-      projectId: faker.string.uuid(),
+      projectId,
     };
 
     const { data: board } = await api.board.addBoard(boardInput);
@@ -270,7 +280,7 @@ describe('board-router test', () => {
   it('should get users assigned to task', async () => {
     const boardInput: RouterInput['board']['addBoard'] = {
       name: faker.lorem.sentence(),
-      projectId: faker.string.uuid(),
+      projectId,
     };
 
     const { data: board } = await api.board.addBoard(boardInput);
@@ -307,7 +317,7 @@ describe('board-router test', () => {
   it('should remove user from task', async () => {
     const boardInput: RouterInput['board']['addBoard'] = {
       name: faker.lorem.sentence(),
-      projectId: faker.string.uuid(),
+      projectId,
     };
 
     const { data: board } = await api.board.addBoard(boardInput);
@@ -346,7 +356,7 @@ describe('board-router test', () => {
   it('should comment task', async () => {
     const boardInput: RouterInput['board']['addBoard'] = {
       name: faker.lorem.sentence(),
-      projectId: faker.string.uuid(),
+      projectId,
     };
 
     const { data: board } = await api.board.addBoard(boardInput);
@@ -379,7 +389,7 @@ describe('board-router test', () => {
   it('should get comments from task', async () => {
     const boardInput: RouterInput['board']['addBoard'] = {
       name: faker.lorem.sentence(),
-      projectId: faker.string.uuid(),
+      projectId,
     };
 
     const { data: board } = await api.board.addBoard(boardInput);
