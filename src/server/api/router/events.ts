@@ -43,6 +43,7 @@ export const eventRouter = t.router({
             backgroundColor: input.backgroundColor,
             authorId: authedUserId,
             users: { create: input.users.map((userId) => ({ userId })) },
+            taskId: input.taskId,
           },
         });
       } catch (e) {
@@ -91,6 +92,51 @@ export const eventRouter = t.router({
               deleteMany: {},
               create: input.users.map((userId) => ({ userId })),
             },
+            taskId: input.taskId,
+          },
+        });
+        return true;
+      } catch (e) {
+        console.log(e);
+        throw new TRPCError({
+          message: 'Something went wrong. Please try again later.',
+          code: 'INTERNAL_SERVER_ERROR',
+        });
+      }
+    }),
+  updateByTaskId: protectedProcedure
+    .input(EventSchema)
+    .mutation(async ({ input, ctx: { prisma } }) => {
+      try {
+        const existingEvent = await prisma.event.findFirst({
+          where: {
+            taskId: input.taskId,
+          },
+          include: {
+            users: true,
+          },
+        });
+        if (!existingEvent) {
+          throw new TRPCError({
+            message: 'Event not found.',
+            code: 'NOT_FOUND',
+          });
+        }
+        await prisma.event.update({
+          where: {
+            id: existingEvent.id,
+          },
+          data: {
+            title: input.title,
+            description: input.description,
+            start: input.start,
+            end: input.end,
+            backgroundColor: input.backgroundColor,
+            users: {
+              deleteMany: {},
+              create: input.users.map((userId) => ({ userId })),
+            },
+            taskId: input.taskId,
           },
         });
         return true;
@@ -109,6 +155,23 @@ export const eventRouter = t.router({
         await prisma.event.delete({
           where: {
             id: input,
+          },
+        });
+      } catch (e) {
+        console.log(e);
+        throw new TRPCError({
+          message: 'Something went wrong. Please try again later.',
+          code: 'INTERNAL_SERVER_ERROR',
+        });
+      }
+    }),
+  deleteByTaskId: protectedProcedure
+    .input(z.string())
+    .mutation(async ({ input, ctx: { prisma } }) => {
+      try {
+        await prisma.event.deleteMany({
+          where: {
+            taskId: input,
           },
         });
       } catch (e) {
