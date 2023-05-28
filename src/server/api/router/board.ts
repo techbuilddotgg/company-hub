@@ -35,6 +35,8 @@ export const boardRouter = t.router({
           },
         },
       });
+
+      if (!projectBoard) return null;
       const githubData = await ctx.prisma.githubData.findFirst({
         where: { projectBoardId: input.id },
       });
