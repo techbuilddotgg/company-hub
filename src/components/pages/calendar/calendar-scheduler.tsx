@@ -18,7 +18,7 @@ import { useNavigationStore } from '../../../store/navigation-store';
 const CalendarScheduler = () => {
   const isNavigationOpened = useNavigationStore((state) => state.isOpened);
   const { user } = useUser();
-  const { mutate: updateEvent } = trpc.event.update.useMutation({});
+  const { mutate: updateEvent } = trpc.event.update.useMutation();
   const { data: events, refetch: refetchEvents } = trpc.event.get.useQuery();
 
   const [openModal, setOpenModal] = React.useState<boolean>(false);

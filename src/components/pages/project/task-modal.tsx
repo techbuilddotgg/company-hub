@@ -29,7 +29,6 @@ import { Send, User2 } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import PickDate from '@components/pages/project/pick-date';
 import { ProjectBoardTask } from '@prisma/client';
-import { useToast } from '@hooks';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import add from 'date-fns/add';
@@ -78,7 +77,6 @@ export const TaskModal = ({
   taskTypeName,
 }: TaskModalProps) => {
   const user = useUser();
-  const { toast } = useToast();
 
   const [selectedTaskType, setSelectedTaskType] = useState<string | undefined>(
     taskTypeName,
@@ -158,7 +156,7 @@ export const TaskModal = ({
     },
   });
 
-  const { mutate: commentTicket } = trpc.board.commentTicket.useMutation({
+  const { mutate: commentTask } = trpc.board.commentTask.useMutation({
     onSuccess: () => {
       refetchComments();
       setOpenTaskDialog(true);
@@ -189,10 +187,6 @@ export const TaskModal = ({
   const { mutate: updateTask, isLoading: isUpdateTaskLoadingMutation } =
     trpc.board.updateTask.useMutation({
       onSuccess: () => {
-        toast({
-          title: 'Task update',
-          description: 'Task was updated successfully.',
-        });
         refetch();
         setOpenTaskDialog(false);
       },
@@ -258,7 +252,7 @@ export const TaskModal = ({
 
   const onSubmitComment = (data: FormDataComment) => {
     if (user.user?.id.toString() && user.user?.emailAddresses[0]?.emailAddress)
-      commentTicket({
+      commentTask({
         comment: data.comment,
         taskId: task.id,
         userId: user.user?.id.toString(),
