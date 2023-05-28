@@ -26,7 +26,7 @@ const Project = () => {
       fallback={<div>Project not found</div>}
     >
       {(data) => (
-        <div className="ml-10">
+        <div>
           <PageHeader className="mb-5" title={data.name} />
           {data.projectBoards.length !== 0 && data.projectBoards[0] ? (
             <Board data={data.projectBoards[0]} />
