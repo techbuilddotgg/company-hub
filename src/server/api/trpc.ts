@@ -32,7 +32,7 @@ const isAuthed = t.middleware(async ({ next, ctx }) => {
 });
 
 const triggerBoardRefetch = t.middleware(async ({ next }) => {
-  pusher.trigger('my-channel', 'my-event', {});
+  pusher.trigger('board-channel', 'refetch-event', {});
   return next();
 });
 

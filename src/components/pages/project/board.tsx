@@ -45,8 +45,8 @@ export const Board = ({ data }: BoardProps) => {
       cluster: process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER || '',
     });
 
-    const channel = pusher.subscribe('my-channel');
-    channel.bind('my-event', function () {
+    const channel = pusher.subscribe('board-channel');
+    channel.bind('refetch-event', function () {
       refetch();
     });
   }, []);
