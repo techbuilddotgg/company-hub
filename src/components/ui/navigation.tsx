@@ -154,12 +154,12 @@ export const Navigation = () => {
         } z-20 flex h-full w-[300px] flex-col items-center  border-r bg-white px-5 transition-[left]`}
       >
         <div
-          className={`my-4 flex w-full flex-row items-center justify-between gap-1 pl-4 ${
-            company?.logo ? 'pt-1' : 'pt-3.5'
+          className={`grid w-full grid-cols-[50px_1fr] items-center justify-center ${
+            company?.logo ? 'pt-5' : 'pt-7'
           }`}
         >
           <Menu
-            className={'mr-3 cursor-pointer'}
+            className={'mr-3 cursor-pointer justify-self-center'}
             onClick={() => setIsOpened(false)}
           />
           <Logo />
