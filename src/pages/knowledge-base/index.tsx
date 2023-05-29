@@ -63,7 +63,7 @@ const KnowledgeBase = () => {
         />
       </div>
 
-      <div className={'flex w-full grow flex-col gap-4'} ref={parent}>
+      <div className={'flex w-full grow flex-col gap-4'}>
         <KnowledgeBaseSearch
           isSearching={isLoadingAIResponse}
           register={register}
@@ -71,17 +71,19 @@ const KnowledgeBase = () => {
           searchOption={searchOption}
           handleAISearch={handleAISearch}
         />
-        {searchOption === SearchOption.DEFAULT && (
-          <DocumentFeed
-            setFilterOption={setFilterOption}
-            filterOption={filterOption}
-            data={data}
-            isLoading={isLoading}
-          />
-        )}
-        {searchOption === SearchOption.AI && (
-          <AiResponse isLoading={isLoadingAIResponse} data={res} />
-        )}
+        <div className={'mt-4'} ref={parent}>
+          {searchOption === SearchOption.DEFAULT && (
+            <DocumentFeed
+              setFilterOption={setFilterOption}
+              filterOption={filterOption}
+              data={data}
+              isLoading={isLoading}
+            />
+          )}
+          {searchOption === SearchOption.AI && (
+            <AiResponse isLoading={isLoadingAIResponse} data={res} />
+          )}
+        </div>
       </div>
     </div>
   );

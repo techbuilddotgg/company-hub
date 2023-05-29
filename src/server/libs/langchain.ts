@@ -7,7 +7,7 @@ import { PineconeStore } from 'langchain/vectorstores/pinecone';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { OpenAI } from 'langchain';
 import { VectorDBQAChain } from 'langchain/chains';
-import { DocxLoader, PDFLoader } from 'langchain/document_loaders';
+import { DocxLoader } from 'langchain/document_loaders';
 
 export interface DocumentMetadata {
   authorId: string;
@@ -37,12 +37,11 @@ export const loadDocument = async (filepath: string): Promise<Document[]> => {
 
   switch (fileExtension) {
     case 'md':
+      const mdLoader = new TextLoader(filepath);
+      return await mdLoader.load();
     case 'txt':
       const textLoader = new TextLoader(filepath);
       return await textLoader.load();
-    case 'pdf':
-      const pdfLoader = new PDFLoader(filepath);
-      return await pdfLoader.load();
     case 'docx':
       const docxLoader = new DocxLoader(filepath);
       return await docxLoader.load();

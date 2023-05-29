@@ -3,7 +3,6 @@ import type { Context } from './context';
 import superjson from 'superjson';
 import { ZodError } from 'zod';
 import { clerkClient } from '@clerk/nextjs/server';
-import { User } from '@clerk/backend/dist/types/api/resources';
 import pusher from '@utils/pusher';
 
 export const t = initTRPC.context<Context>().create({
@@ -42,8 +41,7 @@ const isAdmin = t.middleware(async ({ next, ctx }) => {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
 
-  const user: Omit<User, 'experimental_imageUrl'> =
-    await clerkClient.users.getUser(ctx.userId);
+  const user = await clerkClient.users.getUser(ctx.userId);
 
   if (!user.publicMetadata.isAdmin) {
     throw new TRPCError({ code: 'FORBIDDEN' });

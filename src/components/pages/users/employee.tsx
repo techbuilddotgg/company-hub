@@ -16,21 +16,36 @@ import { getQueryKey } from '@trpc/react-query';
 
 interface UserProps {
   user: User;
-  deleteUser: (user: User) => void;
 }
 
-const Employee = ({ user, deleteUser }: UserProps) => {
+const Employee = ({ user }: UserProps) => {
   const { user: clerkUser } = useUser();
   const queryClient = useQueryClient();
 
   const { mutate } = trpc.users.updateRole.useMutation({
     onSuccess: () => {
-      queryClient.invalidateQueries([
-        ...getQueryKey(trpc.users.getInvitations),
-        ...getQueryKey(trpc.users.findAll),
-      ]);
+      queryClient.invalidateQueries(getQueryKey(trpc.users.findAll));
     },
   });
+
+  const { mutate: deleteUserMutation, isLoading: isDeleteUserLoading } =
+    trpc.users.delete.useMutation({
+      onSuccess: () => {
+        queryClient.invalidateQueries(getQueryKey(trpc.users.findAll));
+      },
+    });
+  const { mutate: revokeInvitation, isLoading: isRevokeUserLoading } =
+    trpc.users.revokeInvitation.useMutation({
+      onSuccess: () => {
+        queryClient.invalidateQueries(getQueryKey(trpc.users.getInvitations));
+      },
+    });
+
+  const deleteUser = (user: User) => {
+    if (user.pending) revokeInvitation({ id: user.id });
+    else deleteUserMutation({ id: user.id });
+  };
+
   const updateRole = (data: UserRoleUpdateType) => {
     mutate({ id: user.id, role: data.role || UserRole.BASIC });
   };
@@ -79,6 +94,7 @@ const Employee = ({ user, deleteUser }: UserProps) => {
                 buttonText={<XIcon className="hover:cursor-pointer" />}
                 title={`Delete user ${user.emailAddress}`}
                 description="Are you sure you want to delete this user?"
+                isActionLoading={isDeleteUserLoading || isRevokeUserLoading}
               />
             </div>
           )}

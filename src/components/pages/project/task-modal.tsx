@@ -5,24 +5,24 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
+  AlertDialogButton,
   Button,
   Checkbox,
   DialogContent,
   DialogHeader,
   DialogTitle,
   Input,
+  LoaderButton,
   ScrollArea,
-  Textarea,
-  Separator,
   Select,
-  SelectTrigger,
-  SelectValue,
   SelectContent,
   SelectGroup,
-  SelectLabel,
   SelectItem,
-  LoaderButton,
-  AlertDialogButton,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+  Separator,
+  Textarea,
 } from '@components';
 import { trpc } from '@utils/trpc';
 import { Send, User2 } from 'lucide-react';
@@ -129,12 +129,13 @@ export const TaskModal = ({
     },
   });
 
-  const { mutate: deleteTaskMutation } = trpc.board.deleteTask.useMutation({
-    onSuccess: () => {
-      refetch();
-      setOpenTaskDialog(false);
-    },
-  });
+  const { mutate: deleteTaskMutation, isLoading: isDeleteTaskLoading } =
+    trpc.board.deleteTask.useMutation({
+      onSuccess: () => {
+        refetch();
+        setOpenTaskDialog(false);
+      },
+    });
 
   const { data: assignedUsers, refetch: refetchAssignedUsers } =
     trpc.board.getUsersAssignedToTask.useQuery({ taskId: task.id });
@@ -143,23 +144,19 @@ export const TaskModal = ({
       refetchAssignedUsers();
       setOpenTaskDialog(true);
       refetch();
+      if (date && assignedUsers) {
+        updateEvent({
+          title: task.name,
+          description: `Task deadline set to ${format(date, 'PPP')}.`,
+          start: date.toISOString(),
+          end: add(date, { hours: 24 }).toISOString(),
+          backgroundColor: LabelColorsType.BLUE,
+          taskId: task.id,
+          users: assignedUsers,
+        });
+      }
     },
   });
-
-  // update if assigned users changed
-  useEffect(() => {
-    if (date && assignedUsers) {
-      updateEvent({
-        title: task.name,
-        description: `Task deadline set to ${format(date, 'PPP')}.`,
-        start: date.toISOString(),
-        end: add(date, { hours: 24 }).toISOString(),
-        backgroundColor: LabelColorsType.BLUE,
-        taskId: task.id,
-        users: assignedUsers,
-      });
-    }
-  }, [assignedUsers]);
 
   const { mutate: commentTicket } = trpc.board.commentTicket.useMutation({
     onSuccess: () => {
@@ -203,7 +200,8 @@ export const TaskModal = ({
 
   const { mutate: addEvent } = trpc.event.add.useMutation();
   const { mutate: updateEvent } = trpc.event.updateByTaskId.useMutation();
-  const { mutate: deleteEvent } = trpc.event.deleteByTaskId.useMutation();
+  const { mutate: deleteEvent, isLoading: isDeleteEventLoading } =
+    trpc.event.deleteByTaskId.useMutation();
   const onSubmitTask = (data: FormData) => {
     const taskTypeId = taskTypes?.find(
       (taskType) => taskType.name === selectedTaskType,
@@ -291,7 +289,7 @@ export const TaskModal = ({
         <Accordion type="single" collapsible>
           <AccordionItem value={'item-1'}>
             <AccordionTrigger>{`Edit task: ${task.name}`}</AccordionTrigger>
-            <AccordionContent className="m-2">
+            <AccordionContent>
               <form
                 className={'flex flex-col gap-4 px-1'}
                 onSubmit={handleSubmit(onSubmitTask)}
@@ -372,6 +370,9 @@ export const TaskModal = ({
                     buttonText={'Delete'}
                     title={'Delete task'}
                     description={'Are you sure you want to delete this task?'}
+                    isActionLoading={
+                      isDeleteTaskLoading || isDeleteEventLoading
+                    }
                   />
                   <LoaderButton
                     isLoading={isUpdateTaskLoadingMutation}
@@ -388,7 +389,7 @@ export const TaskModal = ({
             <AccordionTrigger>{`Assign user to task (${
               assignedUsers?.length ? assignedUsers?.length : 0
             })`}</AccordionTrigger>
-            <AccordionContent className="m-2">
+            <AccordionContent>
               <ScrollArea className="h-44 w-72 rounded-md border">
                 <div className="p-4">
                   {users &&
@@ -424,7 +425,7 @@ export const TaskModal = ({
           </AccordionItem>
           <AccordionItem value={'item-3'}>
             <AccordionTrigger>{`Comments (${comments?.length})`}</AccordionTrigger>
-            <AccordionContent className="m-2">
+            <AccordionContent>
               <form
                 className="p-1"
                 onSubmit={handleSubmitComment(onSubmitComment)}

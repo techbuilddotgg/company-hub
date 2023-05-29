@@ -43,7 +43,7 @@ describe('users-router-admin-user test', () => {
 
     const invitations = await api.users.getInvitations();
     const invitation = invitations.find(
-      (i) => i.emailAddress.toLowerCase() === input.email.toLowerCase(),
+      (i) => i.email_address.toLowerCase() === input.email.toLowerCase(),
     );
     const allowList =
       await clerkClient.allowlistIdentifiers.getAllowlistIdentifierList();
