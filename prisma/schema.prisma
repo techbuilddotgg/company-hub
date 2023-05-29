@@ -29,6 +29,7 @@ model Document {
 model Company {
   id        String     @id @default(cuid())
   name      String
+  logo      String?    @db.Text
   Projects  Project[]
   Documents Document[]
 
