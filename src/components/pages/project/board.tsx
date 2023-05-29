@@ -4,13 +4,15 @@ import Column from '@components/pages/project/column';
 import { DraggableElementType } from '@components/pages/project/types';
 import { reorderElements } from '@components/pages/project/utils';
 import { ProjectBoard } from '@prisma/client';
-import { trpc } from '@utils/trpc';
+import { RouterOutput, trpc } from '@utils/trpc';
 import AddColumn from '@components/pages/project/add-column';
 import { ProjectBoardColumnType } from '@shared/types/board.types';
 import GithubIntegrationDialog from '@components/pages/project/github-integration-dialog';
 import Pusher from 'pusher-js';
 import { useUser } from '@clerk/nextjs';
 import { Checkbox } from '@components/ui/checkbox';
+
+type BoardType = RouterOutput['board']['getById'];
 
 interface BoardProps {
   data: ProjectBoard;
@@ -25,7 +27,11 @@ export const Board = ({ data }: BoardProps) => {
     [columns],
   );
   const { user } = useUser();
-  const { data: board, refetch } = trpc.board.getById.useQuery(
+  const {
+    data: board,
+    refetch,
+    isLoading: isBoardLoading,
+  } = trpc.board.getById.useQuery(
     { id: data.id },
     {
       onSuccess: (data) => {
@@ -162,7 +168,7 @@ export const Board = ({ data }: BoardProps) => {
   const onMyTasksChange = () => {
     setMyTasksChecked(!myTasksChecked);
   };
-
+  console.log(isBoardLoading, board);
   return (
     <div className="h-full max-h-full">
       <>

@@ -21,3 +21,15 @@ export type User = {
 };
 
 export type UserRoleUpdateType = z.infer<typeof UserRoleUpdateSchema>;
+
+export type Invitation = {
+  id: string;
+  email_address: string;
+  public_metadata: {
+    isAdmin: boolean;
+    companyId: string;
+  };
+  status: 'accepted' | 'pending' | 'revoked';
+  created_at: number;
+  updated_at: number;
+};

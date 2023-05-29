@@ -31,9 +31,10 @@ const Column = ({ data, index, refetch }: ColumnProps) => {
   const form = useForm<FormData>({
     defaultValues: { name: data.name },
   });
-  const { mutate: deleteColumnMutation } = trpc.board.deleteColumn.useMutation({
-    onSuccess: () => refetch(),
-  });
+  const { mutate: deleteColumnMutation, isLoading: isDeleteColumnLoading } =
+    trpc.board.deleteColumn.useMutation({
+      onSuccess: () => refetch(),
+    });
   const { user } = useUser();
 
   const { mutate: updateColumnMutation } =
@@ -67,7 +68,7 @@ const Column = ({ data, index, refetch }: ColumnProps) => {
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className="mr-4 flex w-96 flex-col items-center bg-gray-100 py-4"
+          className="mr-4 flex h-min w-96 flex-col items-center bg-gray-100 py-4"
         >
           <div className="flex w-full flex-row justify-between">
             <h2
@@ -88,12 +89,13 @@ const Column = ({ data, index, refetch }: ColumnProps) => {
                   buttonText={<Trash2 color="black" size={22} />}
                   title={'Delete column'}
                   description={'Are you sure you want to delete this column?'}
+                  isActionLoading={isDeleteColumnLoading}
                 />
               )}
             </>
           </div>
 
-          <div>
+          <div className="flex flex-grow flex-col">
             <TaskList
               id={data.id}
               data={data.projectBoardTasks}

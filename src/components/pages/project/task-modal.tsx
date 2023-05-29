@@ -129,12 +129,13 @@ export const TaskModal = ({
     },
   });
 
-  const { mutate: deleteTaskMutation } = trpc.board.deleteTask.useMutation({
-    onSuccess: () => {
-      refetch();
-      setOpenTaskDialog(false);
-    },
-  });
+  const { mutate: deleteTaskMutation, isLoading: isDeleteTaskLoading } =
+    trpc.board.deleteTask.useMutation({
+      onSuccess: () => {
+        refetch();
+        setOpenTaskDialog(false);
+      },
+    });
 
   const { data: assignedUsers, refetch: refetchAssignedUsers } =
     trpc.board.getUsersAssignedToTask.useQuery({ taskId: task.id });
@@ -199,7 +200,8 @@ export const TaskModal = ({
 
   const { mutate: addEvent } = trpc.event.add.useMutation();
   const { mutate: updateEvent } = trpc.event.updateByTaskId.useMutation();
-  const { mutate: deleteEvent } = trpc.event.deleteByTaskId.useMutation();
+  const { mutate: deleteEvent, isLoading: isDeleteEventLoading } =
+    trpc.event.deleteByTaskId.useMutation();
   const onSubmitTask = (data: FormData) => {
     const taskTypeId = taskTypes?.find(
       (taskType) => taskType.name === selectedTaskType,
@@ -368,6 +370,9 @@ export const TaskModal = ({
                     buttonText={'Delete'}
                     title={'Delete task'}
                     description={'Are you sure you want to delete this task?'}
+                    isActionLoading={
+                      isDeleteTaskLoading || isDeleteEventLoading
+                    }
                   />
                   <LoaderButton
                     isLoading={isUpdateTaskLoadingMutation}

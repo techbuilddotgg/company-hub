@@ -3,7 +3,8 @@ import { z } from 'zod';
 import { clerkClient } from '@clerk/nextjs/server';
 import { TRPCError } from '@trpc/server';
 import { getBaseUrl } from '@utils/trpc';
-import { UserRole } from '@shared/types/user.types';
+import { Invitation, UserRole } from '@shared/types/user.types';
+import { env } from '@env';
 
 export const usersRouter = t.router({
   invite: adminProcedure
@@ -43,7 +44,16 @@ export const usersRouter = t.router({
     return await clerkClient.users.getUserList({ limit: 100 });
   }),
   getInvitations: protectedProcedure.query(async () => {
-    return await clerkClient.invitations.getInvitationList();
+    const invitationsResponse = await fetch(
+      `https://api.clerk.dev/v1/invitations`,
+      {
+        headers: {
+          Authorization: `Bearer ${env.CLERK_SECRET_KEY}`,
+        },
+      },
+    );
+    const invitations: Invitation[] = await invitationsResponse.json();
+    return invitations.filter((invitation) => invitation.status === 'pending');
   }),
   updateRole: adminProcedure
     .input(

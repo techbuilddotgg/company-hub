@@ -32,7 +32,7 @@ export const DocumentFeed: FC<{
 
   return (
     <div className={'flex flex-col gap-4'}>
-      <div className={'mt-6 flex flex-row items-center'}>
+      <div className={'flex flex-row items-center'}>
         <PageSubheader
           title={'Documents'}
           description={'Documents that your company uploaded'}
