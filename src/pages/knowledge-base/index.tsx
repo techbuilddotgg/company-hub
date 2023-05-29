@@ -15,17 +15,14 @@ import { useAutoAnimate } from '@formkit/auto-animate/react';
 
 const KnowledgeBase = () => {
   const { register, watch } = useForm<{
-    manualSearch: string;
-    aiSearch: string;
+    search: string;
   }>({
     defaultValues: {
-      manualSearch: '',
-      aiSearch: '',
+      search: '',
     },
   });
 
-  const manualSearch = useDebounce(watch('manualSearch'));
-  const aiSearch = useDebounce(watch('aiSearch'));
+  const search = useDebounce(watch('search'));
 
   const { data: res, mutate, isLoading: isLoadingAIResponse } = useOpenAI();
 
@@ -38,11 +35,11 @@ const KnowledgeBase = () => {
   );
 
   const { data, isLoading } = useGetDocuments({
-    title: manualSearch,
+    title: search,
     order: filterOption.toLowerCase(),
   });
   const handleAISearch = () => {
-    mutate({ prompt: aiSearch });
+    mutate({ prompt: search });
   };
 
   const [parent] = useAutoAnimate();
