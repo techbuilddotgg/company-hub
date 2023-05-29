@@ -34,7 +34,7 @@ export const eventRouter = t.router({
     .input(EventSchema)
     .mutation(async ({ input, ctx: { prisma, authedUserId } }) => {
       try {
-        await prisma.event.create({
+        const event = await prisma.event.create({
           data: {
             title: input.title,
             description: input.description,
@@ -46,6 +46,14 @@ export const eventRouter = t.router({
             taskId: input.taskId,
           },
         });
+
+        return {
+          message: {
+            title: 'Event added successfully.',
+            description: 'Event has been added to your calendar.',
+          },
+          data: event,
+        };
       } catch (e) {
         console.log(e);
         throw new TRPCError({
@@ -78,7 +86,7 @@ export const eventRouter = t.router({
             code: 'UNAUTHORIZED',
           });
         }
-        await prisma.event.update({
+        const updatedEvent = await prisma.event.update({
           where: {
             id: input.id,
           },
@@ -95,7 +103,13 @@ export const eventRouter = t.router({
             taskId: input.taskId,
           },
         });
-        return true;
+        return {
+          message: {
+            title: 'Event updated successfully.',
+            description: 'Event has been updated in your calendar.',
+          },
+          data: updatedEvent,
+        };
       } catch (e) {
         console.log(e);
         throw new TRPCError({
@@ -122,7 +136,7 @@ export const eventRouter = t.router({
             code: 'NOT_FOUND',
           });
         }
-        await prisma.event.update({
+        const updatedEvent = await prisma.event.update({
           where: {
             id: existingEvent.id,
           },
@@ -139,7 +153,13 @@ export const eventRouter = t.router({
             taskId: input.taskId,
           },
         });
-        return true;
+        return {
+          message: {
+            title: 'Event updated successfully.',
+            description: 'Event has been updated in your calendar.',
+          },
+          data: updatedEvent,
+        };
       } catch (e) {
         console.log(e);
         throw new TRPCError({
@@ -152,11 +172,18 @@ export const eventRouter = t.router({
     .input(z.string())
     .mutation(async ({ input, ctx: { prisma } }) => {
       try {
-        await prisma.event.delete({
+        const deletedEvent = await prisma.event.delete({
           where: {
             id: input,
           },
         });
+        return {
+          message: {
+            title: 'Event deleted successfully.',
+            description: 'Event has been deleted from your calendar.',
+          },
+          data: deletedEvent,
+        };
       } catch (e) {
         console.log(e);
         throw new TRPCError({
@@ -169,11 +196,18 @@ export const eventRouter = t.router({
     .input(z.string())
     .mutation(async ({ input, ctx: { prisma } }) => {
       try {
-        await prisma.event.deleteMany({
+        const deletedEvent = await prisma.event.deleteMany({
           where: {
             taskId: input,
           },
         });
+        return {
+          message: {
+            title: 'Event deleted successfully.',
+            description: 'Event has been deleted from your calendar.',
+          },
+          data: deletedEvent,
+        };
       } catch (e) {
         console.log(e);
         throw new TRPCError({

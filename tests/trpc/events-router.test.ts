@@ -105,7 +105,7 @@ describe('events-router test', () => {
     };
 
     const event = await api.event.update(input);
-    expect(event).toBe(true);
+    expect(event).toBeDefined();
 
     await api.event.delete(id);
   });

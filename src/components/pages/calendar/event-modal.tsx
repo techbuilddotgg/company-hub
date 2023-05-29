@@ -162,10 +162,6 @@ const EventModalForm: FC<EventModalFormProps> = ({
     trpc.event.add.useMutation({
       onSuccess: () => {
         setOpen(false);
-        toast({
-          title: 'Event added successfully',
-          description: 'Event has been added to your calendar',
-        });
         refetch();
       },
     });
@@ -174,10 +170,6 @@ const EventModalForm: FC<EventModalFormProps> = ({
     trpc.event.update.useMutation({
       onSuccess: () => {
         setOpen(false);
-        toast({
-          title: 'Event updated successfully',
-          description: 'Event has been updated in your calendar',
-        });
         refetch();
       },
     });
@@ -186,10 +178,6 @@ const EventModalForm: FC<EventModalFormProps> = ({
     trpc.event.delete.useMutation({
       onSuccess: () => {
         setOpen(false);
-        toast({
-          title: 'Event deleted successfully',
-          description: 'Event has been deleted from your calendar',
-        });
         refetch();
       },
     });
