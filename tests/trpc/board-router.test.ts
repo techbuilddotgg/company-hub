@@ -81,7 +81,7 @@ describe('board-router test', () => {
     const { data: board } = await api.board.addBoard(boardInput);
 
     const input: RouterInput['board']['addColumn'] = {
-      name: faker.lorem.sentence(),
+      name: faker.lorem.word(10),
       boardId: board.id,
     };
 
@@ -98,7 +98,7 @@ describe('board-router test', () => {
     const { data: board } = await api.board.addBoard(boardInput);
 
     const columnInput: RouterInput['board']['addColumn'] = {
-      name: faker.lorem.sentence(),
+      name: faker.lorem.word(10),
       boardId: board.id,
     };
 
@@ -122,7 +122,7 @@ describe('board-router test', () => {
     const { data: board } = await api.board.addBoard(boardInput);
 
     const columnInput: RouterInput['board']['addColumn'] = {
-      name: faker.lorem.sentence(),
+      name: faker.lorem.word(10),
       boardId: board.id,
     };
 
@@ -181,7 +181,7 @@ describe('board-router test', () => {
     const { data: board } = await api.board.addBoard(boardInput);
 
     const columnInput: RouterInput['board']['addColumn'] = {
-      name: faker.lorem.sentence(),
+      name: faker.lorem.word(10),
       boardId: board.id,
     };
 
@@ -214,7 +214,7 @@ describe('board-router test', () => {
     const { data: board } = await api.board.addBoard(boardInput);
 
     const columnInput: RouterInput['board']['addColumn'] = {
-      name: faker.lorem.sentence(),
+      name: faker.lorem.word(10),
       boardId: board.id,
     };
 
@@ -255,7 +255,7 @@ describe('board-router test', () => {
     const { data: board } = await api.board.addBoard(boardInput);
 
     const columnInput: RouterInput['board']['addColumn'] = {
-      name: faker.lorem.sentence(),
+      name: faker.lorem.word(10),
       boardId: board.id,
     };
 
@@ -286,7 +286,7 @@ describe('board-router test', () => {
     const { data: board } = await api.board.addBoard(boardInput);
 
     const columnInput: RouterInput['board']['addColumn'] = {
-      name: faker.lorem.sentence(),
+      name: faker.lorem.word(10),
       boardId: board.id,
     };
 
@@ -323,7 +323,7 @@ describe('board-router test', () => {
     const { data: board } = await api.board.addBoard(boardInput);
 
     const columnInput: RouterInput['board']['addColumn'] = {
-      name: faker.lorem.sentence(),
+      name: faker.lorem.word(10),
       boardId: board.id,
     };
 
@@ -362,7 +362,7 @@ describe('board-router test', () => {
     const { data: board } = await api.board.addBoard(boardInput);
 
     const columnInput: RouterInput['board']['addColumn'] = {
-      name: faker.lorem.sentence(),
+      name: faker.lorem.word(10),
       boardId: board.id,
     };
 
@@ -395,7 +395,7 @@ describe('board-router test', () => {
     const { data: board } = await api.board.addBoard(boardInput);
 
     const columnInput: RouterInput['board']['addColumn'] = {
-      name: faker.lorem.sentence(),
+      name: faker.lorem.word(10),
       boardId: board.id,
     };
 
