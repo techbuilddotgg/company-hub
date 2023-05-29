@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterAll, describe, expect, it } from 'vitest';
 import { faker } from '@faker-js/faker';
 import { createContextInner } from '@server/api/context';
 import { appRouter } from '@server/api/router';
@@ -8,6 +8,10 @@ describe('events-router test', () => {
   const userId = faker.string.uuid();
   const ctx = createContextInner({ userId });
   const api = appRouter.createCaller(ctx);
+
+  afterAll(async () => {
+    await ctx.prisma.event.deleteMany();
+  });
 
   it('should get events', async () => {
     const events = await api.event.get();
