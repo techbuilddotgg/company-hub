@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { appRouter } from '@server/api/router';
 import { faker } from '@faker-js/faker';
 import { createContextInner } from '@server/api/context';
@@ -35,7 +35,7 @@ describe('board-router test', () => {
     },
   ] as unknown as User[]);
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     await ctx.prisma.company.create({
       data: {
         id: companyId,
@@ -52,7 +52,7 @@ describe('board-router test', () => {
     });
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await ctx.prisma.project.deleteMany();
     await ctx.prisma.company.deleteMany();
     await ctx.prisma.projectBoardTaskComment.deleteMany();
@@ -375,14 +375,14 @@ describe('board-router test', () => {
 
     const { data: task } = await api.board.addTask(input);
 
-    const commentTicketInput: RouterInput['board']['commentTicket'] = {
+    const commentTaskInput: RouterInput['board']['commentTask'] = {
       taskId: task.id,
       userId: faker.string.uuid(),
       comment: faker.lorem.sentence(),
       email: faker.internet.email(),
     };
 
-    const taskComment = await api.board.commentTicket(commentTicketInput);
+    const taskComment = await api.board.commentTask(commentTaskInput);
     expect(taskComment).toBeDefined();
   });
 
@@ -408,14 +408,14 @@ describe('board-router test', () => {
 
     const { data: task } = await api.board.addTask(input);
 
-    const commentTicketInput: RouterInput['board']['commentTicket'] = {
+    const commentTaskInput: RouterInput['board']['commentTask'] = {
       taskId: task.id,
       userId: faker.string.uuid(),
       comment: faker.lorem.sentence(),
       email: faker.internet.email(),
     };
 
-    await api.board.commentTicket(commentTicketInput);
+    await api.board.commentTask(commentTaskInput);
 
     const getTaskCommentsInput: RouterInput['board']['getTaskComments'] = {
       taskId: task.id,

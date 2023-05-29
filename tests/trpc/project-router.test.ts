@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { appRouter } from '@server/api/router';
 import { faker } from '@faker-js/faker';
 import { createContextInner } from '@server/api/context';
@@ -25,7 +25,7 @@ describe('project-router test', () => {
     },
   ] as unknown as User[]);
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     await ctx.prisma.company.create({
       data: {
         id: companyId,
@@ -34,7 +34,7 @@ describe('project-router test', () => {
     });
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await ctx.prisma.company.deleteMany();
     await ctx.prisma.project.deleteMany();
   });
@@ -81,7 +81,7 @@ describe('project-router test', () => {
       startDate: faker.date.recent(),
       endDate: null,
       description: null,
-      abbreviation: faker.lorem.word(3),
+      abbreviation: 'PRO',
     };
 
     const { data: updatedProject } = await api.project.update(updateInput);

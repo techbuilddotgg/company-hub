@@ -115,12 +115,18 @@ export const usersRouter = t.router({
             code: 'NOT_FOUND',
           });
         }
-        await clerkClient.users.deleteUser(userToDelete.id);
+        const deletedUser = await clerkClient.users.deleteUser(userToDelete.id);
         await clerkClient.allowlistIdentifiers.deleteAllowlistIdentifier(
           identifier.id,
         );
 
-        return { message: 'User deleted' };
+        return {
+          message: {
+            title: 'User deleted',
+            description: `User with email ${emailResponse.emailAddress} successfully deleted`,
+          },
+          data: deletedUser,
+        };
       } catch (e) {
         const message =
           e instanceof TRPCError
@@ -161,7 +167,7 @@ export const usersRouter = t.router({
       return {
         message: {
           title: 'Revoke invitation',
-          description: 'Invitation revoked successfully',
+          description: `Invitation for user with email ${revokedInvitation.emailAddress} revoked successfully`,
         },
         data: revokedInvitation,
       };

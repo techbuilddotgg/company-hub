@@ -358,7 +358,7 @@ export const boardRouter = t.router({
       return {
         message: {
           title: 'Task updated',
-          description: 'Task was updated successfully.',
+          description: `Task ${task.name} updated successfully.`,
         },
         data: task,
       };
@@ -606,7 +606,7 @@ export const boardRouter = t.router({
         data: userTask,
       };
     }),
-  commentTicket: protectedProcedure
+  commentTask: protectedProcedure
     .input(
       z.object({
         comment: z.string(),

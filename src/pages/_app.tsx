@@ -11,8 +11,18 @@ import {
 } from '@tanstack/react-query';
 import { toast } from '@hooks';
 import { TRPCClientError } from '@trpc/client';
+import { TRPCResponse } from '@shared/types/common.types';
 
 const mutationCache = new MutationCache({
+  onSuccess: (data) => {
+    const typedData = data as TRPCResponse;
+    if (typedData?.message) {
+      toast({
+        title: typedData.message.title,
+        description: typedData.message.description,
+      });
+    }
+  },
   onError: (error, _variables, _context, mutation) => {
     if (mutation.options.onError) return;
 
