@@ -13,11 +13,11 @@ const Logo = () => {
       <a>
         {company?.logo ? (
           <img
-            className="h-[60px] w-auto max-w-[180px] overflow-x-hidden "
+            className="aspect-auto h-[60px] w-auto max-w-[180px] overflow-x-hidden "
             src={company.logo}
           />
         ) : (
-          <h1 className="text-3xl">{company.name}</h1>
+          <h1 className="mb-0.5 mr-2 text-3xl">{company.name}</h1>
         )}
       </a>
     </Link>

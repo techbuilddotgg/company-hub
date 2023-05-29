@@ -7,9 +7,13 @@ import {
   DialogTitle,
   Input,
   LoaderButton,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
 } from '@components';
 import React, { useEffect } from 'react';
-import { SettingsIcon } from 'lucide-react';
+import { Info, SettingsIcon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SaveCompanySchema } from '@shared/validators/company.schemes';
@@ -19,6 +23,24 @@ import { useQueryClient } from '@tanstack/react-query';
 import { getQueryKey } from '@trpc/react-query';
 
 type CompanyType = RouterOutput['company']['get'];
+
+const UploadTooltip = () => {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger type={'button'}>
+          <Info className={'h-4 w-4 text-blue-600'} />
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>
+            For best results, use an image with an aspect ratio of 1:4 or
+            smaller
+          </p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+};
 
 const SettingsDialog = () => {
   const queryClient = useQueryClient();
@@ -38,6 +60,8 @@ const SettingsDialog = () => {
     trpc.company.update.useMutation({
       onSuccess: () => {
         queryClient.invalidateQueries(getQueryKey(trpc.company.get));
+        setValue('logo', null);
+        setFileAsDataUrl(undefined);
         setDialogOpened(false);
       },
     });
@@ -99,11 +123,13 @@ const SettingsDialog = () => {
             >
               <Input
                 label="Company name"
+                className="mb-2"
                 type="text"
                 {...register('name')}
                 error={formState.errors.name}
               />
               <Input
+                tooltip={<UploadTooltip />}
                 label="Company logo"
                 type="file"
                 error={{ ...formState.errors.logo, type: 'field' }}
