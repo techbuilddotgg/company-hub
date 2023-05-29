@@ -12,6 +12,8 @@ import { useToast, useUploadDocument } from '@hooks';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Info } from 'lucide-react';
+import { useRouter } from 'next/router';
+import { AppRoute } from '@constants/app-routes';
 
 export interface UploadFormData {
   fileList: FileList;
@@ -50,14 +52,16 @@ export const UploadKnowledgeForm = () => {
   const { toast } = useToast();
 
   const { errors } = formState;
+  const router = useRouter();
 
   const { mutateAsync, isLoading } = useUploadDocument({
-    onSuccess: () => {
+    onSuccess: async () => {
       toast({
         title: 'Document uploaded',
         description: 'Document has been uploaded successfully.',
       });
       reset();
+      await router.push(AppRoute.ADD_KNOWLEDGE);
     },
     onError: () => {
       toast({
