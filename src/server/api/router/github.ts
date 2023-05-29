@@ -52,6 +52,11 @@ export const githubRouter = t.router({
             authedUserId,
             'oauth_github',
           );
+          if (!tokenResponse[0]?.token)
+            throw new TRPCError({
+              code: 'FORBIDDEN',
+              message: `You don't have an associated github account. If you want to connect it, you need to do it under the account settings. (Click on your profile in the application at the bottom left->select "Manage account"->under the chapter "Connected accounts" click on "Connect account")`,
+            });
           await fetch(
             `https://api.github.com/repos/${input.repositoryOwner}/${input.repositoryName}/hooks`,
             {
@@ -195,6 +200,11 @@ export const githubRouter = t.router({
           authedUserId,
           'oauth_github',
         );
+        if (!tokenResponse[0]?.token)
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: `You don't have an associated github account. If you want to connect it, you need to do it under the account settings. (Click on your profile in the application at the bottom left->select "Manage account"->under the chapter "Connected accounts" click on "Connect account")`,
+          });
         for (const githubData of githubDataToDelete) {
           const hooksResponse = await fetch(
             `https://api.github.com/repos/${githubData.owner}/${githubData.repository}/hooks`,
