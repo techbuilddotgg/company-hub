@@ -289,7 +289,7 @@ export const TaskModal = ({
         <Accordion type="single" collapsible>
           <AccordionItem value={'item-1'}>
             <AccordionTrigger>{`Edit task: ${task.name}`}</AccordionTrigger>
-            <AccordionContent className="m-2">
+            <AccordionContent>
               <form
                 className={'flex flex-col gap-4 px-1'}
                 onSubmit={handleSubmit(onSubmitTask)}
@@ -389,7 +389,7 @@ export const TaskModal = ({
             <AccordionTrigger>{`Assign user to task (${
               assignedUsers?.length ? assignedUsers?.length : 0
             })`}</AccordionTrigger>
-            <AccordionContent className="m-2">
+            <AccordionContent>
               <ScrollArea className="h-44 w-72 rounded-md border">
                 <div className="p-4">
                   {users &&
@@ -425,7 +425,7 @@ export const TaskModal = ({
           </AccordionItem>
           <AccordionItem value={'item-3'}>
             <AccordionTrigger>{`Comments (${comments?.length})`}</AccordionTrigger>
-            <AccordionContent className="m-2">
+            <AccordionContent>
               <form
                 className="p-1"
                 onSubmit={handleSubmitComment(onSubmitComment)}
