@@ -5,6 +5,7 @@ import { projectRouter } from '@server/api/router/project';
 import { githubRouter } from '@server/api/router/github';
 import { eventRouter } from '@server/api/router/events';
 import { knowledgeBaseRouter } from '@server/api/router/knowledge-base';
+import { companyRouter } from '@server/api/router/company';
 
 export const appRouter = t.router({
   users: usersRouter,
@@ -13,6 +14,7 @@ export const appRouter = t.router({
   event: eventRouter,
   knowledgeBase: knowledgeBaseRouter,
   github: githubRouter,
+  company: companyRouter,
 });
 
 // export type definition of API

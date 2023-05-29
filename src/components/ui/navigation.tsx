@@ -16,11 +16,12 @@ import {
 import { trpc } from '@utils/trpc';
 import { useNavigationStore } from '../../store/navigation-store';
 import { useWindow } from '../../hooks/useWindow';
+import SettingsDialog from '@components/ui/settings-dialog';
 
 const UserSection = () => {
   const user = useUser();
   return (
-    <div className={'mb-6 flex w-full flex-row'}>
+    <div className={'flex w-full flex-row'}>
       <SignedIn>
         <div className={'flex w-full flex-row items-center justify-between'}>
           <div className={'flex items-center gap-4'}>
@@ -151,7 +152,11 @@ export const Navigation = () => {
           isOpened ? 'left-0' : '-left-[300px]'
         } z-20 flex h-full w-[300px] flex-col items-center  border-r bg-white px-5 transition-[left]`}
       >
-        <div className={'my-4 flex flex-row items-center gap-1 pr-6  pt-4'}>
+        <div
+          className={
+            'my-4 flex w-full flex-row items-center justify-between gap-1 pl-4 pt-1'
+          }
+        >
           <Menu
             className={'mr-3 cursor-pointer'}
             onClick={() => setIsOpened(false)}
@@ -159,7 +164,10 @@ export const Navigation = () => {
           <Logo />
         </div>
         <MainNavigation />
-        <UserSection />
+        <div className="mb-6 flex w-full flex-row items-center justify-between">
+          <UserSection />
+          <SettingsDialog />
+        </div>
       </div>
       <div
         className={`${

@@ -50,7 +50,7 @@ const isAdmin = t.middleware(async ({ next, ctx }) => {
   return next({
     ctx: {
       authedUserId: user.id,
-      companyId: user.publicMetadata.companyId,
+      companyId: user.publicMetadata.companyId as string | undefined,
     },
   });
 });
