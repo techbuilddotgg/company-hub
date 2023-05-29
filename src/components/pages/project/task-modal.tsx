@@ -372,7 +372,7 @@ export const TaskModal = ({
                     isLoading={isUpdateTaskLoadingMutation}
                     type={'submit'}
                   >
-                    Update
+                    Save
                   </LoaderButton>
                 </div>
               </form>
