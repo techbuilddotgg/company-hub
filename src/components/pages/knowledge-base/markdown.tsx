@@ -8,6 +8,10 @@ import scss from 'react-syntax-highlighter/dist/cjs/languages/prism/scss';
 import bash from 'react-syntax-highlighter/dist/cjs/languages/prism/bash';
 import markdown from 'react-syntax-highlighter/dist/cjs/languages/prism/markdown';
 import json from 'react-syntax-highlighter/dist/cjs/languages/prism/json';
+import java from 'react-syntax-highlighter/dist/cjs/languages/prism/java';
+import python from 'react-syntax-highlighter/dist/cjs/languages/prism/python';
+import go from 'react-syntax-highlighter/dist/cjs/languages/prism/go';
+import jsx from 'react-syntax-highlighter/dist/cjs/languages/prism/jsx';
 import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import rangeParser from 'parse-numeric-range';
 
@@ -17,6 +21,10 @@ SyntaxHighlighter.registerLanguage('scss', scss);
 SyntaxHighlighter.registerLanguage('bash', bash);
 SyntaxHighlighter.registerLanguage('markdown', markdown);
 SyntaxHighlighter.registerLanguage('json', json);
+SyntaxHighlighter.registerLanguage('java', java);
+SyntaxHighlighter.registerLanguage('python', python);
+SyntaxHighlighter.registerLanguage('go', go);
+SyntaxHighlighter.registerLanguage('jsx', jsx);
 
 const syntaxTheme = oneDark;
 

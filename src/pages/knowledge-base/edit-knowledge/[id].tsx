@@ -13,7 +13,7 @@ import {
 import { useDeleteDocument, useGetDocument } from '@hooks';
 import { useRouter } from 'next/router';
 import { RouterOutput, trpc } from '@utils/trpc';
-import { Trash } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { AppRoute } from '@constants/app-routes';
 
 type KnowledgeDocument = RouterOutput['knowledgeBase']['findById'];
@@ -71,7 +71,7 @@ const EditKnowledgePage = () => {
                         buttonVariant={'ghost'}
                         buttonClassName={'rounded-full p-0 w-10'}
                         buttonText={
-                          <Trash className={'h-5 w-5 cursor-pointer'} />
+                          <Trash2 className={'h-5 w-5 cursor-pointer'} />
                         }
                         actionText={'Delete'}
                         title={'Delete document'}

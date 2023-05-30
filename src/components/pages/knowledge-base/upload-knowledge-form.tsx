@@ -24,7 +24,10 @@ export interface UploadFormData {
 const UploadFormSchema = z.object({
   fileList: z.any().refine((val) => val.length > 0, "File can't be empty"),
   title: z.string().min(3, 'Title must be at least 3 characters'),
-  description: z.string().min(3, 'Description must be at least 3 characters'),
+  description: z
+    .string()
+    .min(3, 'Description must be at least 3 characters')
+    .max(200, 'Description must be at most 200 characters'),
 });
 
 const UploadTooltip = () => {

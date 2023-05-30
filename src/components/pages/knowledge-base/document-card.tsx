@@ -31,7 +31,12 @@ export const DocumentCard: FC<Props> = ({ document }) => {
             </div>
             <div>
               <CardTitle>{document.title}</CardTitle>
-              <CardDescription>{document.description}</CardDescription>
+              <CardDescription>
+                {document.description.split(' ').length > 8
+                  ? document.description.split(' ').slice(0, 8).join(' ') +
+                    '...'
+                  : document.description}
+              </CardDescription>
             </div>
           </div>
         </CardHeader>
