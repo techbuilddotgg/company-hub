@@ -1,5 +1,12 @@
 import { z } from 'zod';
 
+export const AddColumnSchema = z.object({
+  name: z
+    .string()
+    .min(3, { message: 'Enter at least 3 chars' })
+    .max(20, { message: 'Enter max 20 chars' }),
+});
+
 export const projectSchema = z.object({
   id: z.string(),
   name: z.string(),

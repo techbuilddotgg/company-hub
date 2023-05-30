@@ -18,7 +18,7 @@ import { getQueryKey } from '@trpc/react-query';
 
 const InviteUser = () => {
   const queryClient = useQueryClient();
-  const { register, setValue, handleSubmit, reset } = useForm({
+  const { register, setValue, handleSubmit, reset, formState } = useForm({
     resolver: zodResolver(UserInviteSchema),
     defaultValues: {
       email: '',
@@ -42,7 +42,12 @@ const InviteUser = () => {
       className="mb-5 flex flex-col md:flex-row"
       onSubmit={handleSubmit(sendInvitation)}
     >
-      <Input {...register('email')} type="text" placeholder="Add new user" />
+      <Input
+        {...register('email')}
+        type="text"
+        placeholder="Add new user"
+        error={formState.errors.email}
+      />
       <div className="ml-0 mt-3 flex flex-row md:ml-3 md:mt-0">
         <Select
           onValueChange={(selected) =>

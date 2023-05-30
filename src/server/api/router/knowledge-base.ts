@@ -12,11 +12,11 @@ import {
   uploadDocumentsToPinecone,
 } from '@server/libs/pinecone';
 import { TRPCError } from '@trpc/server';
+import { errorHandler } from '@utils/error-handler';
 
 export const knowledgeBaseRouter = t.router({
-  saveDocument: protectedProcedure
-    .input(CreateDocumentValidator)
-    .mutation(async ({ input, ctx: { prisma, authedUserId: userId } }) => {
+  saveDocument: protectedProcedure.input(CreateDocumentValidator).mutation(
+    errorHandler(async ({ input, ctx: { prisma, authedUserId: userId } }) => {
       const user = await clerkClient.users.getUser(userId);
 
       const result = await prisma.document.create({
@@ -40,6 +40,7 @@ export const knowledgeBaseRouter = t.router({
 
       return result;
     }),
+  ),
 
   findDocuments: protectedProcedure
     .input(
@@ -50,43 +51,44 @@ export const knowledgeBaseRouter = t.router({
         })
         .optional(),
     )
-    .query(async ({ input, ctx }) => {
-      const user = await clerkClient.users.getUser(ctx.authedUserId);
+    .query(
+      errorHandler(async ({ input, ctx }) => {
+        const user = await clerkClient.users.getUser(ctx.authedUserId);
 
-      const order = input?.order === 'asc' ? 'asc' : 'desc';
+        const order = input?.order === 'asc' ? 'asc' : 'desc';
 
-      const docs = await ctx.prisma.document.findMany({
-        where: {
-          title: {
-            contains: input?.title,
+        const docs = await ctx.prisma.document.findMany({
+          where: {
+            title: {
+              contains: input?.title,
+            },
+            companyId: user.publicMetadata.companyId as string,
           },
-          companyId: user.publicMetadata.companyId as string,
-        },
-        orderBy: {
-          createdAt: order,
-        },
-      });
+          orderBy: {
+            createdAt: order,
+          },
+        });
 
-      const userIds = docs.map((doc) => doc.authorId);
+        const userIds = docs.map((doc) => doc.authorId);
 
-      const users = (
-        await clerkClient.users.getUserList({ userId: userIds, limit: 100 })
-      ).map(filterUserForClient);
+        const users = (
+          await clerkClient.users.getUserList({ userId: userIds, limit: 100 })
+        ).map(filterUserForClient);
 
-      return docs.map((doc) => {
-        const author = users.find((user) => user.id === doc.authorId);
-        if (!author) throw new Error('Author not found');
+        return docs.map((doc) => {
+          const author = users.find((user) => user.id === doc.authorId);
+          if (!author) throw new Error('Author not found');
 
-        return {
-          ...doc,
-          author,
-        };
-      });
-    }),
+          return {
+            ...doc,
+            author,
+          };
+        });
+      }),
+    ),
 
-  findById: protectedProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ input, ctx }) => {
+  findById: protectedProcedure.input(z.object({ id: z.string() })).query(
+    errorHandler(async ({ input, ctx }) => {
       const doc = await ctx.prisma.document.findUnique({
         where: {
           id: input.id,
@@ -100,24 +102,26 @@ export const knowledgeBaseRouter = t.router({
       const user = await clerkClient.users.getUser(doc?.authorId);
       return { ...doc, author: filterUserForClient(user) };
     }),
+  ),
 
   deleteDocument: protectedProcedure
     .input(z.object({ id: z.string() }))
-    .mutation(async ({ input, ctx }) => {
-      await deleteDocumentFromPinecone({
-        documentId: input.id,
-      });
+    .mutation(
+      errorHandler(async ({ input, ctx }) => {
+        await deleteDocumentFromPinecone({
+          documentId: input.id,
+        });
 
-      return await ctx.prisma.document.delete({
-        where: {
-          id: input.id,
-        },
-      });
-    }),
+        return await ctx.prisma.document.delete({
+          where: {
+            id: input.id,
+          },
+        });
+      }),
+    ),
 
-  updateDocument: protectedProcedure
-    .input(UpdateDocumentValidator)
-    .mutation(async ({ input, ctx }) => {
+  updateDocument: protectedProcedure.input(UpdateDocumentValidator).mutation(
+    errorHandler(async ({ input, ctx }) => {
       return await ctx.prisma.document.update({
         where: {
           id: input.id,
@@ -129,4 +133,5 @@ export const knowledgeBaseRouter = t.router({
         },
       });
     }),
+  ),
 });

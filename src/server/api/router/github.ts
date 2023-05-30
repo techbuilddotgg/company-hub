@@ -4,39 +4,43 @@ import { TRPCError } from '@trpc/server';
 import { GithubRepository } from '@shared/types/github.types';
 import { z } from 'zod';
 import { env } from '@env';
+import { errorHandler } from '@utils/error-handler';
 
 export const githubRouter = t.router({
-  getRepositories: adminProcedure.query(async ({ ctx: { authedUserId } }) => {
-    const tokenResponse = await clerkClient.users.getUserOauthAccessToken(
-      authedUserId,
-      'oauth_github',
-    );
-    if (!tokenResponse[0]?.token)
-      throw new TRPCError({
-        code: 'FORBIDDEN',
-        message: `You don't have an associated github account. If you want to connect it, you need to do it under the account settings. (Click on your profile in the application at the bottom left->select "Manage account"->under the chapter "Connected accounts" click on "Connect account")`,
-      });
-    const repositoriesResponse = await fetch(
-      'https://api.github.com/user/repos',
-      {
-        headers: {
-          Authorization: `Bearer ${tokenResponse[0]?.token}`,
+  getRepositories: adminProcedure.query(
+    errorHandler(async ({ ctx: { authedUserId } }) => {
+      const tokenResponse = await clerkClient.users.getUserOauthAccessToken(
+        authedUserId,
+        'oauth_github',
+      );
+      if (!tokenResponse[0]?.token)
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: `You don't have an associated github account. If you want to connect it, you need to do it under the account settings. (Click on your profile in the application at the bottom left->select "Manage account"->under the chapter "Connected accounts" click on "Connect account")`,
+        });
+      const repositoriesResponse = await fetch(
+        'https://api.github.com/user/repos',
+        {
+          headers: {
+            Authorization: `Bearer ${tokenResponse[0]?.token}`,
+          },
         },
-      },
-    );
-    const repositories: GithubRepository[] = await repositoriesResponse.json();
-    return repositories
-      .sort(
-        (repo1, repo2) =>
-          new Date(repo1.updated_at).getTime() -
-          new Date(repo2.updated_at).getTime(),
-      )
-      .map((repo) => {
-        return {
-          ...repo,
-        };
-      });
-  }),
+      );
+      const repositories: GithubRepository[] =
+        await repositoriesResponse.json();
+      return repositories
+        .sort(
+          (repo1, repo2) =>
+            new Date(repo1.updated_at).getTime() -
+            new Date(repo2.updated_at).getTime(),
+        )
+        .map((repo) => {
+          return {
+            ...repo,
+          };
+        });
+    }),
+  ),
   addWebhook: adminProcedure
     .input(
       z.object({
@@ -45,13 +49,18 @@ export const githubRouter = t.router({
         repositoryOwner: z.string(),
       }),
     )
-    .mutation(async ({ input, ctx: { prisma, authedUserId } }) => {
-      try {
+    .mutation(
+      errorHandler(async ({ input, ctx: { prisma, authedUserId } }) => {
         await prisma.$transaction(async (tx) => {
           const tokenResponse = await clerkClient.users.getUserOauthAccessToken(
             authedUserId,
             'oauth_github',
           );
+          if (!tokenResponse[0]?.token)
+            throw new TRPCError({
+              code: 'FORBIDDEN',
+              message: `You don't have an associated github account. If you want to connect it, you need to do it under the account settings. (Click on your profile in the application at the bottom left->select "Manage account"->under the chapter "Connected accounts" click on "Connect account")`,
+            });
           await fetch(
             `https://api.github.com/repos/${input.repositoryOwner}/${input.repositoryName}/hooks`,
             {
@@ -159,17 +168,10 @@ export const githubRouter = t.router({
             }
           }
         });
-      } catch (e) {
-        console.log(e);
-        throw new TRPCError({
-          message: 'Something went wrong. Please try again later.',
-          code: 'INTERNAL_SERVER_ERROR',
-        });
-      }
-    }),
-  isIntegrated: adminProcedure
-    .input(z.object({ boardId: z.string() }))
-    .query(async ({ input, ctx: { prisma } }) => {
+      }),
+    ),
+  isIntegrated: adminProcedure.input(z.object({ boardId: z.string() })).query(
+    errorHandler(async ({ input, ctx: { prisma } }) => {
       const data = await prisma.githubData.findFirst({
         where: {
           projectBoardId: input.boardId,
@@ -177,70 +179,82 @@ export const githubRouter = t.router({
       });
       return !!data;
     }),
+  ),
   removeWebhooks: adminProcedure
     .input(z.object({ boardId: z.string() }))
-    .mutation(async ({ input, ctx: { prisma, authedUserId } }) => {
-      await prisma.$transaction(async (tx) => {
-        const githubDataToDelete = await tx.githubData.findMany({
-          where: {
-            projectBoardId: input.boardId,
-          },
-        });
-        await tx.githubData.deleteMany({
-          where: {
-            projectBoardId: input.boardId,
-          },
-        });
-        const tokenResponse = await clerkClient.users.getUserOauthAccessToken(
-          authedUserId,
-          'oauth_github',
-        );
-        for (const githubData of githubDataToDelete) {
-          const hooksResponse = await fetch(
-            `https://api.github.com/repos/${githubData.owner}/${githubData.repository}/hooks`,
-            {
-              headers: {
-                Authorization: `Bearer ${tokenResponse[0]?.token}`,
-              },
+    .mutation(
+      errorHandler(async ({ input, ctx: { prisma, authedUserId } }) => {
+        await prisma.$transaction(async (tx) => {
+          const githubDataToDelete = await tx.githubData.findMany({
+            where: {
+              projectBoardId: input.boardId,
             },
+          });
+          await tx.githubData.deleteMany({
+            where: {
+              projectBoardId: input.boardId,
+            },
+          });
+          const tokenResponse = await clerkClient.users.getUserOauthAccessToken(
+            authedUserId,
+            'oauth_github',
           );
-          const hooks = await hooksResponse.json();
-          for (const hook of hooks) {
-            await fetch(
-              `https://api.github.com/repos/${githubData.owner}/${githubData.repository}/hooks/${hook.id}`,
+          if (!tokenResponse[0]?.token)
+            throw new TRPCError({
+              code: 'FORBIDDEN',
+              message: `You don't have an associated github account. If you want to connect it, you need to do it under the account settings. (Click on your profile in the application at the bottom left->select "Manage account"->under the chapter "Connected accounts" click on "Connect account")`,
+            });
+          for (const githubData of githubDataToDelete) {
+            const hooksResponse = await fetch(
+              `https://api.github.com/repos/${githubData.owner}/${githubData.repository}/hooks`,
               {
-                method: 'DELETE',
                 headers: {
                   Authorization: `Bearer ${tokenResponse[0]?.token}`,
                 },
               },
             );
+            const hooks = await hooksResponse.json();
+            for (const hook of hooks) {
+              await fetch(
+                `https://api.github.com/repos/${githubData.owner}/${githubData.repository}/hooks/${hook.id}`,
+                {
+                  method: 'DELETE',
+                  headers: {
+                    Authorization: `Bearer ${tokenResponse[0]?.token}`,
+                  },
+                },
+              );
+            }
           }
-        }
-      });
-    }),
+        });
+      }),
+    ),
   getWebhookActions: adminProcedure
     .input(z.object({ boardId: z.string() }))
-    .query(async ({ input, ctx: { prisma } }) => {
-      return await prisma.githubData.findFirst({
-        where: {
-          projectBoardId: input.boardId,
-        },
-        select: {
-          githubWebhooks: true,
-        },
-      });
-    }),
+    .query(
+      errorHandler(async ({ input, ctx: { prisma } }) => {
+        return await prisma.githubData.findFirst({
+          where: {
+            projectBoardId: input.boardId,
+          },
+          select: {
+            githubWebhooks: true,
+          },
+        });
+      }),
+    ),
   updateWebhookAction: adminProcedure
     .input(z.object({ projectBoardColumnName: z.string(), id: z.string() }))
-    .mutation(async ({ input, ctx: { prisma } }) => {
-      await prisma.githubWebhookAction.update({
-        where: {
-          id: input.id,
-        },
-        data: {
-          projectBoardColumnName: input.projectBoardColumnName,
-        },
-      });
-    }),
+    .mutation(
+      errorHandler(async ({ input, ctx: { prisma } }) => {
+        await prisma.githubWebhookAction.update({
+          where: {
+            id: input.id,
+          },
+          data: {
+            projectBoardColumnName: input.projectBoardColumnName,
+          },
+        });
+      }),
+    ),
 });

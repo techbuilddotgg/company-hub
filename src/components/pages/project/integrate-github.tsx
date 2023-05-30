@@ -41,6 +41,7 @@ const IntegrateGithub = ({ boardId, closeDialog }: IntegrateGithubProps) => {
   const { mutate: addWebhook, isLoading } = trpc.github.addWebhook.useMutation({
     onSuccess: () => {
       queryClient.invalidateQueries(getQueryKey(trpc.github.isIntegrated));
+      queryClient.invalidateQueries(getQueryKey(trpc.board.getById));
       closeDialog();
     },
   });

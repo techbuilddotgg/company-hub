@@ -12,20 +12,18 @@ import { useForm } from 'react-hook-form';
 import { useDebounce, useGetDocuments, useOpenAI } from '@hooks';
 import { FilterOption } from '@components/pages/knowledge-base/knowledge-base-filter-options';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
+import { Bot, FileSearch } from 'lucide-react';
 
 const KnowledgeBase = () => {
   const { register, watch } = useForm<{
-    manualSearch: string;
-    aiSearch: string;
+    search: string;
   }>({
     defaultValues: {
-      manualSearch: '',
-      aiSearch: '',
+      search: '',
     },
   });
 
-  const manualSearch = useDebounce(watch('manualSearch'));
-  const aiSearch = useDebounce(watch('aiSearch'));
+  const search = useDebounce(watch('search'));
 
   const { data: res, mutate, isLoading: isLoadingAIResponse } = useOpenAI();
 
@@ -38,11 +36,11 @@ const KnowledgeBase = () => {
   );
 
   const { data, isLoading } = useGetDocuments({
-    title: manualSearch,
+    title: search,
     order: filterOption.toLowerCase(),
   });
   const handleAISearch = () => {
-    mutate({ prompt: aiSearch });
+    mutate({ prompt: search });
   };
 
   const [parent] = useAutoAnimate();
@@ -56,14 +54,29 @@ const KnowledgeBase = () => {
             'Centralized repository of organized information and data.'
           }
           rightHelper={
-            <LinkButton href={AppRoute.ADD_KNOWLEDGE} className={'ml-auto'}>
+            <LinkButton
+              href={AppRoute.ADD_KNOWLEDGE}
+              className={'ml-auto self-end'}
+            >
               Add knowledge
             </LinkButton>
           }
         />
       </div>
 
-      <div className={'flex w-full grow flex-col gap-4'}>
+      <div className={'flex w-full grow flex-col gap-1'}>
+        {searchOption === SearchOption.DEFAULT && (
+          <div className={'mt-4 flex items-center gap-1 text-sm'}>
+            <FileSearch className={'h-4 w-4'} />
+            Manual search
+          </div>
+        )}
+        {searchOption === SearchOption.AI && (
+          <div className={'mt-4 flex items-center gap-1 text-sm'}>
+            <Bot className={'h-4 w-4'} />
+            AI search
+          </div>
+        )}
         <KnowledgeBaseSearch
           isSearching={isLoadingAIResponse}
           register={register}
@@ -71,7 +84,7 @@ const KnowledgeBase = () => {
           searchOption={searchOption}
           handleAISearch={handleAISearch}
         />
-        <div className={'mt-4'} ref={parent}>
+        <div className={'mt-10'} ref={parent}>
           {searchOption === SearchOption.DEFAULT && (
             <DocumentFeed
               setFilterOption={setFilterOption}

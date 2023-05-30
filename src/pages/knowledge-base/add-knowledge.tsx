@@ -16,14 +16,14 @@ import {
 
 const AddKnowledge = () => {
   return (
-    <div className={'flex w-full flex-col gap-8 mb-8'}>
+    <div className={'mb-8 flex w-full flex-col gap-8'}>
       <PageHeader
         title={'Add knowledge'}
         description={
           'Add data or upload files to the knowledge base. This will help other users to find the information they need.'
         }
       />
-      <div className={'flex w-full flex-col items-center'}>
+      <div className={'flex w-full flex-col'}>
         <Tabs
           defaultValue="add"
           className="w-full sm:w-full md:w-full lg:w-2/3"

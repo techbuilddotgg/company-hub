@@ -12,6 +12,8 @@ import { useToast, useUploadDocument } from '@hooks';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Info } from 'lucide-react';
+import { useRouter } from 'next/router';
+import { AppRoute } from '@constants/app-routes';
 
 export interface UploadFormData {
   fileList: FileList;
@@ -22,7 +24,10 @@ export interface UploadFormData {
 const UploadFormSchema = z.object({
   fileList: z.any().refine((val) => val.length > 0, "File can't be empty"),
   title: z.string().min(3, 'Title must be at least 3 characters'),
-  description: z.string().min(3, 'Description must be at least 3 characters'),
+  description: z
+    .string()
+    .min(3, 'Description must be at least 3 characters')
+    .max(200, 'Description must be at most 200 characters'),
 });
 
 const UploadTooltip = () => {
@@ -50,14 +55,16 @@ export const UploadKnowledgeForm = () => {
   const { toast } = useToast();
 
   const { errors } = formState;
+  const router = useRouter();
 
   const { mutateAsync, isLoading } = useUploadDocument({
-    onSuccess: () => {
+    onSuccess: async () => {
       toast({
         title: 'Document uploaded',
         description: 'Document has been uploaded successfully.',
       });
       reset();
+      await router.push(AppRoute.ADD_KNOWLEDGE);
     },
     onError: () => {
       toast({

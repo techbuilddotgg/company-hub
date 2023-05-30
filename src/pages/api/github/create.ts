@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { getTaskTagFromFullBranchName, isSignatureValid } from '@utils/github';
 import { prisma } from '@server/db/client';
 import { ProjectBoardColumn } from '@prisma/client';
+import pusher from '@utils/pusher';
 
 export default async function handler(
   req: NextApiRequest,
@@ -60,6 +61,9 @@ export default async function handler(
           projectBoardColumnId: targetColumn[0]?.id,
         },
       });
+
+      pusher.trigger('board-channel', 'refetch-event', {});
+
       console.log(task);
     }
   } catch (e) {

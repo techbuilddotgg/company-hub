@@ -12,13 +12,21 @@ import {
   ScrollArea,
   Textarea,
   TimePicker,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
   UserSelection,
 } from '@components';
 import Labels from '@components/pages/calendar/labels';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DateRange } from 'react-day-picker';
-import { checkTime, formatTime } from '@components/pages/calendar/utils';
+import {
+  checkTime,
+  formatISODate,
+  formatTime,
+} from '@components/pages/calendar/utils';
 import { trpc } from '@utils/trpc';
 import {
   AddEventType,
@@ -29,6 +37,7 @@ import { useToast } from '@hooks';
 import { CheckedState } from '@radix-ui/react-checkbox';
 import { authUser } from '@shared/types/user.types';
 import { LabelColorsType } from '@components/pages/calendar/types';
+import { ClipboardCheck } from 'lucide-react';
 
 interface EventModalFormProps {
   setOpen: (open: boolean) => void;
@@ -279,12 +288,6 @@ const EventModalForm: FC<EventModalFormProps> = ({
         <Labels selected={label} handleLabelChange={handleLabelChange} />
       </div>
       <div className={'mt-4 flex items-center justify-between'}>
-        <LoaderButton
-          isLoading={isAddEventMutationLoading || isUpdateEventMutationLoading}
-          type={'submit'}
-        >
-          Save
-        </LoaderButton>
         {event && (
           <LoaderButton
             isLoading={isDeleteEventMutationLoading}
@@ -297,8 +300,66 @@ const EventModalForm: FC<EventModalFormProps> = ({
             Delete
           </LoaderButton>
         )}
+        <div className={'ml-auto flex'}>
+          <LoaderButton
+            isLoading={
+              isAddEventMutationLoading || isUpdateEventMutationLoading
+            }
+            type={'submit'}
+          >
+            Save
+          </LoaderButton>
+        </div>
       </div>
     </form>
+  );
+};
+
+const EventTooltip = () => {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger type={'button'}>
+          <ClipboardCheck className={'h-4 w-4 text-blue-600'} />
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>This event is generated from project board.</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+};
+interface EventModalInfoProps {
+  event?: AddEventType;
+}
+const EventModalInfo: FC<EventModalInfoProps> = ({ event }) => {
+  console.log(event);
+  return (
+    <div className={'flex flex-col gap-2'}>
+      <div>
+        <label className={'font-bold'}>Title</label>
+        <p>{event?.title}</p>
+      </div>
+      {event?.description && (
+        <div>
+          <label className={'font-bold'}>Description</label>
+          <p>{event?.description}</p>
+        </div>
+      )}
+      {event?.start && event?.end && (
+        <div>
+          <label className={'font-bold'}>Date</label>
+          <p>
+            <span className={'font-semibold'}>From:</span>{' '}
+            {formatISODate(event?.start)}
+          </p>
+          <p>
+            <span className={'font-semibold'}>To:</span>{' '}
+            {formatISODate(event?.end)}
+          </p>
+        </div>
+      )}
+    </div>
   );
 };
 
@@ -309,6 +370,7 @@ interface EventModalProps {
   event?: AddEventType;
   user: authUser;
   refetch: () => void;
+  author: boolean;
 }
 const EventModal: FC<EventModalProps> = ({
   open,
@@ -317,26 +379,48 @@ const EventModal: FC<EventModalProps> = ({
   event,
   user,
   refetch,
+  author,
 }) => {
+  console.log('je avtor: ', author);
+  console.log(event?.taskId);
   return (
     <Dialog open={open}>
-      <DialogContent className={'sm:max-w-[425px]'} setDialogOpen={setOpen}>
-        <DialogHeader className={'mx-1'}>
-          <DialogTitle>Add event</DialogTitle>
-          <DialogDescription>Add new calendar entry</DialogDescription>
-        </DialogHeader>
-        <ScrollArea className="max-h-[80vh]">
-          <div className={'mx-1 grid gap-4'}>
-            <EventModalForm
-              currentDate={date}
-              event={event}
-              user={user}
-              setOpen={setOpen}
-              refetch={refetch}
-            />
-          </div>
-        </ScrollArea>
-      </DialogContent>
+      {!author || event?.taskId ? (
+        <DialogContent className={'sm:max-w-[425px]'} setDialogOpen={setOpen}>
+          <DialogHeader className={'mx-1'}>
+            <DialogTitle className={'flex gap-x-1'}>
+              Event Info
+              {event?.taskId && <EventTooltip />}
+            </DialogTitle>
+            <DialogDescription>Calendar entry information</DialogDescription>
+          </DialogHeader>
+          <ScrollArea className="max-h-[80vh]">
+            <div className={'mx-1 grid gap-4'}>
+              <EventModalInfo event={event} />
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      ) : (
+        <DialogContent className={'sm:max-w-[425px]'} setDialogOpen={setOpen}>
+          <DialogHeader className={'mx-1'}>
+            <DialogTitle>{event ? 'Edit event' : 'Add event'}</DialogTitle>
+            <DialogDescription>
+              {event ? 'Update calendar entry' : 'Add new calendar entry'}
+            </DialogDescription>
+          </DialogHeader>
+          <ScrollArea className="max-h-[80vh]">
+            <div className={'mx-1 grid gap-4'}>
+              <EventModalForm
+                currentDate={date}
+                event={event}
+                user={user}
+                setOpen={setOpen}
+                refetch={refetch}
+              />
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      )}
     </Dialog>
   );
 };

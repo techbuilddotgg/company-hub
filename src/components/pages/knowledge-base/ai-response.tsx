@@ -10,7 +10,7 @@ interface Props {
 
 export const AiResponse: FC<Props> = ({ isLoading, data }) => {
   return (
-    <>
+    <div className={'flex flex-col gap-4'}>
       <PageSubheader
         title={'AI response'}
         description={
@@ -26,11 +26,11 @@ export const AiResponse: FC<Props> = ({ isLoading, data }) => {
             alt={'loading'}
           />
           <p className={'font-semibold text-gray-400'}>
-            Please wait while im searching for results ...
+            Please wait while I&apos;m searching for results ...
           </p>
         </div>
       )}
       {!isLoading && data && <Markdown>{data.response}</Markdown>}
-    </>
+    </div>
   );
 };

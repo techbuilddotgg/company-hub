@@ -55,6 +55,10 @@ const MainNavigation = () => {
     return router.asPath === href;
   };
   const { data: projects } = trpc.project.get.useQuery();
+  const setIsNavigationOpened = useNavigationStore(
+    (state) => state.setIsOpened,
+  );
+  const size = useWindow();
 
   const navigationItems = useMemo(() => {
     return [
@@ -86,11 +90,19 @@ const MainNavigation = () => {
     ] as NavigationItem[];
   }, [projects]);
 
+  const closeNavigationIfMobile = () => {
+    if (size && size.width < 768) setIsNavigationOpened(false);
+  };
+
   return (
     <nav className=" mt-4 flex w-full grow  flex-col gap-4">
       <ul className={'flex grow flex-col gap-4'}>
         {navigationItems.map((item) => (
-          <div key={item.title} className="cursor-pointer">
+          <div
+            key={item.title}
+            className="cursor-pointer"
+            onClick={closeNavigationIfMobile}
+          >
             <li
               className={cn(
                 'rounded p-2 text-gray-500',
@@ -143,6 +155,7 @@ export const Navigation = () => {
   const { isOpened, setIsOpened } = useNavigationStore();
   const { data: company } = trpc.company.get.useQuery();
   const size = useWindow();
+  const user = useUser();
 
   if (!size) return null;
 
@@ -154,20 +167,22 @@ export const Navigation = () => {
         } z-20 flex h-full w-[300px] flex-col items-center  border-r bg-white px-5 transition-[left]`}
       >
         <div
-          className={`my-4 flex w-full flex-row items-center justify-between gap-1 pl-4 ${
-            company?.logo ? 'pt-1' : 'pt-3.5'
+          className={`grid w-full grid-cols-[50px_1fr] items-center justify-center ${
+            company?.logo ? 'pt-5' : 'pt-7'
           }`}
         >
           <Menu
-            className={'mr-3 cursor-pointer'}
+            className={'mr-3 cursor-pointer justify-self-center'}
             onClick={() => setIsOpened(false)}
           />
           <Logo />
         </div>
         <MainNavigation />
         <div className="mb-6 flex w-full flex-row items-center justify-between">
-          <UserSection />
-          <SettingsDialog />
+          <>
+            <UserSection />
+            {user.user?.publicMetadata?.isAdmin && <SettingsDialog />}
+          </>
         </div>
       </div>
       <div

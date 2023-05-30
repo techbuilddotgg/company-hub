@@ -60,8 +60,7 @@ const SearchOptions: FC<{
 
 interface KnowledgeBaseSearchProps {
   register: UseFormRegister<{
-    manualSearch: string;
-    aiSearch: string;
+    search: string;
   }>;
   searchOption: SearchOption;
   setSearchOption: Dispatch<SetStateAction<SearchOption>>;
@@ -82,7 +81,7 @@ export const KnowledgeBaseSearch: FC<KnowledgeBaseSearchProps> = ({
         <>
           <Input
             placeholder={'What are you looking for?'}
-            {...register('manualSearch')}
+            {...register('search')}
           />
           <SearchOptions
             searchOption={searchOption}
@@ -95,7 +94,7 @@ export const KnowledgeBaseSearch: FC<KnowledgeBaseSearchProps> = ({
         <>
           <Input
             placeholder={'What are you looking for?'}
-            {...register('aiSearch')}
+            {...register('search')}
           />
           <LoaderButton
             isLoading={isSearching}

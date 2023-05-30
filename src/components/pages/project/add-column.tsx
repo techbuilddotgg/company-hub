@@ -1,18 +1,10 @@
 import React from 'react';
 import { trpc } from '@utils/trpc';
-import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Card, Input, LoaderButton } from '@components';
-
-export const AddColumnSchema = z.object({
-  name: z
-    .string()
-    .min(3, { message: 'Enter at least 3 chars' })
-    .max(20, { message: 'Enter max 20 chars' }),
-});
-
-type AddColumnType = z.infer<typeof AddColumnSchema>;
+import { AddColumnSchema } from '@shared/validators/board.schemes';
+import { AddColumnType } from '@shared/types/board.types';
 
 interface AddColumnProps {
   boardId: string;
@@ -28,7 +20,6 @@ const AddColumn = ({ boardId, refetch }: AddColumnProps) => {
     resolver: zodResolver(AddColumnSchema),
     defaultValues: {
       name: '',
-      boardName: '',
     },
   });
   const { mutate: addColumn, isLoading } = trpc.board.addColumn.useMutation({

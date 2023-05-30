@@ -14,7 +14,7 @@ import {
   TooltipTrigger,
 } from '@components';
 import { TaskModal } from '@components/pages/project/task-modal';
-import { Clock3, GitBranch, User2 } from 'lucide-react';
+import { Clock3, Github, User2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { trpc } from '@utils/trpc';
 import {
@@ -63,7 +63,7 @@ const Task = ({ task, index, refetch }: TaskProps) => {
               ref={provided.innerRef}
               {...provided.draggableProps}
               {...provided.dragHandleProps}
-              className="mb-4 rounded-lg bg-white p-0 shadow"
+              className="mb-4 rounded-lg bg-white p-0 shadow hover:shadow-md"
             >
               <CardHeader className="flex flex-row items-stretch justify-between p-0">
                 <CardTitle className="flex flex-row p-3 text-left">
@@ -146,7 +146,7 @@ const Task = ({ task, index, refetch }: TaskProps) => {
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <GitBranch />
+                            <Github />
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>

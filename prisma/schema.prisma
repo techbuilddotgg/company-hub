@@ -86,7 +86,7 @@ model ProjectBoard {
 
 model ProjectBoardColumn {
   id                String             @id @default(cuid())
-  name              String
+  name              String             @unique
   projectBoard      ProjectBoard       @relation(fields: [projectBoardId], references: [id], onDelete: Cascade)
   projectBoardId    String
   projectBoardTasks ProjectBoardTask[]

@@ -1,4 +1,6 @@
 import { Prisma, ProjectBoardColumn, ProjectBoardTask } from '@prisma/client';
+import { z } from 'zod';
+import { AddColumnSchema } from '@shared/validators/board.schemes';
 
 const projectColumnFull = Prisma.validator<Prisma.ProjectBoardColumnArgs>()({
   include: { projectBoardTasks: true },
@@ -21,3 +23,5 @@ export type ProjectBoardTaskType = ProjectBoardTask & {
   connectedBranch: string | null;
   users: ProjectBoardAssignedUserType[];
 };
+
+export type AddColumnType = z.infer<typeof AddColumnSchema>;
