@@ -1,13 +1,20 @@
-import { adminProcedure, t } from '../trpc';
+import { adminProcedure, protectedProcedure, t } from '../trpc';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { errorHandler } from '@utils/error-handler';
+import { clerkClient } from '@clerk/nextjs/server';
 
 export const companyRouter = t.router({
-  get: adminProcedure.query(
+  get: protectedProcedure.query(
     errorHandler(async ({ ctx }) => {
-      const company = await ctx.prisma.company.findUnique({
-        where: { id: ctx.companyId },
+      const user = await clerkClient.users.getUser(ctx.authedUserId);
+      if (!user || !user.publicMetadata.companyId)
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'User not found',
+        });
+      const company = await ctx.prisma.company.findFirst({
+        where: { id: user.publicMetadata.companyId },
       });
       if (!company)
         throw new TRPCError({
