@@ -55,6 +55,10 @@ const MainNavigation = () => {
     return router.asPath === href;
   };
   const { data: projects } = trpc.project.get.useQuery();
+  const setIsNavigationOpened = useNavigationStore(
+    (state) => state.setIsOpened,
+  );
+  const size = useWindow();
 
   const navigationItems = useMemo(() => {
     return [
@@ -86,11 +90,19 @@ const MainNavigation = () => {
     ] as NavigationItem[];
   }, [projects]);
 
+  const closeNavigationIfMobile = () => {
+    if (size && size.width < 768) setIsNavigationOpened(false);
+  };
+
   return (
     <nav className=" mt-4 flex w-full grow  flex-col gap-4">
       <ul className={'flex grow flex-col gap-4'}>
         {navigationItems.map((item) => (
-          <div key={item.title} className="cursor-pointer">
+          <div
+            key={item.title}
+            className="cursor-pointer"
+            onClick={closeNavigationIfMobile}
+          >
             <li
               className={cn(
                 'rounded p-2 text-gray-500',

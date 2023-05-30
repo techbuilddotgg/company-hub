@@ -22,17 +22,14 @@ const GithubIntegrationDialog = ({ boardId }: GithubIntegrationDialogProps) => {
 
   return (
     <Dialog open={dialogOpened}>
-      <div className="mb-4 flex flex-row justify-between">
+      <div className="flex flex-row justify-between">
         <DialogTrigger
           asChild
           onClick={() => {
             setDialogOpened(true);
           }}
         >
-          <Button
-            variant={githubIntegrated ? 'outline' : 'default'}
-            className="mt-4"
-          >
+          <Button variant={githubIntegrated ? 'outline' : 'default'}>
             {githubIntegrated ? 'Github configuration' : 'Connect to Github'}
           </Button>
         </DialogTrigger>

@@ -15,6 +15,7 @@ import { AddEventType } from '@shared/types/calendar.types';
 import { useUser } from '@clerk/nextjs';
 import { useNavigationStore } from '../../../store/navigation-store';
 import { useToast } from '@hooks';
+import { useWindow } from '../../../hooks/useWindow';
 
 const CalendarScheduler = () => {
   const isNavigationOpened = useNavigationStore((state) => state.isOpened);
@@ -22,6 +23,12 @@ const CalendarScheduler = () => {
   const { user } = useUser();
   const { mutate: updateEvent } = trpc.event.update.useMutation();
   const { data: events, refetch: refetchEvents } = trpc.event.get.useQuery();
+  const size = useWindow();
+  const [headerToolbar, setHeaderToolbar] = React.useState({
+    left: 'prev,next today',
+    center: 'title',
+    right: 'dayGridMonth,timeGridWeek,timeGridDay',
+  });
 
   const [openModal, setOpenModal] = React.useState<boolean>(false);
   const [date, setDate] = React.useState<string>('');
@@ -98,6 +105,22 @@ const CalendarScheduler = () => {
     return () => clearTimeout(update);
   }, [isNavigationOpened]);
 
+  useEffect(() => {
+    if (size && size.width < 769) {
+      setHeaderToolbar({
+        left: 'title',
+        center: 'prev,next today dayGridMonth,timeGridWeek,timeGridDay',
+        right: '',
+      });
+    } else {
+      setHeaderToolbar({
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay',
+      });
+    }
+  }, [size]);
+
   return (
     <div
       className={
@@ -126,11 +149,7 @@ const CalendarScheduler = () => {
           momentPlugin,
         ]}
         initialView="timeGridWeek"
-        headerToolbar={{
-          left: 'prev,next today',
-          center: 'title',
-          right: 'dayGridMonth,timeGridWeek,timeGridDay',
-        }}
+        headerToolbar={headerToolbar}
         locale={'en-gb'}
         weekends={weekends.weekendsVisible}
         events={events ? events : []}

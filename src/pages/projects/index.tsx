@@ -59,6 +59,7 @@ const Projects = () => {
       <div className="mb-10 flex flex-row justify-between">
         <PageHeader
           title="Projects"
+          classNameContainer="flex-row justify-between"
           rightHelper={
             <>
               {user?.publicMetadata.isAdmin && (
@@ -69,7 +70,7 @@ const Projects = () => {
                     setDialogOpened(true);
                   }}
                 >
-                  <Button className="mt-1">Add new project</Button>
+                  <Button className="self-end">Add new project</Button>
                 </DialogTrigger>
               )}
             </>
@@ -83,7 +84,7 @@ const Projects = () => {
             <AccordionTrigger>{project.name}</AccordionTrigger>
             <AccordionContent>
               <p className="font-bold">{project.description}</p>
-              <div className="mt-6 flex flex-row justify-between">
+              <div className="mt-6 flex flex-col justify-between md:flex-row">
                 <div className="flex flex-row">
                   <div>
                     <p className="font-bold">Start Date</p>
@@ -100,7 +101,7 @@ const Projects = () => {
                 </div>
                 <>
                   {user?.publicMetadata.isAdmin && (
-                    <div className="flex flex-row">
+                    <div className="mt-5 flex flex-row items-center md:mt-0">
                       <LoaderButton
                         isLoading={isUpdateProjectLoading}
                         onClick={() => setProjectStatus(project)}
