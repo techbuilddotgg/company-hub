@@ -26,7 +26,7 @@ export const AiResponse: FC<Props> = ({ isLoading, data }) => {
             alt={'loading'}
           />
           <p className={'font-semibold text-gray-400'}>
-            Please wait while im searching for results ...
+            Please wait while I&apos;m searching for results ...
           </p>
         </div>
       )}
