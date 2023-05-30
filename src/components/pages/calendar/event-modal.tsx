@@ -322,8 +322,8 @@ const EventTooltip = () => {
         <TooltipTrigger type={'button'}>
           <ClipboardCheck className={'h-4 w-4 text-blue-600'} />
         </TooltipTrigger>
-        <TooltipContent>
-          <p>This event is generated from project board.</p>
+        <TooltipContent className={'mb-5'} sideOffset={5}>
+          This event is generated from project board.
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
