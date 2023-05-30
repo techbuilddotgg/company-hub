@@ -63,7 +63,7 @@ const Task = ({ task, index, refetch }: TaskProps) => {
               ref={provided.innerRef}
               {...provided.draggableProps}
               {...provided.dragHandleProps}
-              className="mb-4 rounded-lg bg-white p-0 shadow"
+              className="mb-4 rounded-lg bg-white p-0 shadow hover:shadow-md"
             >
               <CardHeader className="flex flex-row items-stretch justify-between p-0">
                 <CardTitle className="flex flex-row p-3 text-left">

@@ -31,12 +31,12 @@ export const PageHeader: FC<PageHeaderProps> = ({
         <Menu className={'h-4 w-4'} />
       </Button>
 
-      <div className={`ml-4 w-full md:ml-10`}>
-        <div className={cn('flex flex-row justify-between gap-1', className)}>
+      <div className={`ml-4 flex w-full flex-col sm:flex-row md:ml-10`}>
+        <div className={cn('flex flex-col gap-1', className)}>
           <h1 className="text-3xl font-bold">{title}</h1>
-          {rightHelper && rightHelper}
+          <div className="text-sm text-gray-500">{description}</div>
         </div>
-        <div className="text-sm text-gray-500">{description}</div>
+        {rightHelper && rightHelper}
       </div>
     </div>
   );
