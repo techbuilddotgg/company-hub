@@ -279,12 +279,6 @@ const EventModalForm: FC<EventModalFormProps> = ({
         <Labels selected={label} handleLabelChange={handleLabelChange} />
       </div>
       <div className={'mt-4 flex items-center justify-between'}>
-        <LoaderButton
-          isLoading={isAddEventMutationLoading || isUpdateEventMutationLoading}
-          type={'submit'}
-        >
-          Save
-        </LoaderButton>
         {event && (
           <LoaderButton
             isLoading={isDeleteEventMutationLoading}
@@ -297,6 +291,16 @@ const EventModalForm: FC<EventModalFormProps> = ({
             Delete
           </LoaderButton>
         )}
+        <div className={'ml-auto flex'}>
+          <LoaderButton
+            isLoading={
+              isAddEventMutationLoading || isUpdateEventMutationLoading
+            }
+            type={'submit'}
+          >
+            Save
+          </LoaderButton>
+        </div>
       </div>
     </form>
   );

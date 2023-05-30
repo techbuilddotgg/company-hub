@@ -22,6 +22,9 @@ export const eventRouter = t.router({
             },
           ],
         },
+        include: {
+          users: true,
+        },
       }),
     ),
   ),

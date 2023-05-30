@@ -47,8 +47,11 @@ const CalendarScheduler = () => {
       start: clickInfo.event.startStr,
       end: clickInfo.event.endStr,
       authorId: clickInfo.event.extendedProps.authorId,
-      users: [],
+      users: clickInfo.event.extendedProps.users.map(
+        (user: { userId: string }) => user.userId,
+      ),
     };
+
     updateEvent(event);
   };
 
@@ -62,13 +65,13 @@ const CalendarScheduler = () => {
       start: clickInfo.event.startStr,
       end: clickInfo.event.endStr,
       authorId: clickInfo.event.extendedProps.authorId,
-      users: [],
+      users: clickInfo.event.extendedProps.users.map(
+        (user: { userId: string }) => user.userId,
+      ),
     });
     setDate(clickInfo.event.startStr);
     setOpenModal(true);
   };
-
-  console.log(isNavigationOpened);
 
   useEffect(() => {
     const update = setTimeout(() => {
