@@ -13,6 +13,7 @@ import { useDebounce, useGetDocuments, useOpenAI } from '@hooks';
 import { FilterOption } from '@components/pages/knowledge-base/knowledge-base-filter-options';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { Bot, FileSearch } from 'lucide-react';
+import Head from 'next/head';
 
 const KnowledgeBase = () => {
   const { register, watch } = useForm<{
@@ -46,59 +47,64 @@ const KnowledgeBase = () => {
   const [parent] = useAutoAnimate();
 
   return (
-    <div className={'flex h-full flex-col gap-2'}>
-      <div className={'flex flex-row items-center'}>
-        <PageHeader
-          title={'Knowledge Base'}
-          description={
-            'Centralized repository of organized information and data.'
-          }
-          rightHelper={
-            <LinkButton
-              href={AppRoute.ADD_KNOWLEDGE}
-              className={'ml-auto self-end'}
-            >
-              Add knowledge
-            </LinkButton>
-          }
-        />
-      </div>
+    <>
+      <Head>
+        <title>Knowledge Base</title>
+      </Head>
+      <div className={'flex h-full flex-col gap-2'}>
+        <div className={'flex flex-row items-center'}>
+          <PageHeader
+            title={'Knowledge Base'}
+            description={
+              'Centralized repository of organized information and data.'
+            }
+            rightHelper={
+              <LinkButton
+                href={AppRoute.ADD_KNOWLEDGE}
+                className={'ml-auto self-end'}
+              >
+                Add knowledge
+              </LinkButton>
+            }
+          />
+        </div>
 
-      <div className={'flex w-full grow flex-col gap-1'}>
-        {searchOption === SearchOption.DEFAULT && (
-          <div className={'mt-4 flex items-center gap-1 text-sm'}>
-            <FileSearch className={'h-4 w-4'} />
-            Manual search
-          </div>
-        )}
-        {searchOption === SearchOption.AI && (
-          <div className={'mt-4 flex items-center gap-1 text-sm'}>
-            <Bot className={'h-4 w-4'} />
-            AI search
-          </div>
-        )}
-        <KnowledgeBaseSearch
-          isSearching={isLoadingAIResponse}
-          register={register}
-          setSearchOption={setSearchOption}
-          searchOption={searchOption}
-          handleAISearch={handleAISearch}
-        />
-        <div className={'mt-10'} ref={parent}>
+        <div className={'flex w-full grow flex-col gap-1'}>
           {searchOption === SearchOption.DEFAULT && (
-            <DocumentFeed
-              setFilterOption={setFilterOption}
-              filterOption={filterOption}
-              data={data}
-              isLoading={isLoading}
-            />
+            <div className={'mt-4 flex items-center gap-1 text-sm'}>
+              <FileSearch className={'h-4 w-4'} />
+              Manual search
+            </div>
           )}
           {searchOption === SearchOption.AI && (
-            <AiResponse isLoading={isLoadingAIResponse} data={res} />
+            <div className={'mt-4 flex items-center gap-1 text-sm'}>
+              <Bot className={'h-4 w-4'} />
+              AI search
+            </div>
           )}
+          <KnowledgeBaseSearch
+            isSearching={isLoadingAIResponse}
+            register={register}
+            setSearchOption={setSearchOption}
+            searchOption={searchOption}
+            handleAISearch={handleAISearch}
+          />
+          <div className={'mt-10'} ref={parent}>
+            {searchOption === SearchOption.DEFAULT && (
+              <DocumentFeed
+                setFilterOption={setFilterOption}
+                filterOption={filterOption}
+                data={data}
+                isLoading={isLoading}
+              />
+            )}
+            {searchOption === SearchOption.AI && (
+              <AiResponse isLoading={isLoadingAIResponse} data={res} />
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

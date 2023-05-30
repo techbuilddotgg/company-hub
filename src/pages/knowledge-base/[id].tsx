@@ -18,6 +18,7 @@ import { Edit, MoreVertical } from 'lucide-react';
 import Link from 'next/link';
 import { AppRoute } from '@constants/app-routes';
 import moment from 'moment';
+import Head from 'next/head';
 
 type DocumentData = RouterOutput['knowledgeBase']['findById'];
 
@@ -56,40 +57,46 @@ const DocumentPage = () => {
   );
 
   return (
-    <DataView<DocumentData>
-      isLoading={isLoading}
-      data={data}
-      fallback={<PageUnavailable />}
-    >
-      {(data) => (
-        <div className={'flex flex-col gap-4'}>
-          <div className={'flex flex-row items-center'}>
-            <PageHeader
-              title={data.title}
-              description={
-                <>
-                  <p>{data.description}</p>
-                  <p>Author: {data.author.username}</p>
-                  <p>
-                    {data.createdAt >= data.updatedAt ? 'Created' : 'Updated'}:{' '}
-                    {moment(
-                      data.createdAt >= data.updatedAt
-                        ? data.createdAt
-                        : data.updatedAt,
-                    )
-                      .startOf('seconds')
-                      .fromNow()}
-                  </p>
-                </>
-              }
-            />
-            <DocumentActions documentId={data.id} />
-          </div>
+    <>
+      <Head>
+        <title>{data?.title}</title>
+      </Head>
+      <DataView<DocumentData>
+        isLoading={isLoading}
+        data={data}
+        fallback={<PageUnavailable />}
+      >
+        {(data) => (
+          <div className={'flex flex-col gap-4'}>
+            <div className={'flex flex-row items-center'}>
+              <PageHeader
+                title={data.title}
+                description={
+                  <>
+                    <p>{data.description}</p>
+                    <p>Author: {data.author.username}</p>
+                    <p>
+                      {data.createdAt >= data.updatedAt ? 'Created' : 'Updated'}
+                      :{' '}
+                      {moment(
+                        data.createdAt >= data.updatedAt
+                          ? data.createdAt
+                          : data.updatedAt,
+                      )
+                        .startOf('seconds')
+                        .fromNow()}
+                    </p>
+                  </>
+                }
+              />
+              <DocumentActions documentId={data.id} />
+            </div>
 
-          <Markdown>{data.content}</Markdown>
-        </div>
-      )}
-    </DataView>
+            <Markdown>{data.content}</Markdown>
+          </div>
+        )}
+      </DataView>
+    </>
   );
 };
 export default DocumentPage;
