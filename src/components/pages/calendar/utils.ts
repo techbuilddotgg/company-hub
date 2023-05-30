@@ -60,3 +60,18 @@ export const checkTime = (
     return true;
   }
 };
+
+export const formatISODate = (isoTimeString: string) => {
+  const date = new Date(isoTimeString);
+
+  const year = date.getFullYear();
+  const month = date.toLocaleString('default', { month: 'long' });
+  const day = date.getDate();
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+
+  if (minutes < 10) {
+    return `${day} ${month} ${year}, ${hours}:0${minutes}`;
+  }
+  return `${day} ${month} ${year}, ${hours}:${minutes}`;
+};

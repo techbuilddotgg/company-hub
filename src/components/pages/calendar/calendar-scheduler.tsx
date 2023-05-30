@@ -14,6 +14,7 @@ import {
 import { AddEventType } from '@shared/types/calendar.types';
 import { useUser } from '@clerk/nextjs';
 import { useNavigationStore } from '../../../store/navigation-store';
+import { useToast } from '@hooks';
 
 const CalendarScheduler = () => {
   const isNavigationOpened = useNavigationStore((state) => state.isOpened);
@@ -25,6 +26,8 @@ const CalendarScheduler = () => {
   const [openModal, setOpenModal] = React.useState<boolean>(false);
   const [date, setDate] = React.useState<string>('');
   const [event, setEvent] = React.useState<AddEventType | undefined>();
+  const [author, setAuthor] = React.useState<boolean>(false);
+  const { toast } = useToast();
 
   const weekends = {
     weekendsVisible: true,
@@ -32,6 +35,7 @@ const CalendarScheduler = () => {
   };
 
   const handleAddEventSelectAndOpenModal = (selectInfo: DateSelectArg) => {
+    setAuthor(true);
     setEvent(undefined);
     setDate(selectInfo.startStr);
     setOpenModal(true);
@@ -39,6 +43,13 @@ const CalendarScheduler = () => {
 
   const handleUpdateEventSelect = (clickInfo: EventChangeArg) => {
     if (clickInfo.event.extendedProps.authorId !== user?.id) return;
+    if (clickInfo.event.extendedProps.taskId) {
+      toast({
+        title: 'Task cannot be edited directly in calendar',
+        description: 'Please edit the task in project board instead',
+      });
+      return;
+    }
     const event = {
       id: clickInfo.event.id,
       title: clickInfo.event.title,
@@ -56,7 +67,6 @@ const CalendarScheduler = () => {
   };
 
   const handleEditEventSelectAndOpenModal = (clickInfo: EventClickArg) => {
-    if (clickInfo.event.extendedProps.authorId !== user?.id) return;
     setEvent({
       id: clickInfo.event.id,
       title: clickInfo.event.title,
@@ -68,8 +78,16 @@ const CalendarScheduler = () => {
       users: clickInfo.event.extendedProps.users.map(
         (user: { userId: string }) => user.userId,
       ),
+      taskId: clickInfo.event.extendedProps.taskId,
     });
     setDate(clickInfo.event.startStr);
+
+    if (clickInfo.event.extendedProps.authorId === user?.id) {
+      setAuthor(true);
+    } else {
+      setAuthor(false);
+    }
+
     setOpenModal(true);
   };
 
@@ -96,6 +114,7 @@ const CalendarScheduler = () => {
             event={event}
             user={user}
             refetch={refetchEvents}
+            author={author}
           />
         )}
       </div>
