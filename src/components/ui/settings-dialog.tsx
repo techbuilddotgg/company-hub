@@ -106,54 +106,63 @@ const SettingsDialog = () => {
     }
   };
   return (
-    <DataView<CompanyType> isLoading={isCompanyLoading} data={company}>
-      {() => (
-        <Dialog open={dialogOpened}>
-          <SettingsIcon
-            className={'h-6 w-6 cursor-pointer'}
-            onClick={() => setDialogOpened(true)}
-          />
-          <DialogContent setDialogOpen={setDialogOpened}>
-            <DialogHeader>
-              <DialogTitle>Company settings</DialogTitle>
-            </DialogHeader>
-            <form
-              onSubmit={handleSubmit(onSubmit)}
-              className={'flex flex-col gap-2'}
-            >
-              <Input
-                label="Company name"
-                className="mb-2"
-                type="text"
-                {...register('name')}
-                error={formState.errors.name}
-              />
-              <Input
-                tooltip={<UploadTooltip />}
-                label="Company logo"
-                type="file"
-                error={{ ...formState.errors.logo, type: 'field' }}
-                onChange={onChangeLogoInput}
-              />
-              {fileAsDataUrl && (
-                <img className="h-[50px]  self-start" src={fileAsDataUrl} />
-              )}
-              <div className="mt-4 flex flex-row justify-between">
-                <Button
-                  variant="outline"
-                  onClick={() => setDialogOpened(false)}
-                >
-                  Cancel
-                </Button>
-                <LoaderButton isLoading={isUpdateCompanyLoading} type="submit">
-                  Update
-                </LoaderButton>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
-      )}
-    </DataView>
+    <>
+      <SettingsIcon
+        className={'h-6 w-6 cursor-pointer text-gray-500'}
+        onClick={() => setDialogOpened(true)}
+      />
+      <DataView<CompanyType> isLoading={isCompanyLoading} data={company}>
+        {() => (
+          <Dialog open={dialogOpened}>
+            <DialogContent setDialogOpen={setDialogOpened}>
+              <DialogHeader>
+                <DialogTitle>Company settings</DialogTitle>
+              </DialogHeader>
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className={'flex flex-col gap-2'}
+              >
+                <Input
+                  label="Company name"
+                  className="mb-2"
+                  type="text"
+                  {...register('name')}
+                  error={formState.errors.name}
+                />
+                <Input
+                  tooltip={<UploadTooltip />}
+                  label="Company logo"
+                  type="file"
+                  error={{ ...formState.errors.logo, type: 'field' }}
+                  onChange={onChangeLogoInput}
+                />
+                {fileAsDataUrl && (
+                  <img
+                    className="h-[50px]  self-start"
+                    src={fileAsDataUrl}
+                    alt={'fileUpload'}
+                  />
+                )}
+                <div className="mt-4 flex flex-row justify-between">
+                  <Button
+                    variant="outline"
+                    onClick={() => setDialogOpened(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <LoaderButton
+                    isLoading={isUpdateCompanyLoading}
+                    type="submit"
+                  >
+                    Update
+                  </LoaderButton>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
+        )}
+      </DataView>
+    </>
   );
 };
 export default SettingsDialog;
