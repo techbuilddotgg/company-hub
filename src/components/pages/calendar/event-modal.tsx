@@ -333,7 +333,6 @@ interface EventModalInfoProps {
   event?: AddEventType;
 }
 const EventModalInfo: FC<EventModalInfoProps> = ({ event }) => {
-  console.log(event);
   return (
     <div className={'flex flex-col gap-2'}>
       <div>
@@ -381,8 +380,6 @@ const EventModal: FC<EventModalProps> = ({
   refetch,
   author,
 }) => {
-  console.log('je avtor: ', author);
-  console.log(event?.taskId);
   return (
     <Dialog open={open}>
       {!author || event?.taskId ? (
