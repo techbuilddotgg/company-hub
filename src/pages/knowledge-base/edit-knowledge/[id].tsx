@@ -15,6 +15,7 @@ import { useRouter } from 'next/router';
 import { RouterOutput, trpc } from '@utils/trpc';
 import { Trash2 } from 'lucide-react';
 import { AppRoute } from '@constants/app-routes';
+import Head from 'next/head';
 
 type KnowledgeDocument = RouterOutput['knowledgeBase']['findById'];
 const EditKnowledgePage = () => {
@@ -42,60 +43,65 @@ const EditKnowledgePage = () => {
   };
 
   return (
-    <div className={'flex w-full flex-col gap-4'}>
-      <DataView<KnowledgeDocument>
-        isLoading={isLoading}
-        data={data}
-        fallback={<PageUnavailable />}
-      >
-        {(data) => {
-          return (
-            <>
-              <PageHeader
-                title={'Edit Knowledge'}
-                description={
-                  <>
-                    Edit the knowledge document for{' '}
-                    <span className={'font-semibold text-blue-600'}>
-                      {data.title}
-                    </span>
-                  </>
-                }
-              />
-              <div className={'flex w-full flex-row justify-center'}>
-                <Card className="w-full sm:w-full md:w-full lg:w-2/3">
-                  <CardHeader className={'p-0'}>
-                    <div className={'ml-auto'}>
-                      <AlertDialogButton
-                        handleAction={handleDelete}
-                        buttonVariant={'ghost'}
-                        buttonClassName={'rounded-full p-0 w-10'}
-                        buttonText={
-                          <Trash2 className={'h-5 w-5 cursor-pointer'} />
-                        }
-                        actionText={'Delete'}
-                        title={'Delete document'}
-                        description={
-                          'Are you sure you want to delete this document?'
-                        }
+    <>
+      <Head>
+        <title>Edit knowledge</title>
+      </Head>
+      <div className={'flex w-full flex-col gap-4'}>
+        <DataView<KnowledgeDocument>
+          isLoading={isLoading}
+          data={data}
+          fallback={<PageUnavailable />}
+        >
+          {(data) => {
+            return (
+              <>
+                <PageHeader
+                  title={'Edit Knowledge'}
+                  description={
+                    <>
+                      Edit the knowledge document for{' '}
+                      <span className={'font-semibold text-blue-600'}>
+                        {data.title}
+                      </span>
+                    </>
+                  }
+                />
+                <div className={'flex w-full flex-row justify-center'}>
+                  <Card className="w-full sm:w-full md:w-full lg:w-2/3">
+                    <CardHeader className={'p-0'}>
+                      <div className={'ml-auto'}>
+                        <AlertDialogButton
+                          handleAction={handleDelete}
+                          buttonVariant={'ghost'}
+                          buttonClassName={'rounded-full p-0 w-10'}
+                          buttonText={
+                            <Trash2 className={'h-5 w-5 cursor-pointer'} />
+                          }
+                          actionText={'Delete'}
+                          title={'Delete document'}
+                          description={
+                            'Are you sure you want to delete this document?'
+                          }
+                        />
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <KnowledgeForm
+                        id={id as string}
+                        type={KnowledgeFormType.EDIT}
+                        initialValues={data}
+                        refetch={refetch}
                       />
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <KnowledgeForm
-                      id={id as string}
-                      type={KnowledgeFormType.EDIT}
-                      initialValues={data}
-                      refetch={refetch}
-                    />
-                  </CardContent>
-                </Card>
-              </div>
-            </>
-          );
-        }}
-      </DataView>
-    </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </>
+            );
+          }}
+        </DataView>
+      </div>
+    </>
   );
 };
 

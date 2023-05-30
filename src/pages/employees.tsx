@@ -5,6 +5,7 @@ import Employee from '@components/pages/users/employee';
 import { useUser } from '@clerk/nextjs';
 import InviteUser from '@components/pages/users/invite-user';
 import { User, UserRole } from '@shared/types/user.types';
+import Head from 'next/head';
 
 const Employees = () => {
   const { user } = useUser();
@@ -36,23 +37,28 @@ const Employees = () => {
   }, [users, invitations]);
 
   return (
-    <div>
-      <PageHeader className="mb-8" title="Employees" />
-      <>{user?.publicMetadata.isAdmin && <InviteUser />}</>
-      <DataView<User[]>
-        isLoading={isUsersLoading || isInvitationsLoading}
-        data={usersToDisplay}
-        fallback={<div>No users</div>}
-      >
-        {(data) => (
-          <ScrollArea className="mt-5 h-[80vh]">
-            {data.map((user) => (
-              <Employee key={user.id} user={user} />
-            ))}
-          </ScrollArea>
-        )}
-      </DataView>
-    </div>
+    <>
+      <Head>
+        <title>Employees</title>
+      </Head>
+      <div>
+        <PageHeader className="mb-8" title="Employees" />
+        <>{user?.publicMetadata.isAdmin && <InviteUser />}</>
+        <DataView<User[]>
+          isLoading={isUsersLoading || isInvitationsLoading}
+          data={usersToDisplay}
+          fallback={<div>No users</div>}
+        >
+          {(data) => (
+            <ScrollArea className="mt-5 h-[80vh]">
+              {data.map((user) => (
+                <Employee key={user.id} user={user} />
+              ))}
+            </ScrollArea>
+          )}
+        </DataView>
+      </div>
+    </>
   );
 };
 

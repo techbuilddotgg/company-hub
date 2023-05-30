@@ -64,7 +64,7 @@ export const UploadKnowledgeForm = () => {
         description: 'Document has been uploaded successfully.',
       });
       reset();
-      await router.push(AppRoute.ADD_KNOWLEDGE);
+      await router.push(AppRoute.KNOWLEDGE_BASE);
     },
     onError: () => {
       toast({
