@@ -59,10 +59,8 @@ const Employee = ({ user }: UserProps) => {
 
   return (
     <div className="mt-1 flex flex-row flex-wrap items-center justify-between rounded-md border py-1 pl-4 pr-3 text-gray-600">
-      <div>{user.emailAddress}</div>
-      <div
-        className={`flex flex-row items-center ${!showDeleteButton && 'py-5'}`}
-      >
+      <div className={'mr-5 py-2'}>{user.emailAddress}</div>
+      <div className={`flex flex-row items-center ${!showDeleteButton}`}>
         <>
           {showUpdateRoleSelect && (
             <Select
@@ -81,7 +79,7 @@ const Employee = ({ user }: UserProps) => {
             </Select>
           )}
           {user.pending && (
-            <div className="rounded bg-yellow-300 px-3 py-1 text-white">
+            <div className="rounded bg-yellow-300 px-3 py-0.5 text-white">
               Pending
             </div>
           )}

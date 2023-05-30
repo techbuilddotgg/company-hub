@@ -155,6 +155,7 @@ export const Navigation = () => {
   const { isOpened, setIsOpened } = useNavigationStore();
   const { data: company } = trpc.company.get.useQuery();
   const size = useWindow();
+  const user = useUser();
 
   if (!size) return null;
 
@@ -178,8 +179,10 @@ export const Navigation = () => {
         </div>
         <MainNavigation />
         <div className="mb-6 flex w-full flex-row items-center justify-between">
-          <UserSection />
-          <SettingsDialog />
+          <>
+            <UserSection />
+            {user.user?.publicMetadata?.isAdmin && <SettingsDialog />}
+          </>
         </div>
       </div>
       <div
