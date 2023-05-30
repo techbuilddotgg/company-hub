@@ -54,7 +54,10 @@ const KnowledgeBase = () => {
             'Centralized repository of organized information and data.'
           }
           rightHelper={
-            <LinkButton href={AppRoute.ADD_KNOWLEDGE} className={'ml-auto'}>
+            <LinkButton
+              href={AppRoute.ADD_KNOWLEDGE}
+              className={'ml-auto self-end'}
+            >
               Add knowledge
             </LinkButton>
           }

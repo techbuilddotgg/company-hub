@@ -7,7 +7,6 @@ import { ProjectBoard } from '@prisma/client';
 import { RouterOutput, trpc } from '@utils/trpc';
 import AddColumn from '@components/pages/project/add-column';
 import { ProjectBoardColumnType } from '@shared/types/board.types';
-import GithubIntegrationDialog from '@components/pages/project/github-integration-dialog';
 import Pusher from 'pusher-js';
 import { useUser } from '@clerk/nextjs';
 import { Checkbox } from '@components/ui/checkbox';
@@ -168,29 +167,24 @@ export const Board = ({ data }: BoardProps) => {
   const onMyTasksChange = () => {
     setMyTasksChecked(!myTasksChecked);
   };
-  console.log(isBoardLoading, board);
+
   return (
     <div className="h-full max-h-full">
-      <>
-        {user?.publicMetadata.isAdmin && (
-          <GithubIntegrationDialog boardId={data.id} />
-        )}
-        <div className="mb-4 flex space-x-2">
-          <Checkbox
-            id={`myTasks`}
-            checked={myTasksChecked}
-            onCheckedChange={onMyTasksChange}
-          />
-          <div className="grid gap-1.5 leading-none">
-            <label
-              htmlFor={`myTasks`}
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              {'Show only my tasks'}
-            </label>
-          </div>
+      <div className="mb-4 flex space-x-2">
+        <Checkbox
+          id={`myTasks`}
+          checked={myTasksChecked}
+          onCheckedChange={onMyTasksChange}
+        />
+        <div className="grid gap-1.5 leading-none">
+          <label
+            htmlFor={`myTasks`}
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            {'Show only my tasks'}
+          </label>
         </div>
-      </>
+      </div>
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable
           droppableId="board"

@@ -6,12 +6,17 @@ import { useRouter } from 'next/router';
 
 import type { inferRouterOutputs } from '@trpc/server';
 import type { AppRouter } from '@server/api/router';
+import GithubIntegrationDialog from '@components/pages/project/github-integration-dialog';
+import React from 'react';
+import { useUser } from '@clerk/nextjs';
 
 type RouterOutput = inferRouterOutputs<AppRouter>;
 type ProjectWithBoard = RouterOutput['project']['getById'];
 
 const Project = () => {
   const router = useRouter();
+  const { user } = useUser();
+
   const { data: project, isLoading } = trpc.project.getById.useQuery(
     {
       id: router.query.id as string,
@@ -27,7 +32,22 @@ const Project = () => {
     >
       {(data) => (
         <div>
-          <PageHeader className="mb-5" title={data.name} />
+          <PageHeader
+            className="mb-10"
+            title={data.name}
+            classNameContainer="justify-between flex-row"
+            rightHelper={
+              <>
+                {user?.publicMetadata.isAdmin &&
+                  data.projectBoards.length !== 0 &&
+                  data.projectBoards[0] && (
+                    <GithubIntegrationDialog
+                      boardId={data.projectBoards[0].id}
+                    />
+                  )}
+              </>
+            }
+          />
           {data.projectBoards.length !== 0 && data.projectBoards[0] ? (
             <Board data={data.projectBoards[0]} />
           ) : (
