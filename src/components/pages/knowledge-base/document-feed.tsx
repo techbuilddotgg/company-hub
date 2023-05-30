@@ -51,17 +51,21 @@ export const DocumentFeed: FC<{
         }
         ref={parent}
       >
-        <DataView<DocumentFeedData>
-          isLoading={isLoading}
-          loadingComponent={<DocumentCardSkeletonList />}
-          data={data}
-        >
-          {(data) =>
-            data.map((document) => (
-              <DocumentCard key={document.id} document={document} />
-            ))
-          }
-        </DataView>
+        {data?.length === 0 ? (
+          <p>No documents found.</p>
+        ) : (
+          <DataView<DocumentFeedData>
+            isLoading={isLoading}
+            loadingComponent={<DocumentCardSkeletonList />}
+            data={data}
+          >
+            {(data) =>
+              data.map((document) => (
+                <DocumentCard key={document.id} document={document} />
+              ))
+            }
+          </DataView>
+        )}
       </div>
     </div>
   );
