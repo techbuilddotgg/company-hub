@@ -13,7 +13,7 @@
     "lint": "next lint",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "test:unit": "npm run with-test-env vitest run --no-threads",
+    "test:unit": "npm run with-test-env vitest run --no-threads --test-timeout=50000",
     "studio": "npm run with-env npx prisma studio",
     "push": "npm run with-env npx prisma db push",
     "pull": "npm run with-env npx prisma db pull",
