@@ -212,18 +212,41 @@ export const boardRouter = t.router({
     .input(z.object({ id: z.string(), name: z.string() }))
     .mutation(
       errorHandler(async ({ input, ctx }) => {
-        const column = await ctx.prisma.projectBoardColumn.update({
+        const column = await ctx.prisma.projectBoardColumn.findUnique({
           where: { id: input.id },
-          data: input,
+          include: {
+            projectBoard: true,
+          },
         });
 
-        return {
-          message: {
-            title: 'Column updated',
-            description: 'Column was updated successfully.',
-          },
-          data: column,
-        };
+        if (!column)
+          throw new TRPCError({
+            message: 'Column not found',
+            code: 'INTERNAL_SERVER_ERROR',
+          });
+
+        return await ctx.prisma.$transaction(async (tx) => {
+          const updatedColumn = await tx.projectBoardColumn.update({
+            where: { id: input.id },
+            data: input,
+          });
+          await tx.githubWebhookAction.updateMany({
+            where: {
+              projectBoardColumnName: column.name,
+              githubData: { projectBoard: { id: column.projectBoard.id } },
+            },
+            data: {
+              projectBoardColumnName: updatedColumn.name,
+            },
+          });
+          return {
+            message: {
+              title: 'Column updated',
+              description: 'Column was updated successfully.',
+            },
+            data: updatedColumn,
+          };
+        });
       }),
     ),
   deleteColumn: adminBoardProcedure
