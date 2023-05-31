@@ -13,6 +13,9 @@ Application is available at: [Company-Hub](https://companyhub.vercel.app)
 - **Agile Task Board**: Tasks can be managed on an agile task board, providing a flexible and collaborative environment for teams to track and prioritize their work.
 
 
+- **GitHub Integration**: The application features seamless integration with GitHub. When a user creates a branch for a specific task, the corresponding ticket is automatically moved to the "Doing" column on the agile task board. As work progresses and the branch is eventually merged back into the main codebase, the ticket is automatically moved to the "Done" column, indicating completion. This integration ensures that task status on the task board accurately reflects the progress of code development and streamlines the workflow for teams working on software projects.
+
+
 - **Internal Knowledge Base**: The application incorporates an internal knowledge base. It enables users to publish and search for internal problems and knowledge, fostering knowledge sharing and efficient problem resolution.
 
 
