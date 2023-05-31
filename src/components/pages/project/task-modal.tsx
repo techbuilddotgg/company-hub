@@ -148,7 +148,7 @@ export const TaskModal = ({
           description: `Task deadline set to ${format(date, 'PPP')}.`,
           start: date.toISOString(),
           end: add(date, { hours: 24 }).toISOString(),
-          backgroundColor: LabelColorsType.BLUE,
+          backgroundColor: LabelColorsType.TASK,
           taskId: task.id,
           users: assignedUsers,
         });
@@ -227,7 +227,7 @@ export const TaskModal = ({
         description: `Task deadline set to ${format(date, 'PPP')}.`,
         start: date.toISOString(),
         end: add(date, { hours: 24 }).toISOString(),
-        backgroundColor: LabelColorsType.BLUE,
+        backgroundColor: LabelColorsType.TASK,
         taskId: task.id,
         users: assignedUsers,
       });
@@ -242,7 +242,7 @@ export const TaskModal = ({
         description: `Task deadline set to ${format(date, 'PPP')}.`,
         start: date.toISOString(),
         end: add(date, { hours: 24 }).toISOString(),
-        backgroundColor: LabelColorsType.BLUE,
+        backgroundColor: LabelColorsType.TASK,
         taskId: task.id,
         users: assignedUsers,
       });

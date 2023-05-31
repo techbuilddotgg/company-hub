@@ -6,4 +6,5 @@ export enum LabelColorsType {
   YELLOW = '#f6bf26',
 
   BLUE = '#2c9be5',
+  TASK = '#f4511e',
 }
