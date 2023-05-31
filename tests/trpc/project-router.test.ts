@@ -93,7 +93,7 @@ describe('project-router test', () => {
     const input: RouterInput['project']['add'] = {
       name: faker.lorem.word(5),
       description: faker.lorem.paragraph(1),
-      boardName: faker.lorem.sentence(1),
+      boardName: faker.lorem.word(5),
       abbreviation: faker.lorem.word(3),
     };
 
